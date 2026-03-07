@@ -744,7 +744,8 @@ let eventoCalendario = calendar.getEventById(editID)
 
 eventoCalendario.setProp("title",evento.title)
 eventoCalendario.setStart(evento.start)
-calendar.updateSize()
+calendar.refetchEvents()
+calendar.render()
 cerrarEditar()
 
 mostrarActividades()
