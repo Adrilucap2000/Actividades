@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calendario de Actividades</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+
+<style>
+
+
+/* BODY */
+
+body{
+font-family:Arial;
+background:
+linear-gradient(
+to bottom,
+rgba(90,10,20,0.95) 0%,
+rgba(90,10,20,0.85) 50%,
+rgba(90,10,20,0.75) 100%
+),
+url("https://i.imgur.com/hTT1t8L.jpeg");
+background-size:cover;
+background-position:center;
+background-attachment:scroll;
+background-repeat: no-repeat;
+min-height: 100vh;
+padding:20px;
+overflow-x:hidden;
+}
+
+/* ESTRELLAS */
+
+/* DESTELLOS DORADOS */
+
+.destellos{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+pointer-events:none;
+z-index:0;
+background-image:
+radial-gradient(#FFD700 2px, transparent 2px),
+radial-gradient(#F2C94C 1px, transparent 1px),
+radial-gradient(#FFF5CC 1px, transparent 1px);
+background-size:
+120px 120px,
+80px 80px,
+60px 60px;
+animation:brillos 20s linear infinite;
+opacity:0.6;
+}
+
+@keyframes brillos{
+from{transform:translateY(0)}
+to{transform:translateY(-200px)}
+}
+
+body::before{
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background-image:radial-gradient(#F2C94C 1px, transparent 1px);
+background-size:50px 50px;
+opacity:0.15;
+animation:estrellas 40s linear infinite;
+pointer-events:none;
+}
+
+@keyframes estrellas{
+from{transform:translateY(0)}
+to{transform:translateY(-200px)}
+}
+
+@keyframes brilloLinea{
+
+0%{
+box-shadow:
+0 0 5px #F2C94C,
+0 0 10px #F2C94C;
+}
+
+50%{
+box-shadow:
+0 0 10px #FFD700,
+0 0 25px #FFD700,
+0 0 40px #FFF5CC;
+}
+
+100%{
+box-shadow:
+0 0 5px #F2C94C,
+0 0 10px #F2C94C;
+}
+
+}
+
+
+/* ENCABEZADO */
+
+.encabezado{
+text-align:center;
+margin-bottom:40px;
+}
+
+.titulo-cinzel{
+font-family:'Cinzel Decorative';
+font-size:72px;
+letter-spacing:6px;
+color:#F5E6A3;
+}
+
+.titulo-cinzel::after{
+content:"";
+display:block;
+width:250px;
+height:3px;
+background:#F2C94C;
+margin:12px auto;
+border-radius:5px;
+
+box-shadow:
+0 0 5px #F2C94C,
+0 0 15px #F2C94C,
+0 0 25px #FFD700;
+
+animation:brilloLinea 3s ease-in-out infinite;
+}
+
+.subtitulo{
+font-family:'Cinzel Decorative';
+color:white;
+font-size:22px;
+}
+
+
+/* CONTENEDOR */
+
+.contenedor{
+display:grid;
+grid-template-columns:1fr 2px 2fr;
+gap:30px;
+max-width:1200px;
+margin:auto;
+position:relative;
+z-index:2;
+}
+
+.divisor{
+background:rgba(255,255,255,0.6);
+}
+
+/* FORMULARIO */
+
+.formulario{
+background:rgba(0,0,0,0.25);
+backdrop-filter:blur(6px);
+padding:30px;
+border-radius:15px;
+color:white;
+width:380px;
+}
+
+.formulario h1{
+font-family:'Cinzel Decorative';
+}
+
+.texto-explicacion{
+font-size:14px;
+color:#EAEAEA;
+margin-bottom:18px;
+}
+
+.formulario input,
+.formulario select{
+width:100%;
+padding:8px;
+border-radius:6px;
+border:none;
+margin-bottom:15px;
+}
+
+.formulario button{
+background:#F2C94C;
+border:none;
+padding:10px;
+border-radius:8px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.formulario button:hover{
+background:#4B2E83;
+color:white;
+transform:scale(1.05);
+}
+
+/* CALENDARIO */
+
+#calendar{
+background:white;
+padding:20px;
+border-radius:18px;
+box-shadow:0 15px 40px rgba(0,0,0,0.35);
+}
+
+.fc-event-title{
+white-space:normal !important;
+overflow:hidden;
+font-size:12px;
+}
+
+.fc-event{
+padding:4px;
+background:#D4AF37;
+border:none;
+color:black;
+font-weight:bold;
+}
+
+.fc-event:hover{
+background:#F2C94C;
+transform:scale(1.05);
+cursor:pointer;
+}
+
+.fc-day-today{
+background:#FFF5CC !important;
+}
+
+.fc-button{
+background:#7A1E2C !important;
+border:none !important;
+}
+
+/* MODAL */
+
+.modal{
+display:none;
+position:fixed;
+z-index:1000;
+left:0;
+top:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+justify-content:center;
+align-items:center;
+}
+
+.modal-contenido{
+background:white;
+padding:25px;
+border-radius:20px;
+width:400px;
+text-align:center;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="destellos"></div>
+
+<header class="encabezado">
+
+<h1 class="titulo-cinzel">BIENVENIDOS</h1>
+
+<h2 class="subtitulo">Inscripción a temas</h2>
+
+</header>
+
+<div class="contenedor">
+
+<div class="formulario">
+
+<h1>Formulario de selección</h1>
+
+<p class="texto-explicacion">
+Selecciona el tema de tu preferencia y verifica en el calendario
+</p>
+
+<form id="formulario">
+
+<input type="text" id="nombre" placeholder="Nombre" required>
+<input type="email" id="correo" placeholder="Correo" required>
+
+<select id="curso"></select>
+
+<button type="submit">ENVIAR INSCRIPCIÓN</button>
+
+</form>
+
+</div>
+
+<div class="divisor"></div>
+
+<div id="calendar"></div>
+
+</div>
+
+<!-- MODAL ACTIVIDAD -->
+
+<div id="modalActividad" class="modal">
+
+<div class="modal-contenido">
+
+<h2 id="tituloActividad"></h2>
+
+<p id="descripcionActividad"></p>
+
+<button onclick="cerrarModal()">Cerrar</button>
+
+</div>
+
+</div>
+
+<!-- LOGIN ADMIN -->
+
+<div id="adminLogin" class="modal">
+
+<div class="modal-contenido">
+
+<h2>Administrador</h2>
+
+<input type="password" id="adminPass" placeholder="Contraseña">
+
+<br><br>
+
+<button onclick="verificarAdmin()">Entrar</button>
+
+</div>
+
+</div>
+
+<!-- PANEL ADMIN -->
+
+<div id="adminPanel" class="modal">
+
+<div class="modal-contenido">
+
+<h2>Panel Administrador</h2>
+
+<button onclick="mostrarActividades()">Actividades</button>
+
+<button onclick="mostrarInscritos()">Eliminar participantes</button>
+
+<div id="seccionActividades">
+
+<h3>Agregar nueva actividad</h3>
+
+<input id="nuevoTitulo" placeholder="Título">
+
+<input id="nuevaDescripcion" placeholder="Descripción">
+
+<input id="nuevaFecha" type="date">
+
+<br><br>
+
+<button onclick="crearActividad()">Guardar actividad</button>
+
+<hr>
+
+<div id="listaActividades"></div>
+
+</div>
+
+
+<div id="seccionInscritos" style="display:none"></div>
+
+<br>
+
+<button onclick="cerrarAdmin()">Salir</button>
+
+</div>
+
+</div>
+
+
+<!-- MODAL EDITAR ACTIVIDAD -->
+
+<button onclick="abrirLogin()" style="
+position:fixed;
+bottom:20px;
+right:20px;
+background:#7A1E2C;
+color:white;
+padding:12px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+">
+ADMIN
+
+
+</button>
+
+
+<!-- MODAL EDITAR ACTIVIDAD -->
+
+<div id="modalEditar" class="modal">
+
+<div class="modal-contenido">
+
+<h2>Editar actividad</h2>
+
+<input id="editTitulo" placeholder="Título">
+
+<input id="editDescripcion" placeholder="Descripción">
+
+<input id="editFecha" type="date">
+
+<br><br>
+
+<button onclick="guardarEdicion()">Guardar</button>
+
+<button onclick="cerrarEditar()">Cancelar</button>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<script>
+
+(function(){
+emailjs.init("JbLq6Pz4o5CfG8tfQ");
+})();
+
+let eventos = JSON.parse(localStorage.getItem("eventos")) || [
+{
+id:'web',
+title:'Programación Web',
+start:'2026-03-10',
+description:'Traer laptop'
+},
+{
+id:'diseno',
+title:'Diseño de página',
+start:'2026-03-12',
+description:'Traer bocetos'
+}
+]
+
+let inscripciones = JSON.parse(localStorage.getItem("inscripciones")) || {}
+
+let calendar
+
+document.addEventListener('DOMContentLoaded',function(){
+
+calendar = new FullCalendar.Calendar(
+document.getElementById('calendar'),
+{
+initialView:'dayGridMonth',
+locale:'es',
+buttonText:{today:'Hoy'},
+events: eventos,
+
+eventClick:function(info){
+
+mostrarModal(
+info.event.title,
+info.event.extendedProps.description
+)
+
+}
+
+})
+
+calendar.render()
+
+actualizarCursos()
+restaurarInscripciones()
+
+})
+
+function actualizarCursos(){
+
+
+let select=document.getElementById("curso")
+
+select.innerHTML=""
+
+eventos.forEach(e=>{
+let option=document.createElement("option")
+option.value=e.id
+option.textContent=e.title
+select.appendChild(option)
+})
+
+}
+
+function restaurarInscripciones(){
+
+Object.keys(inscripciones).forEach(curso=>{
+
+let evento=calendar.getEventById(curso)
+
+if(evento){
+
+evento.setProp("title",evento.title+" | Inscrito: "+inscripciones[curso])
+evento.setProp("backgroundColor","#B22222")
+
+}
+
+})
+
+}
+
+/* INSCRIPCIÓN */
+
+document.getElementById("formulario")
+.addEventListener("submit",function(e){
+
+e.preventDefault()
+
+let nombre = document.getElementById("nombre").value
+let correo = document.getElementById("correo").value
+let curso = document.getElementById("curso").value
+
+if(inscripciones[curso]){
+mostrarModal("Curso lleno","Este curso ya tiene inscrito")
+return
+}
+
+inscripciones[curso]=nombre
+
+localStorage.setItem("inscripciones",JSON.stringify(inscripciones))
+
+let evento=calendar.getEventById(curso)
+
+evento.setProp("title",evento.title+" | Inscrito: "+nombre)
+evento.setProp("backgroundColor","#B22222")
+
+// correo para administrador
+emailjs.send("service_u8bx9dj","template_0yx01mn",{
+nombre: nombre,
+correo: correo,
+curso: curso
+})
+
+// correo de confirmación al usuario
+emailjs.send("service_u8bx9dj","template_jssulea",{
+nombre: nombre,
+correo: correo,
+curso: curso
+})
+
+});
+
+/* MODAL */
+
+function mostrarModal(titulo,texto){
+
+modalActividad.style.display="flex"
+tituloActividad.innerText=titulo
+descripcionActividad.innerText=texto
+
+}
+
+function cerrarModal(){
+modalActividad.style.display="none"
+}
+
+/* ADMIN */
+
+function abrirLogin(){
+adminLogin.style.display="flex"
+}
+
+function verificarAdmin(){
+
+if(adminPass.value==="MPSS2026"){
+
+adminLogin.style.display="none"
+adminPanel.style.display="flex"
+
+}
+
+}
+
+function cerrarAdmin(){
+adminPanel.style.display="none"
+}
+
+/* PARTICIPANTES */
+
+function mostrarInscritos(){
+
+document.getElementById("seccionActividades").style.display="none"
+document.getElementById("seccionInscritos").style.display="block"
+
+let lista=document.getElementById("seccionInscritos")
+
+lista.innerHTML=""
+
+Object.keys(inscripciones).forEach(curso=>{
+
+let evento = calendar.getEventById(curso)
+
+let titulo = evento ? evento.title.split("|")[0] : curso
+
+lista.innerHTML+=`
+<div>
+<b>${titulo}</b> → ${inscripciones[curso]}
+<button onclick="eliminarInscripcion('${curso}')">Eliminar</button>
+</div>
+`
+
+})
+
+}
+
+function eliminarInscripcion(curso){
+
+delete inscripciones[curso]
+
+localStorage.setItem("inscripciones",JSON.stringify(inscripciones))
+
+let evento = calendar.getEventById(curso)
+
+if(evento){
+evento.setProp("title", evento.title.split("|")[0])
+evento.setProp("backgroundColor", "#D4AF37")
+}
+
+mostrarInscritos()
+
+}
+
+/* ACTIVIDADES */
+
+function mostrarActividades(){
+
+document.getElementById("seccionActividades").style.display="block"
+document.getElementById("seccionInscritos").style.display="none"
+
+let lista=document.getElementById("listaActividades")
+
+lista.innerHTML=""
+
+eventos.forEach(e=>{
+
+lista.innerHTML+=`
+<div style="margin:10px;padding:10px;border-bottom:1px solid #ccc">
+
+<b>${e.title}</b>
+
+<button onclick="editarActividad('${e.id}')">
+Editar
+</button>
+
+<button onclick="eliminarActividad('${e.id}')">
+Eliminar
+</button>
+
+</div>
+`
+
+})
+
+}
+
+function crearActividad(){
+
+let titulo=document.getElementById("nuevoTitulo").value
+let descripcion=document.getElementById("nuevaDescripcion").value
+let fecha=document.getElementById("nuevaFecha").value
+
+if(!titulo || !fecha){
+alert("Completa título y fecha")
+return
+}
+
+let nuevaActividad={
+id:"act"+Date.now(),
+title:titulo,
+start:fecha,
+description:descripcion
+}
+
+eventos.push(nuevaActividad)
+
+localStorage.setItem(
+"eventos",
+JSON.stringify(eventos)
+)
+
+calendar.addEvent(nuevaActividad)
+
+actualizarCursos()
+
+document.getElementById("curso").value = nuevaActividad.id
+
+mostrarActividades()
+
+document.getElementById("nuevoTitulo").value=""
+document.getElementById("nuevaDescripcion").value=""
+document.getElementById("nuevaFecha").value=""
+
+}
+
+
+let editID=null
+
+function editarActividad(id){
+
+editID=id
+
+let evento = eventos.find(e=>e.id===id)
+
+document.getElementById("editTitulo").value=evento.title
+document.getElementById("editDescripcion").value=evento.description
+document.getElementById("editFecha").value=evento.start
+
+document.getElementById("modalEditar").style.display="flex"
+
+}
+
+function guardarEdicion(){
+
+let evento = eventos.find(e=>e.id===editID)
+
+evento.title=document.getElementById("editTitulo").value
+evento.description=document.getElementById("editDescripcion").value
+evento.start=document.getElementById("editFecha").value
+
+localStorage.setItem(
+"eventos",
+JSON.stringify(eventos)
+)
+
+let eventoCalendario = calendar.getEventById(editID)
+
+eventoCalendario.setProp("title",evento.title)
+eventoCalendario.setStart(evento.start)
+
+cerrarEditar()
+
+mostrarActividades()
+
+}
+
+function cerrarEditar(){
+
+document.getElementById("modalEditar").style.display="none"
+
+}
+
+
+function eliminarActividad(id){
+
+eventos = eventos.filter(e=>e.id!==id)
+
+localStorage.setItem("eventos",JSON.stringify(eventos))
+
+let evento = calendar.getEventById(id)
+
+if(evento) evento.remove()
+
+mostrarActividades()
+actualizarCursos()
+
+}
+
+</script>
+
+</body>
+</html>
