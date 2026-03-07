@@ -544,7 +544,7 @@ e.preventDefault()
 let nombre = document.getElementById("nombre").value
 let correo = document.getElementById("correo").value
 let curso = document.getElementById("curso").value
-
+let nombreCurso = document.getElementById("curso").selectedOptions[0].text
 if(inscripciones[curso]){
 mostrarModal("Curso lleno","Este curso ya tiene inscrito")
 return
