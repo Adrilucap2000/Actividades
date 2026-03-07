@@ -550,6 +550,13 @@ Entrar
 </div>
 <div id="seccionActividades">
 
+<div id="listaActividades"></div>
+
+</div>
+
+
+<div id="seccionCrear" style="display:none">
+
 <h3>Agregar nueva actividad</h3>
 
 <input id="nuevoTitulo" placeholder="Título">
@@ -561,10 +568,6 @@ Entrar
 <br><br>
 
 <button class="boton-admin" onclick="crearActividad()">Guardar actividad</button>
-
-<hr>
-
-<div id="listaActividades"></div>
 
 </div>
 
@@ -794,7 +797,7 @@ function mostrarInscritos(){
 
 document.getElementById("seccionActividades").style.display="none"
 document.getElementById("seccionInscritos").style.display="block"
-
+document.getElementById("seccionCrear").style.display="none"
 let lista=document.getElementById("seccionInscritos")
 
 lista.innerHTML=""
@@ -813,6 +816,13 @@ lista.innerHTML+=`
 `
 
 })
+
+}
+function mostrarCrear(){
+
+document.getElementById("seccionActividades").style.display="none"
+document.getElementById("seccionInscritos").style.display="none"
+document.getElementById("seccionCrear").style.display="block"
 
 }
 
