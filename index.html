@@ -748,7 +748,25 @@ ADMIN
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script type="module">
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyBnqZEuuv0V_CAmR_gBqPCQ3bgyS1ny_RI",
+authDomain: "calendario-mpss.firebaseapp.com",
+projectId: "calendario-mpss",
+storageBucket: "calendario-mpss.firebasestorage.app",
+messagingSenderId: "809122907226",
+appId: "1:809122907226:web:c66cfc12aa8617de1fc463",
+measurementId: "G-QD42H6MNDW"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+</script>
 <script>
 function togglePassword(){
 
