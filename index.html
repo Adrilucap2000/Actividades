@@ -793,13 +793,15 @@ async function verificarAccesoFormulario(){
 }
 
 function desbloquearFormulario(){
-  const overlay = document.getElementById("overlay-formulario");
-  overlay.style.opacity="0";
-  overlay.style.pointerEvents="none";
 
-  setTimeout(()=>{
-    overlay.style.display="none";
-  },400);
+const overlay = document.getElementById("overlay-formulario")
+
+overlay.style.opacity="0"
+
+setTimeout(()=>{
+overlay.style.display="none"
+},400)
+
 }
 
 // Auto-desbloqueo si la sesión sigue vigente
