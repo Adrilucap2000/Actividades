@@ -759,12 +759,15 @@ authDomain: "calendario-mpss.firebaseapp.com",
 projectId: "calendario-mpss",
 storageBucket: "calendario-mpss.firebasestorage.app",
 messagingSenderId: "809122907226",
-appId: "1:809122907226:web:c66cfc12aa8617de1fc463",
-measurementId: "G-QD42H6MNDW"
+appId: "1:809122907226:web:c66cfc12aa8617de1fc463"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+window.db = db
+window.getDocs = getDocs
+window.collection = collection
 
 </script>
 <script>
