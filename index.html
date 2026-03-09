@@ -827,18 +827,24 @@ function desbloquearFormulario(){
 emailjs.init("JbLq6Pz4o5CfG8tfQ");
 })();
 
-let eventos = JSON.parse(localStorage.getItem("eventos")) || [
-{
-id:'web',
-title:'Programación Web',
-start:'2026-03-10',
-description:'Traer laptop'
-},
-{
-id:'diseno',
-title:'Diseño de página',
-start:'2026-03-12',
-description:'Traer bocetos'
+let eventos = []
+
+async function cargarEventosFirebase(){
+
+const snapshot = await getDocs(collection(db,"eventos"))
+
+eventos = []
+
+snapshot.forEach(doc=>{
+eventos.push({
+id: doc.id,
+...doc.data()
+})
+})
+
+calendar.removeAllEvents()
+calendar.addEventSource(eventos)
+
 }
 ]
 
@@ -871,7 +877,7 @@ calendar.render()
 
 actualizarCursos()
 restaurarInscripciones()
-
+cargarEventosFirebase()
 })
 
 function actualizarCursos(){
