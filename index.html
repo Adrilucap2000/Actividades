@@ -1069,45 +1069,34 @@ Eliminar
 
 }
 
-function crearActividad(){
+async function crearActividad(){
 
-let titulo=document.getElementById("nuevoTitulo").value
-let descripcion=document.getElementById("nuevaDescripcion").value
-let fecha=document.getElementById("nuevaFecha").value
+let titulo = document.getElementById("nuevoTitulo").value
+let descripcion = document.getElementById("nuevaDescripcion").value
+let fecha = document.getElementById("nuevaFecha").value
 
 if(!titulo || !fecha){
 alert("Completa título y fecha")
 return
 }
 
-let nuevaActividad={
-id:"act"+Date.now(),
-title:titulo,
-start:fecha,
-description:descripcion
-}
+await addDoc(collection(db,"eventos"),{
 
-eventos.push(nuevaActividad)
+title: titulo,
+start: fecha,
+description: descripcion
 
-localStorage.setItem(
-"eventos",
-JSON.stringify(eventos)
-)
-
-calendar.addEvent(nuevaActividad)
-
-actualizarCursos()
-
-document.getElementById("curso").value = nuevaActividad.id
-
-mostrarActividades()
+})
 
 document.getElementById("nuevoTitulo").value=""
 document.getElementById("nuevaDescripcion").value=""
 document.getElementById("nuevaFecha").value=""
 
-}
+cargarEventosFirebase()
 
+mostrarActividades()
+
+}
 
 let editID=null
 
