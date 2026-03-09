@@ -503,50 +503,6 @@ animation:balanceo 2.5s infinite ease-in-out;
     transform:scale(1);
   }
 }
-const HASH_FORMULARIO = "ee8751ae55c8822c5aca939c7f2bd57b29dc6befeb8c8664c081ac1e7f7e1e9f";
-const DURACION_FORM = 6 * 60 * 60 * 1000; // 6 horas
-
-async function hashTexto(texto){
-  const data = new TextEncoder().encode(texto);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hash))
-    .map(b => b.toString(16).padStart(2,"0"))
-    .join("");
-}
-
-async function verificarAccesoFormulario(){
-  const codigo = document.getElementById("codigoAcceso").value;
-  const hashIngresado = await hashTexto(codigo);
-
-  if(hashIngresado === HASH_FORMULARIO){
-    sessionStorage.setItem("formUnlocked","true");
-    sessionStorage.setItem("formExpire", Date.now() + DURACION_FORM);
-    desbloquearFormulario();
-  }else{
-    document.getElementById("errorAcceso").style.display="block";
-  }
-}
-
-function desbloquearFormulario(){
-  const overlay = document.getElementById("overlay-formulario");
-  overlay.style.opacity="0";
-  overlay.style.pointerEvents="none";
-
-  setTimeout(()=>{
-    overlay.style.display="none";
-  },400);
-}
-
-// Auto-desbloqueo si la sesión sigue vigente
-(function(){
-  const ok = sessionStorage.getItem("formUnlocked");
-  const exp = sessionStorage.getItem("formExpire");
-
-  if(ok === "true" && exp && Date.now() < exp){
-    desbloquearFormulario();
-  }
-})();
-  </style>
 </head>
 
 <body>
@@ -762,6 +718,50 @@ ADMIN
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
 <script>
+const HASH_FORMULARIO = "ee8751ae55c8822c5aca939c7f2bd57b29dc6befeb8c8664c081ac1e7f7e1e9f";
+const DURACION_FORM = 6 * 60 * 60 * 1000; // 6 horas
+
+async function hashTexto(texto){
+  const data = new TextEncoder().encode(texto);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash))
+    .map(b => b.toString(16).padStart(2,"0"))
+    .join("");
+}
+
+async function verificarAccesoFormulario(){
+  const codigo = document.getElementById("codigoAcceso").value;
+  const hashIngresado = await hashTexto(codigo);
+
+  if(hashIngresado === HASH_FORMULARIO){
+    sessionStorage.setItem("formUnlocked","true");
+    sessionStorage.setItem("formExpire", Date.now() + DURACION_FORM);
+    desbloquearFormulario();
+  }else{
+    document.getElementById("errorAcceso").style.display="block";
+  }
+}
+
+function desbloquearFormulario(){
+  const overlay = document.getElementById("overlay-formulario");
+  overlay.style.opacity="0";
+  overlay.style.pointerEvents="none";
+
+  setTimeout(()=>{
+    overlay.style.display="none";
+  },400);
+}
+
+// Auto-desbloqueo si la sesión sigue vigente
+(function(){
+  const ok = sessionStorage.getItem("formUnlocked");
+  const exp = sessionStorage.getItem("formExpire");
+
+  if(ok === "true" && exp && Date.now() < exp){
+    desbloquearFormulario();
+  }
+})();
+  </style>
 
 (function(){
 emailjs.init("JbLq6Pz4o5CfG8tfQ");
