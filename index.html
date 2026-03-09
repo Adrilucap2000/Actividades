@@ -846,8 +846,10 @@ id: doc.id,
 calendar.removeAllEvents()
 calendar.addEventSource(eventos)
 
-}
+/* 👇 AGREGA ESTA LÍNEA */
+actualizarCursos()
 
+}
 let inscripciones = JSON.parse(localStorage.getItem("inscripciones")) || {}
 
 let calendar
