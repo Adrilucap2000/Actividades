@@ -454,22 +454,27 @@ padding-right:5px;
 
 }  
 .tlacuache-admin{
-transform-origin:bottom right;
+
 position:fixed;
-bottom:65px;
-right:8px;
-width:50px;      /* tamaño real */
-max-width:30px;  /* evita que crezca */
+bottom:70px;
+right:15px;
+
+width:70px;
 height:auto;
-z-index:99999;
+
+z-index:9999;
+
 pointer-events:none;
+
 animation:balanceo 2.5s infinite ease-in-out;
+
 }
+
 @keyframes balanceo{
 
-0%{transform:scale(0.4) rotate(-6deg);}
-50%{transform:scale(0.4) rotate(6deg);}
-100%{transform:scale(0.4) rotate(-6deg);}
+0%{transform:rotate(-6deg);}
+50%{transform:rotate(6deg);}
+100%{transform:rotate(-6deg);}
 
 }
 .formulario-wrapper{
