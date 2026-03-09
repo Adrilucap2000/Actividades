@@ -454,7 +454,6 @@ padding-right:5px;
 
 }  
 .tlacuache-admin{
-transform:scale(0.4);
 transform-origin:bottom right;
 position:fixed;
 bottom:65px;
@@ -468,9 +467,9 @@ animation:balanceo 2.5s infinite ease-in-out;
 }
 @keyframes balanceo{
 
-0%{transform:rotate(-6deg);}
-50%{transform:rotate(6deg);}
-100%{transform:rotate(-6deg);}
+0%{transform:scale(0.4) rotate(-6deg);}
+50%{transform:scale(0.4) rotate(6deg);}
+100%{transform:scale(0.4) rotate(-6deg);}
 
 }
 .formulario-wrapper{
