@@ -1122,8 +1122,27 @@ document.getElementById("modalEditar").style.display="flex"
 
 }
 
-function guardarEdicion(){
+async function guardarEdicion(){
 
+let titulo = document.getElementById("editTitulo").value
+let descripcion = document.getElementById("editDescripcion").value
+let fecha = document.getElementById("editFecha").value
+
+await updateDoc(doc(db,"eventos",editID),{
+
+title: titulo,
+description: descripcion,
+start: fecha
+
+})
+
+cerrarEditar()
+
+cargarEventosFirebase()
+
+mostrarActividades()
+
+}
 let evento = eventos.find(e=>e.id===editID)
 
 evento.title=document.getElementById("editTitulo").value
