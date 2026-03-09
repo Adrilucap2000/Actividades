@@ -454,20 +454,17 @@ padding-right:5px;
 
 }  
 .tlacuache-admin{
-
+transform:scale(0.4);
+transform-origin:bottom right;
 position:fixed;
-
-bottom:55px;   /* altura sobre el botón */
-right:-10px;   /* lo centra sobre el botón */
-
-width:90px;   /* un poco más pequeño */
-
+bottom:65px;
+right:8px;
+width:90px;      /* tamaño real */
+max-width:90px;  /* evita que crezca */
+height:auto;
 z-index:99999;
-
 pointer-events:none;
-
 animation:balanceo 2.5s infinite ease-in-out;
-
 }
 @keyframes balanceo{
 
