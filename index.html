@@ -1173,8 +1173,15 @@ document.getElementById("modalEditar").style.display="none"
 }
 
 
-function eliminarActividad(id){
+async function eliminarActividad(id){
 
+await deleteDoc(doc(db,"eventos",id))
+
+cargarEventosFirebase()
+
+mostrarActividades()
+
+}
 eventos = eventos.filter(e=>e.id!==id)
 
 localStorage.setItem("eventos",JSON.stringify(eventos))
