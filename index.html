@@ -834,20 +834,23 @@ const snapshot = await getDocs(collection(db,"eventos"))
 
 eventos = []
 
-snapshot.forEach(doc=>{
+snapshot.forEach(docSnap => {
+
 eventos.push({
-id: doc.id,
-...doc.data()
+id: docSnap.id,
+...docSnap.data()
 })
+
 })
 
 calendar.removeAllEvents()
+
 calendar.addEventSource(eventos)
 
-/* 👇 AGREGA ESTA LÍNEA */
 actualizarCursos()
 
 }
+  
 let inscripciones = JSON.parse(localStorage.getItem("inscripciones")) || {}
 
 let calendar
