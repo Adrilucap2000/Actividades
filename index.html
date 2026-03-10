@@ -144,6 +144,9 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+window.abrirAdminLogin = () => {
+    document.getElementById('adminLogin').style.display = 'flex';
+};
         let calendar;
 
         // 1. FUNCIÓN PARA CARGAR CALENDARIO
