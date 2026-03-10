@@ -208,16 +208,17 @@ window.abrirAdminLogin = () => {
                 document.getElementById('bloqueo').style.display = 'none';
             } else { alert("Código incorrecto"); }
         };
-
-        // 3. ADMIN
-        document.getElementById('btnOpenLogin').onclick = () => document.getElementById('adminLogin').style.display='flex';
-        document.getElementById('btnVerifyAdmin').onclick = () => {
-            if(document.getElementById('passAdmin').value === "MPSS2026") {
-                document.getElementById('adminLogin').style.display='none';
-                document.getElementById('adminPanel').style.display='flex';
-                cargarAdmin();
-            } else { alert("Error"); }
-        };
+document.getElementById('btnVerifyAdmin').onclick = () => {
+    const claveEntrada = document.getElementById('passAdmin').value;
+    
+    if(claveEntrada === "MPSS2026") {
+        document.getElementById('adminLogin').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'flex'; 
+        cargarAdmin();
+    } else {
+        alert("Contraseña incorrecta");
+    }
+};
 
         async function cargarAdmin() {
             const snap = await getDocs(collection(db, "eventos"));
