@@ -282,6 +282,62 @@ ADMIN
 
 <div class="modal-contenido">
 
+<h2>Panel Administrador</h2>
+
+<div class="tabs-admin">
+
+<button class="tab-admin" onclick="mostrarActividades()">Actividades</button>
+
+<button class="tab-admin" onclick="mostrarCrear()">Crear actividad</button>
+
+<button class="tab-admin" onclick="mostrarInscritos()">Participantes</button>
+
+</div>
+
+
+<!-- LISTA ACTIVIDADES -->
+
+<div id="seccionActividades">
+
+<div id="listaActividades"></div>
+
+</div>
+
+
+<!-- CREAR ACTIVIDAD -->
+
+<div id="seccionCrear" style="display:none">
+
+<h3>Agregar nueva actividad</h3>
+
+<input id="nuevoTitulo" placeholder="Título">
+
+<input id="nuevaDescripcion" placeholder="Descripción">
+
+<input id="nuevaFecha" type="date">
+
+<br><br>
+
+<button class="boton-admin" onclick="crearActividad()">
+Guardar actividad
+</button>
+
+</div>
+
+
+<!-- PARTICIPANTES -->
+
+<div id="seccionInscritos" style="display:none"></div>
+
+<br>
+
+<button class="boton-admin" onclick="cerrarAdmin()">Salir</button>
+
+</div>
+
+</div>
+<div class="modal-contenido">
+
 <h2>Crear actividad</h2>
 
 <input id="nuevoTitulo" placeholder="Título">
