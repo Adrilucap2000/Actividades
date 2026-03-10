@@ -2,320 +2,350 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendario de Actividades</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
 
     <style>
-        /* CSS GENERAL */
+        /* --- DISEÑO BASE --- */
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(to bottom, rgba(90,10,20,0.95), rgba(90,10,20,0.85)), url("https://i.imgur.com/hTT1t8L.jpeg");
+            background: linear-gradient(to bottom, rgba(90,10,20,0.9), rgba(90,10,20,0.8)), 
+                        url("https://i.imgur.com/hTT1t8L.jpeg");
             background-size: cover;
             background-attachment: fixed;
             color: white;
             margin: 0;
             padding: 20px;
-            min-height: 100vh;
         }
 
-        /* TÍTULOS */
-        .encabezado { text-align: center; margin-bottom: 40px; }
-        .titulo-cinzel { font-family: 'Cinzel Decorative'; font-size: 50px; color: #F5E6A3; margin: 0; }
-        .subtitulo { font-family: 'Cinzel Decorative'; font-size: 20px; color: #white; }
+        .titulo-cinzel { 
+            font-family: 'Cinzel Decorative', cursive; 
+            text-align: center; 
+            color: #F5E6A3; 
+            font-size: clamp(30px, 5vw, 60px);
+            margin-bottom: 30px;
+        }
 
-        /* CONTENEDOR PRINCIPAL */
+        /* --- LAYOUT --- */
         .contenedor {
-            display: grid;
-            grid-template-columns: 380px 2px 1fr;
+            display: flex;
+            flex-wrap: wrap;
             gap: 30px;
             max-width: 1200px;
             margin: auto;
+            justify-content: center;
         }
 
-        .divisor { width: 2px; background: rgba(255,255,255,0.3); }
+        /* --- FORMULARIO Y BLOQUEO --- */
+        .formulario-wrapper {
+            position: relative;
+            width: 380px;
+            min-height: 400px;
+        }
 
-        /* FORMULARIO Y BLOQUEO */
-        .formulario-wrapper { position: relative; width: 380px; }
         .formulario {
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.5);
             backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #F2C94C;
+        }
+
+        .overlay-formulario {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 15, 15, 0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 15px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* --- CALENDARIO --- */
+        #calendar {
+            flex: 1;
+            min-width: 350px;
+            background: white;
+            color: black;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* --- MODALES --- */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-contenido {
+            background: white;
+            color: black;
             padding: 25px;
             border-radius: 15px;
-            border: 1px solid rgba(242, 201, 76, 0.3);
-        }
-        .overlay-formulario {
-            position: absolute; inset: 0; z-index: 10;
-            background: rgba(0,0,0,0.9);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; border-radius: 15px; padding: 20px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
         }
 
-        input, select {
-            width: 100%; padding: 10px; margin-bottom: 15px;
-            border-radius: 5px; border: none; box-sizing: border-box;
-        }
-
-        button {
-            cursor: pointer; transition: 0.3s; font-weight: bold;
-        }
-
-        /* CALENDARIO */
-        #calendar { background: white; padding: 15px; border-radius: 15px; color: black; }
-
-        /* MODALES */
-        .modal {
-            display: none; position: fixed; z-index: 1000; inset: 0;
-            background: rgba(0,0,0,0.7); justify-content: center; align-items: center;
-        }
-        .modal-contenido {
-            background: white; color: black; padding: 30px; border-radius: 15px;
-            width: 90%; max-width: 400px; position: relative; text-align: center;
-        }
-
-        /* EL TLACUACHE (CORREGIDO) */
+        /* --- ELEMENTOS FLOTANTES --- */
         .tlacuache-admin {
-            position: fixed; bottom: 70px; right: 15px;
-            width: 80px !important; height: auto;
-            z-index: 9998; pointer-events: none;
-            animation: balanceo 2.5s infinite ease-in-out;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 80px;
+            z-index: 1000;
+            pointer-events: none;
+            animation: balanceo 3s infinite ease-in-out;
         }
 
         @keyframes balanceo {
-            0%, 100% { transform: rotate(-6deg); }
-            50% { transform: rotate(6deg); }
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
         }
 
-        .btn-admin-flotante {
-            position: fixed; bottom: 20px; right: 20px;
-            background: #7A1E2C; color: #F5E6A3; border: 1px solid #F2C94C;
-            padding: 12px 20px; border-radius: 10px; z-index: 9999;
+        .btn-admin {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #7A1E2C;
+            color: #F5E6A3;
+            border: 2px solid #F2C94C;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1001;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .btn-gold {
+            background: #F2C94C;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<header class="encabezado">
     <h1 class="titulo-cinzel">BIENVENIDOS</h1>
-    <h2 class="subtitulo">Inscripción a temas</h2>
-</header>
 
-<div class="contenedor">
-    <div class="formulario-wrapper">
-        <div id="overlay-formulario" class="overlay-formulario">
-            <h3>Acceso Restringido</h3>
-            <p>Introduce el código del instructor:</p>
-            <input type="password" id="codigoAcceso" placeholder="Código">
-            <button onclick="verificarAccesoFormulario()" style="background:#F2C94C; padding:10px 20px; border:none; border-radius:5px;">DESBLOQUEAR</button>
-            <p id="errorAcceso" style="display:none; color:red; margin-top:10px;">Código incorrecto</p>
+    <div class="contenedor">
+        <div class="formulario-wrapper">
+            <div id="overlay-formulario" class="overlay-formulario">
+                <h3>Acceso Restringido</h3>
+                <p>Ingresa el código para habilitar el registro:</p>
+                <input type="password" id="inputCodigo" placeholder="Código de acceso">
+                <button class="btn-gold" id="btnDesbloquear">DESBLOQUEAR</button>
+                <p id="msgError" style="color: #F2C94C; display: none; margin-top: 10px;">Código Incorrecto</p>
+            </div>
+
+            <div class="formulario">
+                <h3>Inscripción</h3>
+                <form id="formInscripcion">
+                    <input type="text" placeholder="Nombre completo" required>
+                    <input type="email" placeholder="Correo electrónico" required>
+                    <label>Tema de interés:</label>
+                    <select id="selectCursos">
+                        <option>Cargando temas...</option>
+                    </select>
+                    <button type="submit" style="background:#7A1E2C; color:white; width:100%; border:none; padding:12px; border-radius:5px; cursor:pointer;">
+                        ENVIAR DATOS
+                    </button>
+                </form>
+            </div>
         </div>
 
-        <div class="formulario">
-            <h3>Registro</h3>
-            <form id="formInscripcion">
-                <input type="text" id="nombre" placeholder="Tu Nombre" required>
-                <input type="email" id="correo" placeholder="Tu Correo" required>
-                <label>Selecciona Tema:</label>
-                <select id="cursoSelect"></select>
-                <button type="submit" style="background:#7A1E2C; color:white; width:100%; padding:12px; border:none; border-radius:5px;">ENVIAR INSCRIPCIÓN</button>
-            </form>
+        <div id="calendar"></div>
+    </div>
+
+    <div id="modalLogin" class="modal">
+        <div class="modal-contenido">
+            <h3>Acceso Administrativo</h3>
+            <input type="password" id="passAdmin" placeholder="Contraseña Admin">
+            <button class="btn-gold" id="btnEntrarAdmin">Entrar</button>
+            <button onclick="cerrarModales()" style="background:none; border:none; cursor:pointer; color: grey; display:block; margin: 10px auto;">Cancelar</button>
         </div>
     </div>
 
-    <div class="divisor"></div>
-
-    <div id="calendar"></div>
-</div>
-
-<div id="modalActividad" class="modal">
-    <div class="modal-contenido">
-        <h2 id="tituloActividad"></h2>
-        <p id="descActividad"></p>
-        <button onclick="cerrarModales()" style="background:#7A1E2C; color:white; padding:10px; border:none; border-radius:5px;">Cerrar</button>
+    <div id="modalPanel" class="modal">
+        <div class="modal-contenido" style="max-width: 600px;">
+            <h3>Panel de Control</h3>
+            <div id="listaAdmin" style="text-align: left; max-height: 200px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-bottom: 15px;"></div>
+            <hr>
+            <h4>Nueva Actividad</h4>
+            <input type="text" id="newTitle" placeholder="Título">
+            <input type="text" id="newDesc" placeholder="Descripción">
+            <input type="date" id="newDate">
+            <button class="btn-gold" id="btnCrearEvento" style="width: 100%;">Guardar Actividad</button>
+            <button onclick="cerrarModales()" style="width: 100%; margin-top: 10px; border:none; padding:10px;">Cerrar Panel</button>
+        </div>
     </div>
-</div>
 
-<div id="adminLogin" class="modal">
-    <div class="modal-contenido">
-        <h2>Panel Admin</h2>
-        <input type="password" id="adminPass" placeholder="Contraseña">
-        <button onclick="verificarAdmin()" style="background:#7A1E2C; color:white; padding:10px; width:100%; border:none;">Entrar</button>
-        <button onclick="cerrarModales()" style="margin-top:10px; background:none; border:none;">Cancelar</button>
-    </div>
-</div>
+    <img src="https://raw.githubusercontent.com/TU_USUARIO/TU_REPOSITORIO/main/tlaquache-admin.png" class="tlacuache-admin" alt="tlacuache">
+    <button class="btn-admin" id="btnAbrirLogin">ADMIN</button>
 
-<div id="adminPanel" class="modal">
-    <div class="modal-contenido" style="max-width: 600px;">
-        <h2>Gestión de Actividades</h2>
-        <div id="listaActividades" style="max-height: 200px; overflow-y: auto; margin-bottom: 20px; text-align: left;"></div>
-        <hr>
-        <h3>Nueva Actividad</h3>
-        <input id="newTitle" placeholder="Título">
-        <input id="newDesc" placeholder="Descripción">
-        <input id="newDate" type="date">
-        <button onclick="crearActividad()" style="background:green; color:white; padding:10px; width:100%; border:none;">Guardar</button>
-        <br><br>
-        <button onclick="cerrarModales()" style="background:#333; color:white; padding:10px; width:100%; border:none;">Salir</button>
-    </div>
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    
+    <script type="module">
+        // 1. IMPORTAR FIREBASE
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<img src="https://raw.githubusercontent.com/TU_USUARIO/TU_REPOSITORIO/main/tlaquache-admin.png" class="tlacuache-admin">
-<button class="btn-admin-flotante" onclick="abrirLogin()">ADMIN</button>
+        // 2. CONFIGURACIÓN
+        const firebaseConfig = {
+            apiKey: "AIzaSyBnqZEuuv0V_CAmR_gBqPCQ3bgyS1ny_RI",
+            authDomain: "calendario-mpss.firebaseapp.com",
+            projectId: "calendario-mpss",
+            storageBucket: "calendario-mpss.firebasestorage.app",
+            messagingSenderId: "809122907226",
+            appId: "1:809122907226:web:c66cfc12aa8617de1fc463"
+        };
 
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        let calendar;
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyBnqZEuuv0V_CAmR_gBqPCQ3bgyS1ny_RI",
-        authDomain: "calendario-mpss.firebaseapp.com",
-        projectId: "calendario-mpss",
-        storageBucket: "calendario-mpss.firebasestorage.app",
-        messagingSenderId: "809122907226",
-        appId: "1:809122907226:web:c66cfc12aa8617de1fc463"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Compartir con el script normal
-    window.db = db;
-    window.collection = collection;
-    window.addDoc = addDoc;
-    window.getDocs = getDocs;
-    window.deleteDoc = deleteDoc;
-    window.doc = doc;
-
-    window.dispatchEvent(new Event('firebase-ready'));
-</script>
-
-<script>
-    let calendar;
-    let eventos = [];
-    const HASH_CORRECTO = "5d2d86f0f75a5c8c4a0cfe5fa5e1e0b1c0b4f7e5d70bdb8c4b4e33e3c0df0b91";
-
-    window.addEventListener('firebase-ready', () => {
-        initApp();
-    });
-
-    function initApp() {
-        const calendarEl = document.getElementById('calendar');
-        calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            locale: 'es',
-            events: (info, success) => {
-                fetchEventos().then(data => success(data));
-            },
-            eventClick: (info) => {
-                document.getElementById('modalActividad').style.display = 'flex';
-                document.getElementById('tituloActividad').innerText = info.event.title;
-                document.getElementById('descActividad').innerText = info.event.extendedProps.description || 'Sin descripción';
+        // 3. CARGA INICIAL
+        document.addEventListener('DOMContentLoaded', async () => {
+            const calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'es',
+                headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
+                events: async (info, success) => {
+                    const data = await obtenerEventos();
+                    success(data);
+                }
+            });
+            calendar.render();
+            
+            // Verificar bloqueo previo
+            if(sessionStorage.getItem('accesoConcedido') === 'true') {
+                document.getElementById('overlay-formulario').style.display = 'none';
             }
         });
-        calendar.render();
-        
-        if(sessionStorage.getItem('unlocked') === 'true') {
-            document.getElementById('overlay-formulario').style.display = 'none';
+
+        // 4. FUNCIONES DE BASE DE DATOS
+        async function obtenerEventos() {
+            const snap = await getDocs(collection(db, "eventos"));
+            const lista = [];
+            const select = document.getElementById('selectCursos');
+            select.innerHTML = "";
+            
+            snap.forEach(d => {
+                const item = { id: d.id, ...d.data() };
+                lista.push(item);
+                const opt = document.createElement('option');
+                opt.value = item.id;
+                opt.textContent = item.title;
+                select.appendChild(opt);
+            });
+            return lista;
         }
-    }
 
-    async function fetchEventos() {
-        const querySnapshot = await getDocs(collection(db, "eventos"));
-        eventos = [];
-        const select = document.getElementById('cursoSelect');
-        select.innerHTML = '';
+        // 5. LÓGICA DE BOTONES (Dentro del módulo para que funcione)
         
-        querySnapshot.forEach((doc) => {
-            const data = { id: doc.id, ...doc.data() };
-            eventos.push(data);
-            const opt = document.createElement('option');
-            opt.value = data.id;
-            opt.textContent = data.title;
-            select.appendChild(opt);
-        });
-        return eventos;
-    }
+        // Desbloquear Formulario
+        document.getElementById('btnDesbloquear').onclick = async () => {
+            const pass = document.getElementById('inputCodigo').value;
+            // Hash SHA-256 de tu código
+            const msg = document.getElementById('msgError');
+            const hash = await generarHash(pass);
+            
+            if(hash === "5d2d86f0f75a5c8c4a0cfe5fa5e1e0b1c0b4f7e5d70bdb8c4b4e33e3c0df0b91") {
+                sessionStorage.setItem('accesoConcedido', 'true');
+                document.getElementById('overlay-formulario').style.display = 'none';
+            } else {
+                msg.style.display = 'block';
+            }
+        };
 
-    // --- ACCESO Y SEGURIDAD ---
-    async function verificarAccesoFormulario() {
-        const pass = document.getElementById('codigoAcceso').value;
-        const msg = document.getElementById('errorAcceso');
-        
-        const encoder = new TextEncoder();
-        const data = encoder.encode(pass);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        // Admin Login
+        document.getElementById('btnAbrirLogin').onclick = () => {
+            document.getElementById('modalLogin').style.display = 'flex';
+        };
 
-        if(hashHex === HASH_CORRECTO) {
-            sessionStorage.setItem('unlocked', 'true');
-            document.getElementById('overlay-formulario').style.display = 'none';
-        } else {
-            msg.style.display = 'block';
-        }
-    }
+        document.getElementById('btnEntrarAdmin').onclick = () => {
+            if(document.getElementById('passAdmin').value === "MPSS2026") {
+                cerrarModales();
+                document.getElementById('modalPanel').style.display = 'flex';
+                cargarListaAdmin();
+            } else {
+                alert("Acceso Denegado");
+            }
+        };
 
-    // --- ADMIN ---
-    function abrirLogin() { document.getElementById('adminLogin').style.display = 'flex'; }
-    function cerrarModales() { 
-        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
-    }
-
-    function verificarAdmin() {
-        if(document.getElementById('adminPass').value === "MPSS2026") {
-            cerrarModales();
-            document.getElementById('adminPanel').style.display = 'flex';
-            actualizarListaAdmin();
-        } else {
-            alert("Contraseña incorrecta");
-        }
-    }
-
-    async function actualizarListaAdmin() {
-        const lista = document.getElementById('listaActividades');
-        lista.innerHTML = 'Cargando...';
-        await fetchEventos();
-        lista.innerHTML = '';
-        eventos.forEach(e => {
-            lista.innerHTML += `
-                <div style="padding:10px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; color:black;">
-                    <span>${e.title}</span>
-                    <button onclick="borrarEvento('${e.id}')" style="background:red; color:white; border:none; padding:5px;">Eliminar</button>
-                </div>`;
-        });
-    }
-
-    async function crearActividad() {
-        const title = document.getElementById('newTitle').value;
-        const description = document.getElementById('newDesc').value;
-        const start = document.getElementById('newDate').value;
-        
-        if(!title || !start) return alert("Falta título o fecha");
-        
-        await addDoc(collection(db, "eventos"), { title, description, start });
-        calendar.refetchEvents();
-        actualizarListaAdmin();
-    }
-
-    async function borrarEvento(id) {
-        if(confirm("¿Seguro?")) {
-            await deleteDoc(doc(db, "eventos", id));
+        // Crear Evento
+        document.getElementById('btnCrearEvento').onclick = async () => {
+            const t = document.getElementById('newTitle').value;
+            const d_text = document.getElementById('newDesc').value;
+            const f = document.getElementById('newDate').value;
+            
+            if(!t || !f) return alert("Llena los campos");
+            
+            await addDoc(collection(db, "eventos"), { title: t, description: d_text, start: f });
             calendar.refetchEvents();
-            actualizarListaAdmin();
+            cargarListaAdmin();
+            alert("Evento creado");
+        };
+
+        // Eliminar Evento
+        window.borrarEvento = async (id) => {
+            if(confirm("¿Eliminar actividad?")) {
+                await deleteDoc(doc(db, "eventos", id));
+                calendar.refetchEvents();
+                cargarListaAdmin();
+            }
+        };
+
+        // Auxiliares
+        async function cargarListaAdmin() {
+            const snap = await getDocs(collection(db, "eventos"));
+            const div = document.getElementById('listaAdmin');
+            div.innerHTML = "";
+            snap.forEach(d => {
+                div.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:14px;">
+                        <span>${d.data().title}</span>
+                        <button onclick="borrarEvento('${d.id}')" style="color:red; border:none; background:none; cursor:pointer;">Eliminar</button>
+                    </div>`;
+            });
         }
-    }
 
-    // Exponer funciones al HTML
-    window.verificarAccesoFormulario = verificarAccesoFormulario;
-    window.abrirLogin = abrirLogin;
-    window.cerrarModales = cerrarModales;
-    window.verificarAdmin = verificarAdmin;
-    window.crearActividad = crearActividad;
-    window.borrarEvento = borrarEvento;
-</script>
+        async function generarHash(string) {
+            const msgBuffer = new TextEncoder().encode(string);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
 
+        window.cerrarModales = () => {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        };
+
+    </script>
 </body>
 </html>
