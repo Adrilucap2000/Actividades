@@ -220,30 +220,50 @@ document.getElementById('btnVerifyAdmin').onclick = () => {
     }
 };
 
-        async function cargarAdmin() {
-            const snap = await getDocs(collection(db, "eventos"));
-            const lista = document.getElementById('listaAdminActividades');
-            lista.innerHTML = "";
-            snap.forEach(d => {
-                const item = document.createElement('div');
-                item.style = "display:flex; justify-content:space-between; padding:5px; color:black; border-bottom:1px solid #eee;";
-                item.innerHTML = `<span>${d.data().title}</span>`;
-                const btn = document.createElement('button');
-                btn.textContent = "X"; btn.style = "color:red; border:none; background:none; cursor:pointer;";
-                btn.onclick = async () => { await deleteDoc(doc(db, "eventos", d.id)); calendar.refetchEvents(); cargarAdmin(); };
-                item.appendChild(btn);
-                lista.appendChild(item);
-            });
-        }
-
-        document.getElementById('btnSaveActividad').onclick = async () => {
-            const t = document.getElementById('newTitle').value;
-            const f = document.getElementById('newDate').value;
-            if(!t || !f) return;
-            await addDoc(collection(db, "eventos"), { title: t, start: f });
-            calendar.refetchEvents();
-            cargarAdmin();
+       async function cargarAdmin() {
+    const snap = await getDocs(collection(db, "eventos"));
+    const lista = document.getElementById('listaAdminActividades');
+    lista.innerHTML = "";
+    
+    snap.forEach(d => {
+        const item = document.createElement('div');
+        item.style = "display:flex; justify-content:space-between; align-items:center; padding:8px; color:black; border-bottom:1px solid #eee;";
+        
+        item.innerHTML = `<span>${d.data().title}</span>`;
+        
+        const btnBorrar = document.createElement('button');
+        btnBorrar.textContent = "X"; 
+        btnBorrar.style = "color:red; border:none; background:none; cursor:pointer; font-weight:bold; font-size:16px;";
+        
+        btnBorrar.onclick = async () => { 
+            if(confirm("¿Eliminar actividad?")) {
+                await deleteDoc(doc(db, "eventos", d.id)); 
+                calendar.refetchEvents(); 
+                cargarAdmin(); 
+            }
         };
+
+        item.appendChild(btnBorrar);
+        lista.appendChild(item);
+    });
+}
+
+       document.getElementById('btnSaveActividad').onclick = async () => {
+    const t = document.getElementById('newTitle').value;
+    const f = document.getElementById('newDate').value;
+    
+    if(!t || !f) return alert("Faltan datos");
+
+    // Guarda en la nube
+    await addDoc(collection(db, "eventos"), { title: t, start: f });
+    
+    // Limpia los cuadritos después de guardar
+    document.getElementById('newTitle').value = "";
+    document.getElementById('newDate').value = "";
+
+    calendar.refetchEvents(); // Actualiza el calendario
+    cargarAdmin();            // Actualiza la lista con la X roja
+};
     </script>
 </body>
 </html>
