@@ -494,13 +494,36 @@ function verificarAdmin(){
 if(adminPass.value==="MPSS2026"){
 
 adminLogin.style.display="none"
-
 adminPanel.style.display="flex"
 
 }
 
 }
 
+function mostrarActividades(){
+
+document.getElementById("seccionActividades").style.display="block"
+document.getElementById("seccionCrear").style.display="none"
+document.getElementById("seccionInscritos").style.display="none"
+
+}
+
+function mostrarCrear(){
+
+document.getElementById("seccionActividades").style.display="none"
+document.getElementById("seccionCrear").style.display="block"
+document.getElementById("seccionInscritos").style.display="none"
+
+}
+
+function mostrarInscritos(){
+
+document.getElementById("seccionActividades").style.display="none"
+document.getElementById("seccionCrear").style.display="none"
+document.getElementById("seccionInscritos").style.display="block"
+
+}
+  }
 </script>
 
 </body>
