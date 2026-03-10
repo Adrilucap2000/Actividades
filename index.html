@@ -1,980 +1,321 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Calendario de Actividades</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-
-<style>
-  /* PESTAÑAS ADMIN */
-
-.tabs-admin{
-display:flex;
-justify-content:center;
-gap:10px;
-margin-bottom:20px;
-}
-
-.tab-admin{
-
-background: linear-gradient(145deg,#7A1E2C,#5a0a14);
-color:#F5E6A3;
-
-padding:8px 18px;
-
-border:none;
-border-radius:10px 10px 0 0;
-
-cursor:pointer;
-
-font-weight:bold;
-
-box-shadow:
-0 0 5px #F2C94C;
-
-transition:0.3s;
-
-}
-
-.tab-admin:hover{
-
-background: linear-gradient(145deg,#8f2436,#6b0c1a);
-
-box-shadow:
-0 0 10px #FFD700;
-0 0 20px rgba(255,215,0,0.6);
-
-}
-  
-/* BOTONES DEL PANEL ADMIN */
-
-#adminPanel button:not(.tab-admin){
-  
-background: linear-gradient(145deg,#7A1E2C,#5a0a14);
-color:#F5E6A3;
-padding:10px 16px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-font-weight:bold;
-letter-spacing:1px;
-margin:5px;
-transition:0.3s;
-
-box-shadow:
-0 0 5px #F2C94C,
-0 0 10px rgba(0,0,0,0.4);
-
-}
-
-#adminPanel button:hover{
-
-background: linear-gradient(145deg,#8f2436,#6b0c1a);
-
-transform:scale(1.05);
-
-box-shadow:
-0 0 10px #FFD700,
-0 0 20px #FFD700,
-0 0 35px rgba(255,215,0,0.7);
-
-}
-
-  /* BOTONES PEQUEÑOS ADMIN */
-
-.boton-mini{
-
-padding:2px 6px;
-font-size:12px;
-
-background: linear-gradient(145deg,#7A1E2C,#5a0a14);
-color:#F5E6A3;
-
-border:none;
-border-radius:6px;
-
-cursor:pointer;
-transition:0.2s;
-
-box-shadow:
-0 0 3px #F2C94C,
-0 0 6px rgba(0,0,0,0.4);
-
-}
-
-.boton-mini:hover{
-
-background: linear-gradient(145deg,#8f2436,#6b0c1a);
-
-transform:scale(1.05);
-
-box-shadow:
-0 0 6px #FFD700,
-0 0 12px rgba(255,215,0,0.6);
-
-}
-  /* INPUTS DEL ADMIN */
-
-#adminPanel input{
-
-background:#FFF5CC;
-border:1px solid #D4AF37;
-padding:6px;
-border-radius:6px;
-
-}
-
-#adminPanel input:focus{
-
-outline:none;
-box-shadow:
-0 0 6px #FFD700,
-0 0 12px rgba(255,215,0,0.5);
-
-}
-/* BODY */
-
-body{
-font-family:Arial;
-background:
-linear-gradient(
-to bottom,
-rgba(90,10,20,0.95) 0%,
-rgba(90,10,20,0.85) 50%,
-rgba(90,10,20,0.75) 100%
-),
-url("https://i.imgur.com/hTT1t8L.jpeg");
-background-size:cover;
-background-position:center;
-background-attachment:scroll;
-background-repeat: no-repeat;
-min-height: 100vh;
-padding:20px;
-overflow-x:hidden;
-}
-
-/* ESTRELLAS */
-
-/* DESTELLOS DORADOS */
-
-.destellos{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-pointer-events:none;
-z-index:0;
-background-image:
-radial-gradient(#FFD700 2px, transparent 2px),
-radial-gradient(#F2C94C 1px, transparent 1px),
-radial-gradient(#FFF5CC 1px, transparent 1px);
-background-size:
-120px 120px,
-80px 80px,
-60px 60px;
-animation:brillos 20s linear infinite;
-opacity:0.6;
-}
-
-@keyframes brillos{
-from{transform:translateY(0)}
-to{transform:translateY(-200px)}
-}
-
-body::before{
-content:"";
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background-image:radial-gradient(#F2C94C 1px, transparent 1px);
-background-size:50px 50px;
-opacity:0.15;
-animation:estrellas 40s linear infinite;
-pointer-events:none;
-}
-
-@keyframes estrellas{
-from{transform:translateY(0)}
-to{transform:translateY(-200px)}
-}
-
-@keyframes brilloLinea{
-
-0%{
-box-shadow:
-0 0 5px #F2C94C,
-0 0 10px #F2C94C;
-}
-
-50%{
-box-shadow:
-0 0 10px #FFD700,
-0 0 25px #FFD700,
-0 0 40px #FFF5CC;
-}
-
-100%{
-box-shadow:
-0 0 5px #F2C94C,
-0 0 10px #F2C94C;
-}
-
-}
-
-
-/* ENCABEZADO */
-
-.encabezado{
-text-align:center;
-margin-bottom:40px;
-}
-
-.titulo-cinzel{
-font-family:'Cinzel Decorative';
-font-size:72px;
-letter-spacing:6px;
-color:#F5E6A3;
-}
-
-.titulo-cinzel::after{
-content:"";
-display:block;
-width:250px;
-height:3px;
-background:#F2C94C;
-margin:12px auto;
-border-radius:5px;
-
-box-shadow:
-0 0 5px #F2C94C,
-0 0 15px #F2C94C,
-0 0 25px #FFD700;
-
-animation:brilloLinea 3s ease-in-out infinite;
-}
-
-.subtitulo{
-font-family:'Cinzel Decorative';
-color:white;
-font-size:22px;
-}
-
-
-/* CONTENEDOR */
-
-.contenedor{
-display:grid;
-grid-template-columns:1fr 2px 2fr;
-gap:30px;
-max-width:1200px;
-margin:auto;
-position:relative;
-z-index:2;
-}
-
-.divisor{
-width:2px;
-background:rgba(255,255,255,0.6);
-border-radius:5px;
-
-align-self:stretch;
-}
-
-/* FORMULARIO */
-/* BOTONES ADMIN VINO + DORADO */
-
-.boton-admin{
-background: linear-gradient(145deg,#7A1E2C,#5a0a14);
-color:#F5E6A3;
-padding:10px 18px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-font-weight:bold;
-letter-spacing:1px;
-transition:all 0.3s ease;
-
-box-shadow:
-0 0 5px #F2C94C,
-0 0 10px rgba(0,0,0,0.4);
-}
-
-.boton-admin:hover{
-
-background: linear-gradient(145deg,#8f2436,#6b0c1a);
-
-transform:scale(1.05);
-
-box-shadow:
-0 0 8px #FFD700,
-0 0 18px #FFD700,
-0 0 30px rgba(255,215,0,0.6);
-
-}
-.formulario{
-background:rgba(0,0,0,0.25);
-backdrop-filter:blur(6px);
-padding:30px;
-border-radius:15px;
-color:white;
-width:380px;
-}
-
-.formulario h1{
-font-family:'Cinzel Decorative';
-}
-
-.texto-explicacion{
-font-size:14px;
-color:#EAEAEA;
-margin-bottom:18px;
-}
-
-.formulario input,
-.formulario select{
-width:100%;
-padding:8px;
-border-radius:6px;
-border:none;
-margin-bottom:45px;
-box-sizing:border-box;
-}
-
-.formulario button{
-
-background:#F2C94C;
-border:none;
-padding:10px 20px;
-border-radius:8px;
-cursor:pointer;
-transition:0.3s;
-
-display:block;
-margin:10px auto;
-
-}
-
-.formulario button:hover{
-background:#4B2E83;
-color:white;
-transform:scale(1.05);
-}
-
-/* CALENDARIO */
-
-#calendar{
-background:white;
-padding:20px;
-border-radius:18px;
-box-shadow:0 15px 40px rgba(0,0,0,0.35);
-}
-
-.fc-event-title{
-white-space:normal !important;
-overflow:hidden;
-font-size:12px;
-}
-
-.fc-event{
-padding:4px;
-background:#D4AF37;
-border:none;
-color:black;
-font-weight:bold;
-}
-
-.fc-event:hover{
-background:#F2C94C;
-transform:scale(1.05);
-cursor:pointer;
-}
-
-.fc-day-today{
-background:#FFF5CC !important;
-}
-
-.fc-button{
-background:#7A1E2C !important;
-border:none !important;
-}
-
-/* MODAL */
-
-.modal{
-display:none;
-position:fixed;
-z-index:1000;
-left:0;
-top:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.6);
-justify-content:center;
-align-items:center;
-}
-
-.modal-contenido{
-background:white;
-padding:25px;
-border-radius:20px;
-width:400px;
-text-align:center;
-position:relative;
-}
-
-  /* INPUT CONTRASEÑA ADMIN */
-
-#adminLogin input{
-
-background:#FFF5CC;
-border:1px solid #D4AF37;
-padding:6px;
-border-radius:6px;
-
-}
-
-#adminLogin input:focus{
-
-outline:none;
-box-shadow:
-0 0 6px #FFD700,
-0 0 12px rgba(255,215,0,0.5);
-
-}
-#listaActividades{
-
-max-height:220px;
-overflow-y:auto;
-
-padding-right:5px;
-
-}  
-.tlaquache-admin{
-
-position:fixed;
-bottom:70px;
-right:15px;
-
-width:70px;
-height:auto;
-
-z-index:9999;
-
-pointer-events:none;
-
-animation:balanceo 2.5s infinite ease-in-out;
-
-}
-
-@keyframes balanceo{
-
-0%{transform:rotate(-6deg);}
-50%{transform:rotate(6deg);}
-100%{transform:rotate(-6deg);}
-
-}
-.formulario-wrapper{
-  position:relative;
-  width:380px;
-  flex-shrink:0; /* 👈 evita que empuje el grid */
-}
-
-.overlay-formulario{
-
-position:absolute;
-inset:0;
-
-z-index:10;
-
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-
-background:rgba(0,0,0,0.85);
-
-border-radius:15px;
-
-padding:30px;
-
-}
-  /* INPUT CONTRASEÑA */
-
-.input-password{
-position:relative;
-width:100%;
-}
-
-.input-password input{
-width:100%;
-padding-right:40px;
-}
-
-.input-password button{
-
-position:absolute;
-right:5px;
-top:50%;
-transform:translateY(-50%);
-
-background:none;
-border:none;
-cursor:pointer;
-font-size:16px;
-color:#FFD700;
-
-}
-
-</style>
+    <meta charset="UTF-8">
+    <title>Calendario de Actividades</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+
+    <style>
+        /* CSS GENERAL */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, rgba(90,10,20,0.95), rgba(90,10,20,0.85)), url("https://i.imgur.com/hTT1t8L.jpeg");
+            background-size: cover;
+            background-attachment: fixed;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* TÍTULOS */
+        .encabezado { text-align: center; margin-bottom: 40px; }
+        .titulo-cinzel { font-family: 'Cinzel Decorative'; font-size: 50px; color: #F5E6A3; margin: 0; }
+        .subtitulo { font-family: 'Cinzel Decorative'; font-size: 20px; color: #white; }
+
+        /* CONTENEDOR PRINCIPAL */
+        .contenedor {
+            display: grid;
+            grid-template-columns: 380px 2px 1fr;
+            gap: 30px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .divisor { width: 2px; background: rgba(255,255,255,0.3); }
+
+        /* FORMULARIO Y BLOQUEO */
+        .formulario-wrapper { position: relative; width: 380px; }
+        .formulario {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(242, 201, 76, 0.3);
+        }
+        .overlay-formulario {
+            position: absolute; inset: 0; z-index: 10;
+            background: rgba(0,0,0,0.9);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; border-radius: 15px; padding: 20px;
+        }
+
+        input, select {
+            width: 100%; padding: 10px; margin-bottom: 15px;
+            border-radius: 5px; border: none; box-sizing: border-box;
+        }
+
+        button {
+            cursor: pointer; transition: 0.3s; font-weight: bold;
+        }
+
+        /* CALENDARIO */
+        #calendar { background: white; padding: 15px; border-radius: 15px; color: black; }
+
+        /* MODALES */
+        .modal {
+            display: none; position: fixed; z-index: 1000; inset: 0;
+            background: rgba(0,0,0,0.7); justify-content: center; align-items: center;
+        }
+        .modal-contenido {
+            background: white; color: black; padding: 30px; border-radius: 15px;
+            width: 90%; max-width: 400px; position: relative; text-align: center;
+        }
+
+        /* EL TLACUACHE (CORREGIDO) */
+        .tlacuache-admin {
+            position: fixed; bottom: 70px; right: 15px;
+            width: 80px !important; height: auto;
+            z-index: 9998; pointer-events: none;
+            animation: balanceo 2.5s infinite ease-in-out;
+        }
+
+        @keyframes balanceo {
+            0%, 100% { transform: rotate(-6deg); }
+            50% { transform: rotate(6deg); }
+        }
+
+        .btn-admin-flotante {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #7A1E2C; color: #F5E6A3; border: 1px solid #F2C94C;
+            padding: 12px 20px; border-radius: 10px; z-index: 9999;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="destellos"></div>
-
 <header class="encabezado">
-
-<h1 class="titulo-cinzel">BIENVENIDOS</h1>
-
-<h2 class="subtitulo">Inscripción a temas</h2>
-
+    <h1 class="titulo-cinzel">BIENVENIDOS</h1>
+    <h2 class="subtitulo">Inscripción a temas</h2>
 </header>
+
 <div class="contenedor">
-  
-<div class="formulario-wrapper">
+    <div class="formulario-wrapper">
+        <div id="overlay-formulario" class="overlay-formulario">
+            <h3>Acceso Restringido</h3>
+            <p>Introduce el código del instructor:</p>
+            <input type="password" id="codigoAcceso" placeholder="Código">
+            <button onclick="verificarAccesoFormulario()" style="background:#F2C94C; padding:10px 20px; border:none; border-radius:5px;">DESBLOQUEAR</button>
+            <p id="errorAcceso" style="display:none; color:red; margin-top:10px;">Código incorrecto</p>
+        </div>
 
-  <!-- OVERLAY (VENTANA BLOQUEO) -->
-  <div id="overlay-formulario" class="formulario overlay-formulario">
+        <div class="formulario">
+            <h3>Registro</h3>
+            <form id="formInscripcion">
+                <input type="text" id="nombre" placeholder="Tu Nombre" required>
+                <input type="email" id="correo" placeholder="Tu Correo" required>
+                <label>Selecciona Tema:</label>
+                <select id="cursoSelect"></select>
+                <button type="submit" style="background:#7A1E2C; color:white; width:100%; padding:12px; border:none; border-radius:5px;">ENVIAR INSCRIPCIÓN</button>
+            </form>
+        </div>
+    </div>
 
-    <h1>Acceso restringido</h1>
+    <div class="divisor"></div>
 
-    <p class="texto-explicacion">
-      Para enviar la inscripción necesitas un código
-      proporcionado por el instructor.
-    </p>
-
-<div class="input-password">
-
-<input type="password" id="codigoAcceso" placeholder="Código de acceso">
-
+    <div id="calendar"></div>
 </div>
-    <button onclick="verificarAccesoFormulario()">
-      DESBLOQUEAR
-    </button>
-
-    <p id="errorAcceso" style="display:none;color:#FFD700;text-align:center;">
-      Código incorrecto
-    </p>
-
-  </div>
-
-  <!-- TU FORMULARIO ORIGINAL (NO SE TOCA) -->
-  <div class="formulario">
-
-    <h1>Formulario de selección</h1>
-
-    <p class="texto-explicacion">
-      Selecciona el tema de tu preferencia y verifica en el calendario las instrucciones
-    </p>
-
-    <form id="formulario">
-<input type="text" id="nombre" placeholder="Nombre" required autocomplete="name">
-<input type="email" id="correo" placeholder="Correo" required autocomplete="email">
-<select id="curso"></select>
-
-<button type="submit">ENVIAR INSCRIPCIÓN</button>
-
-</form>
-
-</div>
-</div>
-<div class="divisor"></div>
-
-<div id="calendar"></div>
-
-</div>
-
-<!-- MODAL ACTIVIDAD -->
 
 <div id="modalActividad" class="modal">
-
-<div class="modal-contenido">
-<button onclick="cerrarModal()" style="
-position:absolute;
-top:10px;
-right:15px;
-background:none;
-border:none;
-font-size:22px;
-cursor:pointer;
-">✕</button>
-<h2 id="tituloActividad"></h2>
-
-<p id="descripcionActividad"></p>
-
-<button class="boton-admin" onclick="cerrarModal()">Cerrar</button>
+    <div class="modal-contenido">
+        <h2 id="tituloActividad"></h2>
+        <p id="descActividad"></p>
+        <button onclick="cerrarModales()" style="background:#7A1E2C; color:white; padding:10px; border:none; border-radius:5px;">Cerrar</button>
+    </div>
 </div>
-
-</div>
-
-<!-- LOGIN ADMIN -->
 
 <div id="adminLogin" class="modal">
-
-<div class="modal-contenido">
-<button onclick="cerrarLogin()" style="
-position:absolute;
-top:10px;
-right:15px;
-background:none;
-border:none;
-font-size:22px;
-cursor:pointer;
-">✕</button>
-<h2>Administrador</h2>
-
-<input type="password" id="adminPass" placeholder="Contraseña">
-
-<br><br>
-
-<button class="boton-admin" style="margin-top:10px" onclick="verificarAdmin()">
-Entrar
-</button>
-  
+    <div class="modal-contenido">
+        <h2>Panel Admin</h2>
+        <input type="password" id="adminPass" placeholder="Contraseña">
+        <button onclick="verificarAdmin()" style="background:#7A1E2C; color:white; padding:10px; width:100%; border:none;">Entrar</button>
+        <button onclick="cerrarModales()" style="margin-top:10px; background:none; border:none;">Cancelar</button>
+    </div>
 </div>
-
-</div>
-
-<!-- PANEL ADMIN -->
 
 <div id="adminPanel" class="modal">
-
-<div class="modal-contenido">
-
-<h2>Panel Administrador</h2>
-
-<div class="tabs-admin">
-
-<button class="tab-admin" onclick="mostrarActividades()">Actividades</button>
-
-<button class="tab-admin" onclick="mostrarCrear()">Crear actividad</button>
-
-<button class="tab-admin" onclick="mostrarInscritos()">Participantes</button>
-
-</div>
-<div id="seccionActividades">
-
-<div id="listaActividades"></div>
-
+    <div class="modal-contenido" style="max-width: 600px;">
+        <h2>Gestión de Actividades</h2>
+        <div id="listaActividades" style="max-height: 200px; overflow-y: auto; margin-bottom: 20px; text-align: left;"></div>
+        <hr>
+        <h3>Nueva Actividad</h3>
+        <input id="newTitle" placeholder="Título">
+        <input id="newDesc" placeholder="Descripción">
+        <input id="newDate" type="date">
+        <button onclick="crearActividad()" style="background:green; color:white; padding:10px; width:100%; border:none;">Guardar</button>
+        <br><br>
+        <button onclick="cerrarModales()" style="background:#333; color:white; padding:10px; width:100%; border:none;">Salir</button>
+    </div>
 </div>
 
-
-<div id="seccionCrear" style="display:none">
-
-<h3>Agregar nueva actividad</h3>
-
-<input id="nuevoTitulo" placeholder="Título">
-
-<input id="nuevaDescripcion" placeholder="Descripción">
-
-<input id="nuevaFecha" type="date">
-
-<br><br>
-
-<button class="boton-admin" onclick="crearActividad()">Guardar actividad</button>
-
-</div>
-
-
-<div id="seccionInscritos" style="display:none"></div>
-
-<br>
-
-<button class="boton-admin" onclick="cerrarAdmin()">Salir</button>
-</div>
-</div>
-
-<!-- MODAL EDITAR ACTIVIDAD -->
-<img src="./tlaquache-admin.png" class="tlaquache-admin" loading="eager">
-  <button onclick="abrirLogin()" style="
-position:fixed;
-bottom:20px;
-right:20px;
-background:#7A1E2C;
-color:white;
-padding:12px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-z-index:9999;
-  ">
-ADMIN
-
-
-</button>
-
-
-<!-- MODAL EDITAR ACTIVIDAD -->
-
-<div id="modalEditar" class="modal">
-
-<div class="modal-contenido">
-
-<h2>Editar actividad</h2>
-
-<input id="editTitulo" placeholder="Título">
-
-<input id="editDescripcion" placeholder="Descripción">
-
-<input id="editFecha" type="date">
-
-<br><br>
-
-<button onclick="guardarEdicion()">Guardar</button>
-
-<button onclick="cerrarEditar()">Cancelar</button>
-
-</div>
-
-</div>
+<img src="https://raw.githubusercontent.com/TU_USUARIO/TU_REPOSITORIO/main/tlaquache-admin.png" class="tlacuache-admin">
+<button class="btn-admin-flotante" onclick="abrirLogin()">ADMIN</button>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
 <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-getFirestore, 
-collection, 
-addDoc, 
-getDocs, 
-deleteDoc, 
-doc,
-updateDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    const firebaseConfig = {
+        apiKey: "AIzaSyBnqZEuuv0V_CAmR_gBqPCQ3bgyS1ny_RI",
+        authDomain: "calendario-mpss.firebaseapp.com",
+        projectId: "calendario-mpss",
+        storageBucket: "calendario-mpss.firebasestorage.app",
+        messagingSenderId: "809122907226",
+        appId: "1:809122907226:web:c66cfc12aa8617de1fc463"
+    };
 
-const firebaseConfig = {
-apiKey: "AIzaSyBnqZEuuv0V_CAmR_gBqPCQ3bgyS1ny_RI",
-authDomain: "calendario-mpss.firebaseapp.com",
-projectId: "calendario-mpss",
-storageBucket: "calendario-mpss.firebasestorage.app",
-messagingSenderId: "809122907226",
-appId: "1:809122907226:web:c66cfc12aa8617de1fc463"
-};
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    // Compartir con el script normal
+    window.db = db;
+    window.collection = collection;
+    window.addDoc = addDoc;
+    window.getDocs = getDocs;
+    window.deleteDoc = deleteDoc;
+    window.doc = doc;
 
-window.db = db
-window.getDocs = getDocs
-<script>
-// --- CONFIGURACIÓN DE SEGURIDAD ---
-const HASH_FORMULARIO = "5d2d86f0f75a5c8c4a0cfe5fa5e1e0b1c0b4f7e5d70bdb8c4b4e33e3c0df0b91";
-const DURACION_FORM = 6 * 60 * 60 * 1000; 
-
-async function hashTexto(texto){
-    const data = new TextEncoder().encode(texto);
-    const hash = await crypto.subtle.digest("SHA-256", data);
-    return Array.from(new Uint8Array(hash))
-        .map(b => b.toString(16).padStart(2,"0"))
-        .join("");
-}
-
-async function verificarAccesoFormulario(){
-    const codigo = document.getElementById("codigoAcceso").value;
-    const hashIngresado = await hashTexto(codigo);
-
-    if(hashIngresado === HASH_FORMULARIO){
-        sessionStorage.setItem("formUnlocked","true");
-        sessionStorage.setItem("formExpire", Date.now() + DURACION_FORM);
-        desbloquearFormulario();
-    } else {
-        document.getElementById("errorAcceso").style.display="block";
-    }
-}
-
-function desbloquearFormulario(){
-    const overlay = document.getElementById("overlay-formulario");
-    if(overlay){
-        overlay.style.opacity="0";
-        setTimeout(() => { overlay.style.display="none"; }, 400);
-    }
-}
-
-// --- INICIALIZACIÓN ---
-let eventos = [];
-let calendar;
-let inscripciones = JSON.parse(localStorage.getItem("inscripciones")) || {};
-
-document.addEventListener('DOMContentLoaded', function(){
-    // Inicializar EmailJS
-    emailjs.init("JbLq6Pz4o5CfG8tfQ");
-
-    // Inicializar Calendario
-    calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
-        initialView:'dayGridMonth',
-        locale:'es',
-        buttonText:{today:'Hoy'},
-        events: eventos,
-        eventClick: function(info){
-            mostrarModal(info.event.title, info.event.extendedProps.description);
-        }
-    });
-    calendar.render();
-
-    // Cargar datos
-    cargarEventosFirebase();
-    
-    // Auto-desbloqueo si ya puso la clave antes
-    const ok = sessionStorage.getItem("formUnlocked");
-    const exp = sessionStorage.getItem("formExpire");
-    if(ok === "true" && exp && Date.now() < exp){
-        desbloquearFormulario();
-    }
-});
-
-// --- FUNCIONES FIREBASE ---
-async function cargarEventosFirebase(){
-    const snapshot = await getDocs(collection(db,"eventos"));
-    eventos = [];
-    snapshot.forEach(docSnap => {
-        eventos.push({ id: docSnap.id, ...docSnap.data() });
-    });
-    calendar.removeAllEvents();
-    calendar.addEventSource(eventos);
-    actualizarCursos();
-}
-
-function actualizarCursos(){
-    let select = document.getElementById("curso");
-    if(!select) return;
-    select.innerHTML = "";
-    eventos.forEach(e => {
-        let option = document.createElement("option");
-        option.value = e.id;
-        option.textContent = e.title;
-        select.appendChild(option);
-    });
-}
-
-// --- GESTIÓN DE INSCRIPCIONES ---
-document.getElementById("formulario").addEventListener("submit", async function(e){
-    e.preventDefault();
-    let nombre = document.getElementById("nombre").value;
-    let correo = document.getElementById("correo").value;
-    let curso = document.getElementById("curso").value;
-    let nombreCurso = document.getElementById("curso").selectedOptions[0].text;
-
-    if(inscripciones[curso]){
-        alert("Ya estás inscrito en este curso.");
-        return;
-    }
-
-    inscripciones[curso] = nombre;
-    localStorage.setItem("inscripciones", JSON.stringify(inscripciones));
-
-    // Enviar correos
-    emailjs.send("service_u8bx9dj","template_0yx01mn",{ nombre, correo, curso: nombreCurso });
-    emailjs.send("service_u8bx9dj","template_jssulea",{ nombre, correo, curso: nombreCurso });
-
-    alert("Inscripción enviada con éxito");
-    location.reload(); 
-});
-
-// --- INTERFAZ Y MODALES ---
-function mostrarModal(titulo, texto){
-    document.getElementById("modalActividad").style.display = "flex";
-    document.getElementById("tituloActividad").innerText = titulo;
-    document.getElementById("descripcionActividad").innerText = texto;
-}
-
-function cerrarModal(){
-    document.getElementById("modalActividad").style.display = "none";
-}
-
-function abrirLogin(){
-    document.getElementById("adminLogin").style.display = "flex";
-}
-
-function cerrarLogin(){
-    document.getElementById("adminLogin").style.display = "none";
-}
-
-function verificarAdmin(){
-    const pass = document.getElementById("adminPass").value;
-    if(pass === "MPSS2026"){
-        document.getElementById("adminLogin").style.display = "none";
-        document.getElementById("adminPanel").style.display = "flex";
-        mostrarActividades();
-    } else {
-        alert("Contraseña incorrecta");
-    }
-}
-
-function cerrarAdmin(){
-    document.getElementById("adminPanel").style.display = "none";
-}
-
-// --- PANEL ADMIN (CRUD) ---
-function mostrarActividades(){
-    document.getElementById("seccionActividades").style.display="block";
-    document.getElementById("seccionInscritos").style.display="none";
-    document.getElementById("seccionCrear").style.display="none";
-    
-    let lista = document.getElementById("listaActividades");
-    lista.innerHTML = "";
-    eventos.forEach(e => {
-        lista.innerHTML += `
-            <div style="margin:10px; padding:10px; border-bottom:1px solid #eee; color: black;">
-                <b>${e.title}</b>
-                <button class="boton-mini" onclick="editarActividad('${e.id}')">Editar</button>
-                <button class="boton-mini" onclick="eliminarActividad('${e.id}')">Eliminar</button>
-            </div>`;
-    });
-}
-
-async function crearActividad(){
-    let titulo = document.getElementById("nuevoTitulo").value;
-    let descripcion = document.getElementById("nuevaDescripcion").value;
-    let fecha = document.getElementById("nuevaFecha").value;
-
-    if(!titulo || !fecha){ alert("Completa título y fecha"); return; }
-
-    await addDoc(collection(db,"eventos"), { title: titulo, start: fecha, description: descripcion });
-    cargarEventosFirebase();
-    mostrarActividades();
-}
-
-async function eliminarActividad(id){
-    if(confirm("¿Seguro que quieres eliminar esta actividad?")){
-        await deleteDoc(doc(db, "eventos", id));
-        cargarEventosFirebase();
-        mostrarActividades();
-    }
-}
-
-function mostrarInscritos(){
-    document.getElementById("seccionActividades").style.display="none";
-    document.getElementById("seccionInscritos").style.display="block";
-    document.getElementById("seccionCrear").style.display="none";
-    let lista = document.getElementById("seccionInscritos");
-    lista.innerHTML = "<h3>Participantes inscritos</h3>";
-
-    Object.keys(inscripciones).forEach(idCurso => {
-        lista.innerHTML += `<p style="color:black"><b>Curso ID: ${idCurso}</b> - Persona: ${inscripciones[idCurso]}</p>`;
-    });
-}
-
-function mostrarCrear(){
-    document.getElementById("seccionActividades").style.display="none";
-    document.getElementById("seccionInscritos").style.display="none";
-    document.getElementById("seccionCrear").style.display="block";
-}
+    window.dispatchEvent(new Event('firebase-ready'));
 </script>
+
+<script>
+    let calendar;
+    let eventos = [];
+    const HASH_CORRECTO = "5d2d86f0f75a5c8c4a0cfe5fa5e1e0b1c0b4f7e5d70bdb8c4b4e33e3c0df0b91";
+
+    window.addEventListener('firebase-ready', () => {
+        initApp();
+    });
+
+    function initApp() {
+        const calendarEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            events: (info, success) => {
+                fetchEventos().then(data => success(data));
+            },
+            eventClick: (info) => {
+                document.getElementById('modalActividad').style.display = 'flex';
+                document.getElementById('tituloActividad').innerText = info.event.title;
+                document.getElementById('descActividad').innerText = info.event.extendedProps.description || 'Sin descripción';
+            }
+        });
+        calendar.render();
+        
+        if(sessionStorage.getItem('unlocked') === 'true') {
+            document.getElementById('overlay-formulario').style.display = 'none';
+        }
+    }
+
+    async function fetchEventos() {
+        const querySnapshot = await getDocs(collection(db, "eventos"));
+        eventos = [];
+        const select = document.getElementById('cursoSelect');
+        select.innerHTML = '';
+        
+        querySnapshot.forEach((doc) => {
+            const data = { id: doc.id, ...doc.data() };
+            eventos.push(data);
+            const opt = document.createElement('option');
+            opt.value = data.id;
+            opt.textContent = data.title;
+            select.appendChild(opt);
+        });
+        return eventos;
+    }
+
+    // --- ACCESO Y SEGURIDAD ---
+    async function verificarAccesoFormulario() {
+        const pass = document.getElementById('codigoAcceso').value;
+        const msg = document.getElementById('errorAcceso');
+        
+        const encoder = new TextEncoder();
+        const data = encoder.encode(pass);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+        if(hashHex === HASH_CORRECTO) {
+            sessionStorage.setItem('unlocked', 'true');
+            document.getElementById('overlay-formulario').style.display = 'none';
+        } else {
+            msg.style.display = 'block';
+        }
+    }
+
+    // --- ADMIN ---
+    function abrirLogin() { document.getElementById('adminLogin').style.display = 'flex'; }
+    function cerrarModales() { 
+        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
+    }
+
+    function verificarAdmin() {
+        if(document.getElementById('adminPass').value === "MPSS2026") {
+            cerrarModales();
+            document.getElementById('adminPanel').style.display = 'flex';
+            actualizarListaAdmin();
+        } else {
+            alert("Contraseña incorrecta");
+        }
+    }
+
+    async function actualizarListaAdmin() {
+        const lista = document.getElementById('listaActividades');
+        lista.innerHTML = 'Cargando...';
+        await fetchEventos();
+        lista.innerHTML = '';
+        eventos.forEach(e => {
+            lista.innerHTML += `
+                <div style="padding:10px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; color:black;">
+                    <span>${e.title}</span>
+                    <button onclick="borrarEvento('${e.id}')" style="background:red; color:white; border:none; padding:5px;">Eliminar</button>
+                </div>`;
+        });
+    }
+
+    async function crearActividad() {
+        const title = document.getElementById('newTitle').value;
+        const description = document.getElementById('newDesc').value;
+        const start = document.getElementById('newDate').value;
+        
+        if(!title || !start) return alert("Falta título o fecha");
+        
+        await addDoc(collection(db, "eventos"), { title, description, start });
+        calendar.refetchEvents();
+        actualizarListaAdmin();
+    }
+
+    async function borrarEvento(id) {
+        if(confirm("¿Seguro?")) {
+            await deleteDoc(doc(db, "eventos", id));
+            calendar.refetchEvents();
+            actualizarListaAdmin();
+        }
+    }
+
+    // Exponer funciones al HTML
+    window.verificarAccesoFormulario = verificarAccesoFormulario;
+    window.abrirLogin = abrirLogin;
+    window.cerrarModales = cerrarModales;
+    window.verificarAdmin = verificarAdmin;
+    window.crearActividad = crearActividad;
+    window.borrarEvento = borrarEvento;
+</script>
+
 </body>
 </html>
