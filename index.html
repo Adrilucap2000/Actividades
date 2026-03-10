@@ -8,8 +8,132 @@
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
 
 <style>
+  /* PESTAÑAS ADMIN */
 
+.tabs-admin{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-bottom:20px;
+}
 
+.tab-admin{
+
+background: linear-gradient(145deg,#7A1E2C,#5a0a14);
+color:#F5E6A3;
+
+padding:8px 18px;
+
+border:none;
+border-radius:10px 10px 0 0;
+
+cursor:pointer;
+
+font-weight:bold;
+
+box-shadow:
+0 0 5px #F2C94C;
+
+transition:0.3s;
+
+}
+
+.tab-admin:hover{
+
+background: linear-gradient(145deg,#8f2436,#6b0c1a);
+
+box-shadow:
+0 0 10px #FFD700;
+0 0 20px rgba(255,215,0,0.6);
+
+}
+  
+/* BOTONES DEL PANEL ADMIN */
+
+#adminPanel button:not(.tab-admin){
+  
+background: linear-gradient(145deg,#7A1E2C,#5a0a14);
+color:#F5E6A3;
+padding:10px 16px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+letter-spacing:1px;
+margin:5px;
+transition:0.3s;
+
+box-shadow:
+0 0 5px #F2C94C,
+0 0 10px rgba(0,0,0,0.4);
+
+}
+
+#adminPanel button:hover{
+
+background: linear-gradient(145deg,#8f2436,#6b0c1a);
+
+transform:scale(1.05);
+
+box-shadow:
+0 0 10px #FFD700,
+0 0 20px #FFD700,
+0 0 35px rgba(255,215,0,0.7);
+
+}
+
+  /* BOTONES PEQUEÑOS ADMIN */
+
+.boton-mini{
+
+padding:2px 6px;
+font-size:12px;
+
+background: linear-gradient(145deg,#7A1E2C,#5a0a14);
+color:#F5E6A3;
+
+border:none;
+border-radius:6px;
+
+cursor:pointer;
+transition:0.2s;
+
+box-shadow:
+0 0 3px #F2C94C,
+0 0 6px rgba(0,0,0,0.4);
+
+}
+
+.boton-mini:hover{
+
+background: linear-gradient(145deg,#8f2436,#6b0c1a);
+
+transform:scale(1.05);
+
+box-shadow:
+0 0 6px #FFD700,
+0 0 12px rgba(255,215,0,0.6);
+
+}
+  /* INPUTS DEL ADMIN */
+
+#adminPanel input{
+
+background:#FFF5CC;
+border:1px solid #D4AF37;
+padding:6px;
+border-radius:6px;
+
+}
+
+#adminPanel input:focus{
+
+outline:none;
+box-shadow:
+0 0 6px #FFD700,
+0 0 12px rgba(255,215,0,0.5);
+
+}
 /* BODY */
 
 body{
@@ -213,16 +337,22 @@ width:100%;
 padding:8px;
 border-radius:6px;
 border:none;
-margin-bottom:15px;
+margin-bottom:45px;
+box-sizing:border-box;
 }
 
 .formulario button{
+
 background:#F2C94C;
 border:none;
-padding:10px;
+padding:10px 20px;
 border-radius:8px;
 cursor:pointer;
 transition:0.3s;
+
+display:block;
+margin:10px auto;
+
 }
 
 .formulario button:hover{
@@ -293,6 +423,58 @@ text-align:center;
 position:relative;
 }
 
+  /* INPUT CONTRASEÑA ADMIN */
+
+#adminLogin input{
+
+background:#FFF5CC;
+border:1px solid #D4AF37;
+padding:6px;
+border-radius:6px;
+
+}
+
+#adminLogin input:focus{
+
+outline:none;
+box-shadow:
+0 0 6px #FFD700,
+0 0 12px rgba(255,215,0,0.5);
+
+}
+#listaActividades{
+
+max-height:220px;
+overflow-y:auto;
+
+padding-right:5px;
+
+}  
+.tlacuache-admin{
+
+position:fixed;
+
+bottom:39px;     /* baja más para que se siente en el botón */
+right:-40px;     /* lo centra sobre el botón */
+
+width:240px;     /* más grande */
+
+z-index:9998;
+
+pointer-events:none;
+
+filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+
+animation:balanceo 2.5s infinite ease-in-out;
+
+}
+@keyframes balanceo{
+
+0%{transform:rotate(-6deg);}
+50%{transform:rotate(6deg);}
+100%{transform:rotate(-6deg);}
+
+}
 </style>
 </head>
 
@@ -342,7 +524,7 @@ Selecciona el tema de tu preferencia y verifica en el calendario las instruccion
 <div id="modalActividad" class="modal">
 
 <div class="modal-contenido">
-<button onclick="cerrarLogin()" style="
+<button onclick="cerrarModal()" style="
 position:absolute;
 top:10px;
 right:15px;
@@ -355,8 +537,7 @@ cursor:pointer;
 
 <p id="descripcionActividad"></p>
 
-<button onclick="cerrarModal()">Cerrar</button>
-
+<button class="boton-admin" onclick="cerrarModal()">Cerrar</button>
 </div>
 
 </div>
@@ -381,8 +562,10 @@ cursor:pointer;
 
 <br><br>
 
-<button onclick="verificarAdmin()">Entrar</button>
-
+<button class="boton-admin" style="margin-top:10px" onclick="verificarAdmin()">
+Entrar
+</button>
+  
 </div>
 
 </div>
@@ -395,11 +578,23 @@ cursor:pointer;
 
 <h2>Panel Administrador</h2>
 
-<button onclick="mostrarActividades()">Actividades</button>
+<div class="tabs-admin">
 
-<button onclick="mostrarInscritos()">Eliminar participantes</button>
+<button class="tab-admin" onclick="mostrarActividades()">Actividades</button>
 
+<button class="tab-admin" onclick="mostrarCrear()">Crear actividad</button>
+
+<button class="tab-admin" onclick="mostrarInscritos()">Participantes</button>
+
+</div>
 <div id="seccionActividades">
+
+<div id="listaActividades"></div>
+
+</div>
+
+
+<div id="seccionCrear" style="display:none">
 
 <h3>Agregar nueva actividad</h3>
 
@@ -411,11 +606,7 @@ cursor:pointer;
 
 <br><br>
 
-<button onclick="crearActividad()">Guardar actividad</button>
-
-<hr>
-
-<div id="listaActividades"></div>
+<button class="boton-admin" onclick="crearActividad()">Guardar actividad</button>
 
 </div>
 
@@ -424,14 +615,12 @@ cursor:pointer;
 
 <br>
 
-<button onclick="cerrarAdmin()">Salir</button>
-
+<button class="boton-admin" onclick="cerrarAdmin()">Salir</button>
 </div>
-
 </div>
-
 
 <!-- MODAL EDITAR ACTIVIDAD -->
+<img src="https://i.ibb.co/FZtb0Vk/tlaq-png.png" class="tlacuache-admin">
 
 <button onclick="abrirLogin()" style="
 position:fixed;
@@ -443,7 +632,8 @@ padding:12px;
 border:none;
 border-radius:10px;
 cursor:pointer;
-">
+z-index:9999;
+  ">
 ADMIN
 
 
@@ -647,7 +837,7 @@ function mostrarInscritos(){
 
 document.getElementById("seccionActividades").style.display="none"
 document.getElementById("seccionInscritos").style.display="block"
-
+document.getElementById("seccionCrear").style.display="none"
 let lista=document.getElementById("seccionInscritos")
 
 lista.innerHTML=""
@@ -666,6 +856,13 @@ lista.innerHTML+=`
 `
 
 })
+
+}
+function mostrarCrear(){
+
+document.getElementById("seccionActividades").style.display="none"
+document.getElementById("seccionInscritos").style.display="none"
+document.getElementById("seccionCrear").style.display="block"
 
 }
 
@@ -692,6 +889,7 @@ function mostrarActividades(){
 
 document.getElementById("seccionActividades").style.display="block"
 document.getElementById("seccionInscritos").style.display="none"
+document.getElementById("seccionCrear").style.display="none"
 
 let lista=document.getElementById("listaActividades")
 
@@ -704,11 +902,11 @@ lista.innerHTML+=`
 
 <b>${e.title}</b>
 
-<button onclick="editarActividad('${e.id}')">
+<button class="boton-mini" onclick="editarActividad('${e.id}')">
 Editar
 </button>
 
-<button onclick="eliminarActividad('${e.id}')">
+<button class="boton-mini" onclick="eliminarActividad('${e.id}')">
 Eliminar
 </button>
 
