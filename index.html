@@ -330,17 +330,36 @@ font-size:14px;
 color:#EAEAEA;
 margin-bottom:18px;
 }
-
 .formulario input,
 .formulario select{
+
 width:100%;
 padding:8px;
+
+background: rgba(255,255,255,0.08);
+backdrop-filter: blur(4px);
+
+color:white;
+
+border:1px solid #D4AF37;
 border-radius:6px;
-border:none;
+
 margin-bottom:45px;
 box-sizing:border-box;
+
+}
+  .formulario input::placeholder{
+color:#eee;
 }
 
+.formulario input:focus,
+.formulario select:focus{
+outline:none;
+
+box-shadow:
+0 0 8px #FFD700,
+0 0 15px rgba(255,215,0,0.5);
+}
 .formulario button{
 
 background:#F2C94C;
