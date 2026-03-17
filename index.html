@@ -499,7 +499,17 @@ animation:balanceo 2.5s infinite ease-in-out;
 <p class="texto-explicacion">
 Selecciona el tema de tu preferencia y verifica en el calendario las instrucciones
 </p>
+<!-- 🔒 BLOQUEO CON CONTRASEÑA -->
 
+<div id="bloqueo" style="margin-bottom:15px;">
+
+<input type="password" id="passwordInput" placeholder="Ingresa la contraseña">
+
+<button onclick="checkPassword()">Desbloquear</button>
+
+<p id="errorMsg" style="color:#FFD700; font-size:13px;"></p>
+
+</div>
 <form id="formulario">
 
 <input type="text" id="nombre" placeholder="Nombre" required>
