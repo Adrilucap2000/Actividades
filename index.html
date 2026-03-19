@@ -530,9 +530,9 @@ padding:12px;
 background: radial-gradient(circle,#FFD700,#b8860b);
 
 box-shadow:
-0 0 10px #FFD700,
-0 0 25px rgba(255,215,0,0.5),
-0 0 50px rgba(255,215,0,0.3);
+0 0 25px #FFD700,
+0 0 70px #FFD700,
+0 0 140px rgba(255,215,0,0.7);
 
 display:flex;
 justify-content:center;
@@ -552,25 +552,22 @@ border-radius:50%;
 
 /* ANIMACIÓN GLOW */
 @keyframes brillo{
-0%{box-shadow:0 0 10px #FFD700;}
-50%{box-shadow:0 0 40px rgba(255,215,0,0.6);}
-100%{box-shadow:0 0 10px #FFD700;}
+0%{box-shadow:0 0 25px #FFD700;}
+50%{box-shadow:0 0 80px #FFD700,0 0 150px #FFD700;}
+100%{box-shadow:0 0 25px #FFD700;}
 }
 
 /* TEXTO ESTILO AMSTERDAM */
 .titulo{
 font-family: 'Great Vibes', cursive;
-transform: rotate(-2deg);
-font-size: 65px;
-color: #FFD700;
-margin-top: 25px;
-font-weight: normal;
+font-size:70px;
+color:#FFD700;
+margin-top:30px;
 
 text-shadow:
-0 0 3px #FFD700,
-0 0 8px rgba(255,215,0,0.5);
-
-letter-spacing: 2px;
+0 0 10px #FFD700,
+0 0 20px #FFD700,
+0 0 40px rgba(255,215,0,0.7);
 }
 
 /* INPUT OCULTO */
@@ -851,7 +848,6 @@ ADMIN
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <!-- FIREBASE -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script>
@@ -867,7 +863,6 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-    const auth = firebase.auth()
 </script>
 <script>
 
@@ -917,41 +912,19 @@ document.addEventListener('DOMContentLoaded',function(){
 // 🔄 actualizar select
 actualizarCursos()
 
-// 🔐 LOGIN PROMETEO (FIREBASE)
+// 🔐 LOGIN PROMETEO (YA FUNCIONA)
+const PASSWORD = "TLAQH2026"
 const input = document.getElementById("pinInput")
 const pantalla = document.getElementById("pantallaInicio")
 
 if(input && pantalla){
-
-input.addEventListener("keyup", function(){
-
-if(input.value.length >= 6){
-
-auth.signInWithEmailAndPassword("admin@prometeo.com", input.value)
-.then(() => {
-pantalla.style.display = "none"
-})
-.catch(() => {})
-
-}
-
-})
-
-auth.onAuthStateChanged(user => {
-if(user){
+input.addEventListener("input", function(){
+if(input.value.trim() === PASSWORD){
 pantalla.style.display = "none"
 }
 })
-
 }
 
-}) // 🔥 ESTE TE FALTABA
-
-// 🔓 FUERA DEL DOM
-function cerrarSesion(){
-auth.signOut()
-location.reload()
-}
 // 📅 CALENDARIO
 calendar = new FullCalendar.Calendar(
 document.getElementById('calendar'),
@@ -1076,7 +1049,6 @@ curso: nombreCurso
 })
 
 })
-
 /* MODAL */
 
 function mostrarModal(titulo,texto){
@@ -1124,31 +1096,22 @@ document.getElementById("seccionCrear").style.display="none"
 
 let lista = document.getElementById("seccionInscritos")
 
-db.collection("inscripciones").onSnapshot(async snapshot => {
+db.collection("inscripciones").onSnapshot(snapshot => {
 
 lista.innerHTML=""
 
-for (const doc of snapshot.docs){
+snapshot.forEach(doc => {
 
 let data = doc.data()
 
-// 🔥 TRAER EL NOMBRE DEL EVENTO
-let eventoDoc = await db.collection("eventos").doc(doc.id).get()
-
-let tituloEvento = "Sin nombre"
-
-if(eventoDoc.exists){
-tituloEvento = eventoDoc.data().title
-}
-
 lista.innerHTML += `
 <div>
-<b>${tituloEvento}</b> → ${data.nombre}
+<b>${doc.id}</b> → ${data.nombre}
 <button onclick="eliminarInscripcion('${doc.id}')">Eliminar</button>
 </div>
 `
 
-}
+})
 
 })
 
@@ -1293,7 +1256,6 @@ mostrarActividades()
 actualizarCursos()
 
 }
-  
 </script>
 
 </body>
