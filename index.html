@@ -892,16 +892,15 @@ info.event.extendedProps.description
 })
 
 calendar.render()
-db.collection("eventos").onSnapshot(snapshot => {
+db.collection("eventos").onSnapshot(async snapshot => {
 
 calendar.removeAllEvents()
 
-snapshot.forEach(doc => {
+for (const doc of snapshot.docs){
 
 let data = doc.data()
 
-db.collection("inscripciones").doc(doc.id)
-.onSnapshot(insc => {
+let inscDoc = await db.collection("inscripciones").doc(doc.id).get()
 
 let eventoFinal = {
 id: doc.id,
@@ -910,16 +909,14 @@ start: data.start,
 description: data.description
 }
 
-if(insc.exists){
-eventoFinal.title = data.title + " | Inscrito: " + insc.data().nombre
+if(inscDoc.exists){
+eventoFinal.title = data.title + " | Inscrito: " + inscDoc.data().nombre
 eventoFinal.backgroundColor = "#B22222"
 }
 
 calendar.addEvent(eventoFinal)
 
-})
-
-})
+}
 
 })
 actualizarCursos()
