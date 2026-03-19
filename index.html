@@ -909,14 +909,12 @@ select.appendChild(option)
 }
 
 // ✅ TODO DENTRO DEL DOM (🔥 CLAVE)
-document.addEventListener('DOMContentLoaded',function(){
+document.addEventListener('DOMContentLoaded', function(){
+
 const input = document.getElementById("pinInput")
-
-// 🔄 actualizar select
-actualizarCursos()
-
-// 🔐 LOGIN FIREBASE
 const pantalla = document.getElementById("pantallaInicio")
+
+console.log("LOGIN LISTO")
 
 if(input && pantalla){
 
@@ -940,18 +938,6 @@ console.log("ERROR LOGIN:", error.message)
 }
 
 })
-if(input.value.length >= 6){
-
-auth.signInWithEmailAndPassword("admin@prometeo.com", input.value)
-.then(() => {
-pantalla.style.display = "none"
-})
-.catch((error) => {
-console.log("ERROR LOGIN:", error.message)
-})
-}
-
-})
 
 auth.onAuthStateChanged(user => {
 if(user){
@@ -960,6 +946,8 @@ pantalla.style.display = "none"
 })
 
 }
+
+})
 
 // 📅 CALENDARIO
 calendar = new FullCalendar.Calendar(
