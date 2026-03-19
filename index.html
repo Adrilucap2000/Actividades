@@ -870,9 +870,10 @@ const db = firebase.firestore();
 emailjs.init("JbLq6Pz4o5CfG8tfQ");
 })();
 
-
 let calendar
+
 document.addEventListener('DOMContentLoaded',function(){
+
 // 📅 CALENDARIO
 calendar = new FullCalendar.Calendar(
 document.getElementById('calendar'),
@@ -890,6 +891,7 @@ info.event.extendedProps.description
 })
 
 calendar.render()
+
 let eventosData = {}
 let inscripcionesData = {}
 
@@ -944,21 +946,74 @@ inscripcionesData[doc.id] = doc.data()
 renderCalendar()
 
 })
+
+// 🔄 actualizar select
 actualizarCursos()
+
 // 🔐 LOGIN PROMETEO
 const PASSWORD = "TLAQH2026"
 const input = document.getElementById("pinInput")
 const pantalla = document.getElementById("pantallaInicio")
 
 input.addEventListener("keyup", function(){
-
 if(input.value.trim() === PASSWORD){
 pantalla.style.display = "none"
 }
+})
+
+// 🟢 INSCRIPCIÓN (YA BIEN PUESTA)
+document.getElementById("formulario")
+.addEventListener("submit",function(e){
+
+e.preventDefault()
+
+let nombre = document.getElementById("nombre").value
+let correo = document.getElementById("correo").value
+let curso = document.getElementById("curso").value
+let nombreCurso = document.getElementById("curso").selectedOptions[0].text
+
+db.collection("inscripciones").doc(curso).get().then(doc => {
+
+if(doc.exists){
+mostrarModal("Curso lleno","Este curso ya tiene inscrito")
+return
+}
+
+db.collection("inscripciones").doc(curso).set({
+nombre: nombre,
+correo: correo
+})
+
+actualizarCursos()
+
+let evento = calendar.getEventById(curso)
+
+if(evento){
+evento.setProp("title", evento.title + " | Inscrito: " + nombre)
+evento.setProp("backgroundColor", "#B22222")
+}
 
 })
+
+// correos
+emailjs.send("service_u8bx9dj","template_0yx01mn",{
+nombre: nombre,
+correo: correo,
+curso: nombreCurso
 })
+
+emailjs.send("service_u8bx9dj","template_jssulea",{
+nombre: nombre,
+correo: correo,
+curso: nombreCurso
+})
+
+})
+
+}) // ✅ SOLO UN CIERRE
+
 function actualizarCursos(){
+
 let select = document.getElementById("curso")
 select.innerHTML = ""
 
@@ -987,53 +1042,6 @@ select.appendChild(option)
 })
 
 }
-/* INSCRIPCIÓN */
-
-document.getElementById("formulario")
-.addEventListener("submit",function(e){
-  
-e.preventDefault()
-
-let nombre = document.getElementById("nombre").value
-let correo = document.getElementById("correo").value
-let curso = document.getElementById("curso").value
-let nombreCurso = document.getElementById("curso").selectedOptions[0].text
-db.collection("inscripciones").doc(curso).get().then(doc => {
-
-if(doc.exists){
-mostrarModal("Curso lleno","Este curso ya tiene inscrito")
-return
-}
-
-db.collection("inscripciones").doc(curso).set({
-nombre: nombre,
-correo: correo
-})
-actualizarCursos()
-let evento = calendar.getEventById(curso)
-
-if(evento){
-evento.setProp("title", evento.title + " | Inscrito: " + nombre)
-evento.setProp("backgroundColor", "#B22222")
-}
-
-})
-// correo para administrador
-emailjs.send("service_u8bx9dj","template_0yx01mn",{
-nombre: nombre,
-correo: correo,
-curso: nombreCurso
-})
-
-// correo de confirmación al usuario
-emailjs.send("service_u8bx9dj","template_jssulea",{
-nombre: nombre,
-correo: correo,
-curso: nombreCurso
-})
-
-})
-
 /* MODAL */
 
 function mostrarModal(titulo,texto){
