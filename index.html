@@ -892,15 +892,6 @@ info.event.extendedProps.description
 })
 
 calendar.render()
-db.collection("eventos").onSnapshot(async snapshot => {
-
-calendar.removeAllEvents()
-
-for (const doc of snapshot.docs){
-
-let data = doc.data()
-
-// 🔥 AQUÍ FALTABA ESTO
 db.collection("eventos").onSnapshot(snapshot => {
 
 calendar.removeAllEvents()
@@ -1134,7 +1125,8 @@ lista.innerHTML += `
 Editar
 </button>
 
-<button class="boton-mini" onclick="eliminarActividad('${e.id}')">
+<button onclick="eliminarActividad('${doc.id}')">
+
 Eliminar
 </button>
 
