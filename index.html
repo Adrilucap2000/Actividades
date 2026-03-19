@@ -898,17 +898,21 @@ calendar.removeAllEvents()
 
 for (const doc of snapshot.docs){
 
-let evento = doc.data()
+let data = doc.data()
 
-let insc = await db.collection("inscripciones").doc(evento.id).get()
+let evento = {
+id: data.id,
+title: data.title,
+start: data.start,
+description: data.description
+}
 
 if(insc.exists){
-evento.title += " | Inscrito: " + insc.data().nombre
+evento.title = data.title + " | Inscrito: " + insc.data().nombre
 evento.backgroundColor = "#B22222"
 }
 
 calendar.addEvent(evento)
-
 }
 
 })
