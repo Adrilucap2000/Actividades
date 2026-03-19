@@ -873,7 +873,52 @@ emailjs.init("JbLq6Pz4o5CfG8tfQ");
 
 let calendar
 document.addEventListener('DOMContentLoaded',function(){
+/* INSCRIPCIÓN */
 
+document.getElementById("formulario")
+.addEventListener("submit",function(e){
+  
+e.preventDefault()
+
+let nombre = document.getElementById("nombre").value
+let correo = document.getElementById("correo").value
+let curso = document.getElementById("curso").value
+let nombreCurso = document.getElementById("curso").selectedOptions[0].text
+db.collection("inscripciones").doc(curso).get().then(doc => {
+
+if(doc.exists){
+mostrarModal("Curso lleno","Este curso ya tiene inscrito")
+return
+}
+
+db.collection("inscripciones").doc(curso).set({
+nombre: nombre,
+correo: correo
+})
+actualizarCursos()
+let evento = calendar.getEventById(curso)
+
+if(evento){
+evento.setProp("title", evento.title + " | Inscrito: " + nombre)
+evento.setProp("backgroundColor", "#B22222")
+}
+
+})
+// correo para administrador
+emailjs.send("service_u8bx9dj","template_0yx01mn",{
+nombre: nombre,
+correo: correo,
+curso: nombreCurso
+})
+
+// correo de confirmación al usuario
+emailjs.send("service_u8bx9dj","template_jssulea",{
+nombre: nombre,
+correo: correo,
+curso: nombreCurso
+})
+
+})
 
 // 📅 CALENDARIO
 calendar = new FullCalendar.Calendar(
@@ -989,52 +1034,6 @@ select.appendChild(option)
 })
 
 }
-
-/* INSCRIPCIÓN */
-
-document.getElementById("formulario")
-.addEventListener("submit",function(e){
-e.preventDefault()
-
-let nombre = document.getElementById("nombre").value
-let correo = document.getElementById("correo").value
-let curso = document.getElementById("curso").value
-let nombreCurso = document.getElementById("curso").selectedOptions[0].text
-db.collection("inscripciones").doc(curso).get().then(doc => {
-
-if(doc.exists){
-mostrarModal("Curso lleno","Este curso ya tiene inscrito")
-return
-}
-
-db.collection("inscripciones").doc(curso).set({
-nombre: nombre,
-correo: correo
-})
-actualizarCursos()
-let evento = calendar.getEventById(curso)
-
-if(evento){
-evento.setProp("title", evento.title + " | Inscrito: " + nombre)
-evento.setProp("backgroundColor", "#B22222")
-}
-
-})
-// correo para administrador
-emailjs.send("service_u8bx9dj","template_0yx01mn",{
-nombre: nombre,
-correo: correo,
-curso: nombreCurso
-})
-
-// correo de confirmación al usuario
-emailjs.send("service_u8bx9dj","template_jssulea",{
-nombre: nombre,
-correo: correo,
-curso: nombreCurso
-})
-
-});
 
 /* MODAL */
 
