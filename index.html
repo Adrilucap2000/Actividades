@@ -475,33 +475,6 @@ animation:balanceo 2.5s infinite ease-in-out;
 100%{transform:rotate(-6deg);}
 
 }
-  /* CONTRASEÑA BLOQUEADA */
-
-#password{
-background:#FFF5CC;
-border:2px solid #D4AF37;
-padding:10px;
-border-radius:8px;
-margin-bottom:20px;
-font-weight:bold;
-letter-spacing:2px;
-}
-
-#password:focus{
-outline:none;
-box-shadow:
-0 0 8px #FFD700,
-0 0 18px rgba(255,215,0,0.6);
-}
-
-/* BOTÓN DESACTIVADO */
-
-#btnEnviar:disabled{
-background:#999;
-cursor:not-allowed;
-opacity:0.6;
-box-shadow:none;
-}
 </style>
 </head>
 
@@ -533,7 +506,7 @@ Selecciona el tema de tu preferencia y verifica en el calendario las instruccion
 <input type="email" id="correo" placeholder="Correo" required>
 
 <select id="curso"></select>
-<input type="password" id="password" placeholder="Contraseña de acceso">
+
 <button type="submit">ENVIAR INSCRIPCIÓN</button>
 
 </form>
@@ -720,18 +693,7 @@ let inscripciones = JSON.parse(localStorage.getItem("inscripciones")) || {}
 let calendar
 
 document.addEventListener('DOMContentLoaded',function(){
-const passInput = document.getElementById("password")
-const btnEnviar = document.getElementById("btnEnviar")
 
-passInput.addEventListener("input", () => {
-
-if(passInput.value === "MPSS2026"){ // puedes cambiarla
-btnEnviar.disabled = false
-} else {
-btnEnviar.disabled = true
-}
-
-})
 calendar = new FullCalendar.Calendar(
 document.getElementById('calendar'),
 {
@@ -795,14 +757,8 @@ evento.setProp("backgroundColor","#B22222")
 
 document.getElementById("formulario")
 .addEventListener("submit",function(e){
+
 e.preventDefault()
-
-let password = document.getElementById("password").value
-
-if(password !== "MPSS2026"){
-alert("Contraseña incorrecta")
-return
-}
 
 let nombre = document.getElementById("nombre").value
 let correo = document.getElementById("correo").value
