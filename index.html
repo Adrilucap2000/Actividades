@@ -1051,7 +1051,6 @@ evento.setProp("title", evento.title + " | Inscrito: " + nombre)
 evento.setProp("backgroundColor", "#B22222")
 }
 
-// 📧 correos
 emailjs.send("service_u8bx9dj","template_0yx01mn",{
 nombre: nombre,
 correo: correo,
@@ -1063,8 +1062,11 @@ nombre: nombre,
 correo: correo,
 curso: nombreCurso
 })
+
 })
-})
+
+}) // 🔥 ESTE ES EL QUE TE FALTABA
+
 // 🔓 LOGOUT
 function cerrarSesion(){
 auth.signOut()
