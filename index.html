@@ -892,15 +892,16 @@ info.event.extendedProps.description
 })
 
 calendar.render()
-db.collection("eventos").onSnapshot(async snapshot => {
+db.collection("eventos").onSnapshot(snapshot => {
 
 calendar.removeAllEvents()
 
-for (const doc of snapshot.docs){
+snapshot.forEach(doc => {
 
 let data = doc.data()
 
-let inscDoc = await db.collection("inscripciones").doc(doc.id).get()
+db.collection("inscripciones").doc(doc.id)
+.onSnapshot(insc => {
 
 let eventoFinal = {
 id: doc.id,
@@ -909,14 +910,16 @@ start: data.start,
 description: data.description
 }
 
-if(inscDoc.exists){
-eventoFinal.title = data.title + " | Inscrito: " + inscDoc.data().nombre
+if(insc.exists){
+eventoFinal.title = data.title + " | Inscrito: " + insc.data().nombre
 eventoFinal.backgroundColor = "#B22222"
 }
 
 calendar.addEvent(eventoFinal)
 
-}
+})
+
+})
 
 })
 actualizarCursos()
@@ -927,8 +930,8 @@ const pantalla = document.getElementById("pantallaInicio")
 
 input.addEventListener("keyup", function(){
 
-if(input.value.trim() === PASSWORD){
-pantalla.style.display = "none"
+if(input.value.trim() === PASSWORD)
+  pantalla.style.display = "none"
 }
 
 })
