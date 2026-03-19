@@ -941,13 +941,14 @@ select.innerHTML = ""
 
 db.collection("eventos").get().then(snapshot => {
 
-snapshot.forEach(doc => {
+snapshot.forEach(async doc => {
 
 let e = doc.data()
 
-db.collection("inscripciones").doc(doc.id)
+let insc = await db.collection("inscripciones").doc(doc.id).get()
+
 let option = document.createElement("option")
-option.value = e.id
+option.value = doc.id
 
 if(insc.exists){
 option.textContent = e.title + " (LLENO)"
@@ -957,8 +958,6 @@ option.textContent = e.title
 }
 
 select.appendChild(option)
-
-})
 
 })
 
