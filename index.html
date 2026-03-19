@@ -850,11 +850,13 @@ ADMIN
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <script>
+
+<script>
 const firebaseConfig = {
   apiKey: "AIzaSyBnqZEuuv0V_CAmR_gBqPCQ3bgyS1ny_RI",
   authDomain: "calendario-mpss.firebaseapp.com",
@@ -866,28 +868,23 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.firestore();
-</script>
-<script>
-(function(){
+
 emailjs.init("JbLq6Pz4o5CfG8tfQ");
-})();
 
-let calendar
+let calendar;
 
-// ✅ FUNCIÓN ARRIBA
+// 🔄 CARGAR CURSOS
 function actualizarCursos(){
-
 let select = document.getElementById("curso")
 if(!select) return
 
 select.innerHTML = ""
 
 db.collection("eventos").get().then(snapshot => {
-
 snapshot.forEach(async doc => {
-
 let e = doc.data()
 let insc = await db.collection("inscripciones").doc(doc.id).get()
 
@@ -902,34 +899,27 @@ option.textContent = e.title
 }
 
 select.appendChild(option)
-
 })
-
 })
-
 }
 
-// ✅ TODO DENTRO DEL DOM (🔥 CLAVE)
+// 🚀 INICIO
 document.addEventListener('DOMContentLoaded', function(){
+
+// 🔐 FORZAR LOGIN (opcional)
+auth.signOut()
 
 const input = document.getElementById("pinInput")
 const pantalla = document.getElementById("pantallaInicio")
-
-console.log("LOGIN LISTO")
 
 if(input && pantalla){
 
 input.addEventListener("input", function(){
 
-console.log("ESCRIBIENDO:", input.value)
-
 if(input.value.length >= 6){
-
-console.log("INTENTANDO LOGIN...")
 
 auth.signInWithEmailAndPassword("admin@prometeo.com", input.value)
 .then(() => {
-console.log("LOGIN OK")
 pantalla.style.display = "none"
 })
 .catch((error) => {
@@ -947,8 +937,6 @@ pantalla.style.display = "none"
 })
 
 }
-
-})
 
 // 📅 CALENDARIO
 calendar = new FullCalendar.Calendar(
@@ -968,15 +956,15 @@ info.event.extendedProps.description
 
 calendar.render()
 
+actualizarCursos()
+
 let eventosData = {}
 let inscripcionesData = {}
 
 function renderCalendar(){
-
 calendar.removeAllEvents()
 
 for(let id in eventosData){
-
 let e = eventosData[id]
 let inscrito = inscripcionesData[id]
 
@@ -994,35 +982,24 @@ eventoFinal.borderColor = "#B22222"
 }
 
 calendar.addEvent(eventoFinal)
-
+}
 }
 
-}
-
-// 🔥 eventos en tiempo real
+// 🔥 realtime
 db.collection("eventos").onSnapshot(snapshot => {
-
 eventosData = {}
-
 snapshot.forEach(doc=>{
 eventosData[doc.id] = doc.data()
 })
-
 renderCalendar()
-
 })
 
-// 🔥 inscripciones en tiempo real
 db.collection("inscripciones").onSnapshot(snapshot => {
-
 inscripcionesData = {}
-
 snapshot.forEach(doc=>{
 inscripcionesData[doc.id] = doc.data()
 })
-
 renderCalendar()
-
 })
 
 // 🟢 FORMULARIO
@@ -1065,7 +1042,9 @@ curso: nombreCurso
 
 })
 
-}) // 🔥 ESTE ES EL QUE TE FALTABA
+})
+
+})
 
 // 🔓 LOGOUT
 function cerrarSesion(){
@@ -1073,7 +1052,7 @@ auth.signOut()
 location.reload()
 }
 
-// 🪟 MODAL
+// 🪟 MODALES
 function mostrarModal(titulo,texto){
 modalActividad.style.display="flex"
 tituloActividad.innerText=titulo
@@ -1082,6 +1061,15 @@ descripcionActividad.innerText=texto
 
 function cerrarModal(){
 modalActividad.style.display="none"
+}
+
+// 🔐 ADMIN
+function abrirLogin(){
+document.getElementById("adminLogin").style.display="flex"
+}
+
+function cerrarLogin(){
+document.getElementById("adminLogin").style.display="none"
 }
 </script>
 </body>
