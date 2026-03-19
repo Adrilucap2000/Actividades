@@ -959,7 +959,7 @@ const PASSWORD = "TLAQH2026"
 const input = document.getElementById("pinInput")
 const pantalla = document.getElementById("pantallaInicio")
 
-input.addEventListener("keyup", function(){
+input.addEventListener("input", function(){
 if(input.value.trim() === PASSWORD){
 pantalla.style.display = "none"
 }
