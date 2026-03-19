@@ -932,8 +932,9 @@ auth.signInWithEmailAndPassword("admin@prometeo.com", input.value)
 .then(() => {
 pantalla.style.display = "none"
 })
-.catch(() => {})
-
+.catch((error) => {
+console.log("ERROR LOGIN:", error.message)
+})
 }
 
 })
