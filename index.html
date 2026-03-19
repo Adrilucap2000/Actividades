@@ -918,13 +918,15 @@ const input = document.getElementById("pinInput")
 const pantalla = document.getElementById("pantallaInicio")
 
 if(input && pantalla){
-input.addEventListener("input", function(){
+input.addEventListener("keyup", function(){
+
 if(input.value.trim() === PASSWORD){
 pantalla.style.display = "none"
 }
-})
-}
 
+})
+
+}
 // 📅 CALENDARIO
 calendar = new FullCalendar.Calendar(
 document.getElementById('calendar'),
@@ -1096,22 +1098,31 @@ document.getElementById("seccionCrear").style.display="none"
 
 let lista = document.getElementById("seccionInscritos")
 
-db.collection("inscripciones").onSnapshot(snapshot => {
+db.collection("inscripciones").onSnapshot(async snapshot => {
 
 lista.innerHTML=""
 
-snapshot.forEach(doc => {
+for (const doc of snapshot.docs){
 
 let data = doc.data()
 
+// 🔥 TRAER EL NOMBRE DEL EVENTO
+let eventoDoc = await db.collection("eventos").doc(doc.id).get()
+
+let tituloEvento = "Sin nombre"
+
+if(eventoDoc.exists){
+tituloEvento = eventoDoc.data().title
+}
+
 lista.innerHTML += `
 <div>
-<b>${doc.id}</b> → ${data.nombre}
+<b>${tituloEvento}</b> → ${data.nombre}
 <button onclick="eliminarInscripcion('${doc.id}')">Eliminar</button>
 </div>
 `
 
-})
+}
 
 })
 
@@ -1256,7 +1267,6 @@ mostrarActividades()
 actualizarCursos()
 
 }
-})
 </script>
 
 </body>
