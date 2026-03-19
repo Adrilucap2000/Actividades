@@ -1083,6 +1083,52 @@ descripcionActividad.innerText=texto
 function cerrarModal(){
 modalActividad.style.display="none"
 }
+// 📋 MOSTRAR PARTICIPANTES
+function mostrarInscritos(){
+
+  document.getElementById("seccionActividades").style.display = "none"
+  document.getElementById("seccionCrear").style.display = "none"
+
+  const seccion = document.getElementById("seccionInscritos")
+  seccion.style.display = "block"
+  seccion.innerHTML = "<h3>Participantes inscritos</h3>"
+
+  db.collection("inscripciones").get().then(snapshot => {
+
+    if(snapshot.empty){
+      seccion.innerHTML += "<p>No hay participantes inscritos.</p>"
+      return
+    }
+
+    snapshot.forEach(doc => {
+
+      const idActividad = doc.id
+      const datos = doc.data()
+
+      const nombreActividad = eventosData[idActividad]
+        ? eventosData[idActividad].title
+        : "Actividad eliminada"
+
+      seccion.innerHTML += `
+        <div style="margin-bottom:12px; padding:10px; border-bottom:1px solid #ccc;">
+          <strong>${nombreActividad}</strong><br>
+          ${datos.nombre} (${datos.correo})<br>
+          <button class="boton-mini"
+            onclick="eliminarInscrito('${idActividad}')">
+            Eliminar participante
+          </button>
+        </div>
+      `
+    })
+  })
+}
+
+// ❌ ELIMINAR INSCRIPCIÓN
+function eliminarInscrito(idActividad){
+  if(confirm("¿Eliminar participante de esta actividad?")){
+    db.collection("inscripciones").doc(idActividad).delete()
+  }
+}
 </script>
 </body>
 </html>
