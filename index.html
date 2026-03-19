@@ -884,9 +884,9 @@ description:'Traer bocetos'
 let inscripciones = JSON.parse(localStorage.getItem("inscripciones")) || {}
 
 let calendar
-
 document.addEventListener('DOMContentLoaded',function(){
 
+// 🔐 BOTÓN FORMULARIO
 const passInput = document.getElementById("password")
 const btnEnviar = document.getElementById("btnEnviar")
 
@@ -895,16 +895,14 @@ btnEnviar.disabled = true
 }
 
 passInput.addEventListener("input", () => {
-
 if(passInput.value === "MPSS2026"){
-if(btnEnviar) btnEnviar.disabled = false
+btnEnviar.disabled = false
 } else {
-if(btnEnviar) btnEnviar.disabled = true
+btnEnviar.disabled = true
 }
-
 })
 
-})
+// 📅 CALENDARIO
 calendar = new FullCalendar.Calendar(
 document.getElementById('calendar'),
 {
@@ -914,23 +912,29 @@ buttonText:{today:'Hoy'},
 events: eventos,
 
 eventClick:function(info){
-
 mostrarModal(
 info.event.title,
 info.event.extendedProps.description
 )
-
 }
-
 })
 
 calendar.render()
-
 actualizarCursos()
 restaurarInscripciones()
 
+// 🔐 LOGIN PROMETEO
+const PASSWORD = "TLAQH2026"
+const input = document.getElementById("pinInput")
+const pantalla = document.getElementById("pantallaInicio")
+
+input.addEventListener("input", function(){
+if(this.value.trim() === PASSWORD){
+pantalla.style.display = "none"
+}
 })
 
+})
 function actualizarCursos(){
 
 
