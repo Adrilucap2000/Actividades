@@ -888,12 +888,23 @@ let calendar
 
 document.addEventListener('DOMContentLoaded',function(){
 const passInput = document.getElementById("password")
-<button id="btnEnviar" type="submit">ENVIAR INSCRIPCIÓN</button>
 passInput.addEventListener("input", () => {
 
 if(passInput.value === "MPSS2026"){ // puedes cambiarla
+document.addEventListener('DOMContentLoaded',function(){
+
+const passInput = document.getElementById("password")
+const btnEnviar = document.getElementById("btnEnviar")
+
+passInput.addEventListener("input", () => {
+
+if(passInput.value === "MPSS2026"){
 btnEnviar.disabled = false
 } else {
+btnEnviar.disabled = true
+}
+
+})} else {
 btnEnviar.disabled = true
 }
 
@@ -1240,11 +1251,9 @@ const pantalla = document.getElementById("pantallaInicio")
 
 input.addEventListener("input", function(){
 
-if(this.value === PASSWORD){
+if(this.value.trim() === PASSWORD){
 pantalla.style.display = "none"
 }
-
-})
 
 })
 
