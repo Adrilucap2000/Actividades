@@ -892,30 +892,24 @@ info.event.extendedProps.description
 })
 
 calendar.render()
-db.collection("eventos").onSnapshot(snapshot => {
+db.collection("eventos").onSnapshot(async snapshot => {
 
 calendar.removeAllEvents()
 
-snapshot.forEach(doc => {
+for (const doc of snapshot.docs){
 
 let evento = doc.data()
 
-// 🔥 escuchar inscripción en tiempo real
-db.collection("inscripciones").doc(evento.id)
-.onSnapshot(insc => {
-
-let eventoFinal = {...evento}
+let insc = await db.collection("inscripciones").doc(evento.id).get()
 
 if(insc.exists){
-eventoFinal.title = evento.title + " | Inscrito: " + insc.data().nombre
-eventoFinal.backgroundColor = "#B22222"
+evento.title += " | Inscrito: " + insc.data().nombre
+evento.backgroundColor = "#B22222"
 }
 
-calendar.addEvent(eventoFinal)
+calendar.addEvent(evento)
 
-})
-
-})
+}
 
 })
 actualizarCursos()
@@ -1070,12 +1064,20 @@ let data = doc.data()
 lista.innerHTML += `
 <div>
 <b>${doc.id}</b> → ${data.nombre}
+<button onclick="eliminarInscripcion('${doc.id}')">Eliminar</button>
 </div>
 `
 
 })
 
 })
+
+}
+function eliminarInscripcion(id){
+
+db.collection("inscripciones").doc(id).delete()
+
+actualizarCursos()
 
 }
 function mostrarCrear(){
@@ -1190,7 +1192,6 @@ start: fecha
 })
 
 cerrarEditar()
-mostrarActividades()
 
 }
 
