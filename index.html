@@ -870,7 +870,6 @@ const db = firebase.firestore();
 emailjs.init("JbLq6Pz4o5CfG8tfQ");
 })();
 
-let eventos = JSON.parse(localStorage.getItem("eventos")) || [
 {
 id:'web',
 title:'Programación Web',
@@ -884,8 +883,6 @@ start:'2026-03-12',
 description:'Traer bocetos'
 }
 ]
-
-let inscripciones = JSON.parse(localStorage.getItem("inscripciones")) || {}
 
 let calendar
 document.addEventListener('DOMContentLoaded',function(){
@@ -936,16 +933,23 @@ pantalla.style.display = "none"
 })
 function actualizarCursos(){
 
+let select = document.getElementById("curso")
+select.innerHTML = ""
 
-let select=document.getElementById("curso")
+db.collection("eventos").get().then(snapshot => {
 
-select.innerHTML=""
+snapshot.forEach(doc => {
 
-eventos.forEach(e=>{
-let option=document.createElement("option")
-option.value=e.id
-option.textContent=e.title
+let e = doc.data()
+
+let option = document.createElement("option")
+option.value = e.id
+option.textContent = e.title
+
 select.appendChild(option)
+
+})
+
 })
 
 }
@@ -1114,9 +1118,15 @@ let lista=document.getElementById("listaActividades")
 
 lista.innerHTML=""
 
-eventos.forEach(e=>{
+db.collection("eventos").get().then(snapshot => {
 
-lista.innerHTML+=`
+lista.innerHTML=""
+
+snapshot.forEach(doc => {
+
+let e = doc.data()
+
+lista.innerHTML += `
 <div style="margin:10px;padding:10px;border-bottom:1px solid #ccc">
 
 <b>${e.title}</b>
@@ -1134,8 +1144,8 @@ Eliminar
 
 })
 
+})
 }
-
 function crearActividad(){
 
 let titulo=document.getElementById("nuevoTitulo").value
@@ -1173,8 +1183,6 @@ let editID=null
 function editarActividad(id){
 
 editID=id
-
-let evento = eventos.find(e=>e.id===id)
 
 document.getElementById("editTitulo").value=evento.title
 document.getElementById("editDescripcion").value=evento.description
