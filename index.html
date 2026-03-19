@@ -892,34 +892,58 @@ info.event.extendedProps.description
 })
 
 calendar.render()
-db.collection("eventos").onSnapshot(snapshot => {
+let eventosData = {}
+let inscripcionesData = {}
+
+function renderCalendar(){
 
 calendar.removeAllEvents()
 
-snapshot.forEach(doc => {
+for(let id in eventosData){
 
-let data = doc.data()
-
-db.collection("inscripciones").doc(doc.id)
-.onSnapshot(insc => {
+let e = eventosData[id]
 
 let eventoFinal = {
-id: doc.id,
-title: data.title,
-start: data.start,
-description: data.description
+id: id,
+title: e.title,
+start: e.start,
+description: e.description
 }
 
-if(insc.exists){
-eventoFinal.title = data.title + " | Inscrito: " + insc.data().nombre
+if(inscripcionesData[id]){
+eventoFinal.title += " | Inscrito: " + inscripcionesData[id].nombre
 eventoFinal.backgroundColor = "#B22222"
 }
 
 calendar.addEvent(eventoFinal)
 
+}
+
+}
+
+// 🔥 eventos en tiempo real
+db.collection("eventos").onSnapshot(snapshot => {
+
+eventosData = {}
+
+snapshot.forEach(doc=>{
+eventosData[doc.id] = doc.data()
 })
 
+renderCalendar()
+
 })
+
+// 🔥 inscripciones en tiempo real
+db.collection("inscripciones").onSnapshot(snapshot => {
+
+inscripcionesData = {}
+
+snapshot.forEach(doc=>{
+inscripcionesData[doc.id] = doc.data()
+})
+
+renderCalendar()
 
 })
 actualizarCursos()
