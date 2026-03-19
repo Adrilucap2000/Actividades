@@ -882,8 +882,7 @@ document.getElementById('calendar'),
 initialView:'dayGridMonth',
 locale:'es',
 buttonText:{today:'Hoy'},
-events: eventos,
-
+events: [],
 eventClick:function(info){
 mostrarModal(
 info.event.title,
@@ -893,6 +892,15 @@ info.event.extendedProps.description
 })
 
 calendar.render()
+db.collection("eventos").onSnapshot(snapshot => {
+
+calendar.removeAllEvents()
+
+snapshot.forEach(doc => {
+calendar.addEvent(doc.data())
+})
+
+})
 actualizarCursos()
 restaurarInscripciones()
 
@@ -1132,15 +1140,7 @@ start:fecha,
 description:descripcion
 }
 
-eventos.push(nuevaActividad)
-
-localStorage.setItem(
-"eventos",
-JSON.stringify(eventos)
-)
-
-calendar.addEvent(nuevaActividad)
-
+db.collection("eventos").doc(nuevaActividad.id).set(nuevaActividad)
 actualizarCursos()
 
 document.getElementById("curso").value = nuevaActividad.id
