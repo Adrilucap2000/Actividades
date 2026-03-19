@@ -1061,6 +1061,20 @@ document.getElementById("adminLogin").style.display="flex"
 function cerrarLogin(){
 document.getElementById("adminLogin").style.display="none"
 }
+function verificarAdmin(){
+
+let pass = document.getElementById("adminPass").value.trim()
+
+if(pass === "MPSS2026"){ // 👈 tu contraseña admin
+
+document.getElementById("adminLogin").style.display = "none"
+document.getElementById("adminPanel").style.display = "flex"
+
+}else{
+alert("Contraseña incorrecta")
+}
+
+}
 </script>
 </body>
 </html>
