@@ -903,6 +903,8 @@ for(let id in eventosData){
 
 let e = eventosData[id]
 
+let inscrito = inscripcionesData[id]
+
 let eventoFinal = {
 id: id,
 title: e.title,
@@ -910,9 +912,11 @@ start: e.start,
 description: e.description
 }
 
-if(inscripcionesData[id]){
-eventoFinal.title += " | Inscrito: " + inscripcionesData[id].nombre
+// 🔥 SI EXISTE INSCRIPCIÓN
+if(inscrito && inscrito.nombre){
+eventoFinal.title = e.title + " | " + inscrito.nombre
 eventoFinal.backgroundColor = "#B22222"
+eventoFinal.borderColor = "#B22222"
 }
 
 calendar.addEvent(eventoFinal)
@@ -972,16 +976,12 @@ let correo = document.getElementById("correo").value
 let curso = document.getElementById("curso").value
 let nombreCurso = document.getElementById("curso").selectedOptions[0].text
 
-db.collection("inscripciones").doc(curso).get().then(doc => {
-
-if(doc.exists){
-mostrarModal("Curso lleno","Este curso ya tiene inscrito")
-return
-}
-
 db.collection("inscripciones").doc(curso).set({
 nombre: nombre,
 correo: correo
+})
+.then(() => {
+console.log("✅ INSCRIPCIÓN GUARDADA:", curso)
 })
 
 actualizarCursos()
