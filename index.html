@@ -525,17 +525,22 @@ z-index:2;
 width:270px;
 height:270px;
 border-radius:50%;
-padding:2px;
+padding:12px;
 
 background: radial-gradient(circle,#FFD700,#b8860b);
 
-/* brillo más elegante */
 box-shadow:
-0 0 12px #FFD700,
-0 0 30px rgba(255,215,0,0.7),
-0 0 60px rgba(255,215,0,0.4);
+0 0 25px #FFD700,
+0 0 70px #FFD700,
+0 0 140px rgba(255,215,0,0.7);
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+animation: brillo 3s infinite ease-in-out;
 }
-  
+
 /* IMAGEN */
 #mascota{
 width:100%;
@@ -547,30 +552,22 @@ border-radius:50%;
 
 /* ANIMACIÓN GLOW */
 @keyframes brillo{
-0%{
-box-shadow:0 0 12px #FFD700;
-}
-50%{
-box-shadow:0 0 50px rgba(255,215,0,0.9);
-}
-100%{
-box-shadow:0 0 12px #FFD700;
-}
+0%{box-shadow:0 0 25px #FFD700;}
+50%{box-shadow:0 0 80px #FFD700,0 0 150px #FFD700;}
+100%{box-shadow:0 0 25px #FFD700;}
 }
 
 /* TEXTO ESTILO AMSTERDAM */
 .titulo{
 font-family: 'Great Vibes', cursive;
-font-size: 65px;
-color: #FFD700;
-margin-top: 25px;
-font-weight: normal;
+font-size:70px;
+color:#FFD700;
+margin-top:30px;
 
 text-shadow:
-0 0 3px #FFD700,
-0 0 8px rgba(255,215,0,0.5);
-
-letter-spacing: 2px;
+0 0 10px #FFD700,
+0 0 20px #FFD700,
+0 0 40px rgba(255,215,0,0.7);
 }
 
 /* INPUT OCULTO */
@@ -852,7 +849,6 @@ ADMIN
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script>
 const firebaseConfig = {
@@ -866,17 +862,17 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
 const db = firebase.firestore();
 </script>
 <script>
+
 (function(){
 emailjs.init("JbLq6Pz4o5CfG8tfQ");
 })();
 
 let calendar
 
-// ✅ FUNCIÓN ARRIBA
+// ✅ FUNCIÓN ARRIBA (CRÍTICO)
 function actualizarCursos(){
 
 let select = document.getElementById("curso")
@@ -889,6 +885,7 @@ db.collection("eventos").get().then(snapshot => {
 snapshot.forEach(async doc => {
 
 let e = doc.data()
+
 let insc = await db.collection("inscripciones").doc(doc.id).get()
 
 let option = document.createElement("option")
@@ -909,47 +906,27 @@ select.appendChild(option)
 
 }
 
-// ✅ TODO DENTRO DEL DOM (🔥 CLAVE)
-document.addEventListener('DOMContentLoaded', function(){
+// ✅ TODO DENTRO DEL DOM
+document.addEventListener('DOMContentLoaded',function(){
 
+// 🔄 actualizar select
+actualizarCursos()
+
+// 🔐 LOGIN PROMETEO (YA FUNCIONA)
+const PASSWORD = "TLAQH2026"
 const input = document.getElementById("pinInput")
 const pantalla = document.getElementById("pantallaInicio")
 
-console.log("LOGIN LISTO")
-
 if(input && pantalla){
+input.addEventListener("keyup", function(){
 
-input.addEventListener("input", function(){
-
-console.log("ESCRIBIENDO:", input.value)
-
-if(input.value.length >= 6){
-
-console.log("INTENTANDO LOGIN...")
-
-auth.signInWithEmailAndPassword("admin@prometeo.com", input.value)
-.then(() => {
-console.log("LOGIN OK")
-pantalla.style.display = "none"
-})
-.catch((error) => {
-console.log("ERROR LOGIN:", error.message)
-})
-
-}
-
-})
-
-auth.onAuthStateChanged(user => {
-if(user){
+if(input.value.trim() === PASSWORD){
 pantalla.style.display = "none"
 }
+
 })
 
 }
-
-})
-
 // 📅 CALENDARIO
 calendar = new FullCalendar.Calendar(
 document.getElementById('calendar'),
@@ -987,6 +964,7 @@ start: e.start,
 description: e.description
 }
 
+// 🔥 SI EXISTE INSCRIPCIÓN
 if(inscrito && inscrito.nombre){
 eventoFinal.title = e.title + " | " + inscrito.nombre
 eventoFinal.backgroundColor = "#B22222"
@@ -1025,7 +1003,7 @@ renderCalendar()
 
 })
 
-// 🟢 FORMULARIO
+// 🟢 INSCRIPCIÓN
 document.getElementById("formulario")
 .addEventListener("submit",function(e){
 
@@ -1042,8 +1020,12 @@ correo: correo
 })
 .then(() => {
 
+console.log("✅ INSCRIPCIÓN GUARDADA:", curso)
+
+// 🔄 actualizar select
 actualizarCursos()
 
+// 🔄 actualizar evento en calendario
 let evento = calendar.getEventById(curso)
 
 if(evento){
@@ -1051,6 +1033,7 @@ evento.setProp("title", evento.title + " | Inscrito: " + nombre)
 evento.setProp("backgroundColor", "#B22222")
 }
 
+// 📧 correos
 emailjs.send("service_u8bx9dj","template_0yx01mn",{
 nombre: nombre,
 correo: correo,
@@ -1065,25 +1048,226 @@ curso: nombreCurso
 
 })
 
-}) // 🔥 ESTE ES EL QUE TE FALTABA
+})
 
-// 🔓 LOGOUT
-function cerrarSesion(){
-auth.signOut()
-location.reload()
-}
+})
+/* MODAL */
 
-// 🪟 MODAL
 function mostrarModal(titulo,texto){
+
 modalActividad.style.display="flex"
 tituloActividad.innerText=titulo
 descripcionActividad.innerText=texto
+
 }
 
 function cerrarModal(){
 modalActividad.style.display="none"
+}
+
+/* ADMIN */
+
+function abrirLogin(){
+adminLogin.style.display="flex"
+}
+function cerrarLogin(){
+adminLogin.style.display="none"
+}
+function verificarAdmin(){
+
+if(adminPass.value==="MPSS2026"){
+
+adminLogin.style.display="none"
+adminPanel.style.display="flex"
+
+}
+
+}
+
+function cerrarAdmin(){
+adminPanel.style.display="none"
+}
+
+/* PARTICIPANTES */
+
+function mostrarInscritos(){
+
+document.getElementById("seccionActividades").style.display="none"
+document.getElementById("seccionInscritos").style.display="block"
+document.getElementById("seccionCrear").style.display="none"
+
+let lista = document.getElementById("seccionInscritos")
+
+db.collection("inscripciones").onSnapshot(async snapshot => {
+
+lista.innerHTML=""
+
+for (const doc of snapshot.docs){
+
+let data = doc.data()
+
+// 🔥 TRAER EL NOMBRE DEL EVENTO
+let eventoDoc = await db.collection("eventos").doc(doc.id).get()
+
+let tituloEvento = "Sin nombre"
+
+if(eventoDoc.exists){
+tituloEvento = eventoDoc.data().title
+}
+
+lista.innerHTML += `
+<div>
+<b>${tituloEvento}</b> → ${data.nombre}
+<button onclick="eliminarInscripcion('${doc.id}')">Eliminar</button>
+</div>
+`
+
+}
+
+})
+
+}
+function eliminarInscripcion(id){
+
+db.collection("inscripciones").doc(id).delete()
+
+actualizarCursos()
+
+}
+function mostrarCrear(){
+
+document.getElementById("seccionActividades").style.display="none"
+document.getElementById("seccionInscritos").style.display="none"
+document.getElementById("seccionCrear").style.display="block"
+
+}
+
+/* ACTIVIDADES */
+
+function mostrarActividades(){
+
+document.getElementById("seccionActividades").style.display="block"
+document.getElementById("seccionInscritos").style.display="none"
+document.getElementById("seccionCrear").style.display="none"
+
+let lista = document.getElementById("listaActividades")
+
+db.collection("eventos").onSnapshot(snapshot => {
+
+lista.innerHTML=""
+
+snapshot.forEach(doc => {
+
+let e = doc.data()
+
+lista.innerHTML += `
+<div style="margin:10px;padding:10px;border-bottom:1px solid #ccc">
+
+<b>${e.title}</b>
+
+<button class="boton-mini" onclick="editarActividad('${doc.id}')">
+Editar
+</button>
+
+<button onclick="eliminarActividad('${doc.id}')">
+
+Eliminar
+</button>
+
+</div>
+`
+
+})
+
+})
+
+}
+function crearActividad(){
+
+let titulo=document.getElementById("nuevoTitulo").value
+let descripcion=document.getElementById("nuevaDescripcion").value
+let fecha=document.getElementById("nuevaFecha").value
+
+if(!titulo || !fecha){
+alert("Completa título y fecha")
+return
+}
+
+let nuevaActividad={
+id:"act"+Date.now(),
+title:titulo,
+start:fecha,
+description:descripcion
+}
+
+db.collection("eventos").doc(nuevaActividad.id).set({
+title: titulo,
+start: fecha,
+description: descripcion
+})
+actualizarCursos()
+
+document.getElementById("curso").value = nuevaActividad.id
+
+mostrarActividades()
+
+document.getElementById("nuevoTitulo").value=""
+document.getElementById("nuevaDescripcion").value=""
+document.getElementById("nuevaFecha").value=""
+
+}
+
+
+let editID=null
+
+function editarActividad(id){
+
+editID = id
+
+db.collection("eventos").doc(id).get().then(doc => {
+
+let evento = doc.data()
+
+document.getElementById("editTitulo").value = evento.title
+document.getElementById("editDescripcion").value = evento.description
+document.getElementById("editFecha").value = evento.start
+
+document.getElementById("modalEditar").style.display="flex"
+
+})
+
+}
+
+function guardarEdicion(){
+
+let titulo = document.getElementById("editTitulo").value
+let descripcion = document.getElementById("editDescripcion").value
+let fecha = document.getElementById("editFecha").value
+
+db.collection("eventos").doc(editID).update({
+title: titulo,
+description: descripcion,
+start: fecha
+}).then(() => {
+cerrarEditar()
+})
+
+}
+
+function cerrarEditar(){
+document.getElementById("modalEditar").style.display="none"
+}
+
+
+function eliminarActividad(id){
+
+db.collection("eventos").doc(id).delete()
+
+mostrarActividades()
+actualizarCursos()
 
 }
 </script>
+
 </body>
 </html>
