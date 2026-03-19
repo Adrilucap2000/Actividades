@@ -867,6 +867,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const db = firebase.firestore();
 </script>
 <script>
 (function(){
@@ -1062,9 +1063,8 @@ nombre: nombre,
 correo: correo,
 curso: nombreCurso
 })
-
 })
-
+})
 // 🔓 LOGOUT
 function cerrarSesion(){
 auth.signOut()
