@@ -872,61 +872,8 @@ emailjs.init("JbLq6Pz4o5CfG8tfQ");
 
 let calendar
 
-// ✅ FUNCIÓN ARRIBA (CRÍTICO)
-function actualizarCursos(){
-
-let select = document.getElementById("curso")
-if(!select) return
-
-select.innerHTML = ""
-
-db.collection("eventos").get().then(snapshot => {
-
-snapshot.forEach(async doc => {
-
-let e = doc.data()
-
-let insc = await db.collection("inscripciones").doc(doc.id).get()
-
-let option = document.createElement("option")
-option.value = doc.id
-
-if(insc.exists){
-option.textContent = e.title + " (LLENO)"
-option.disabled = true
-} else {
-option.textContent = e.title
-}
-
-select.appendChild(option)
-
-})
-
-})
-
-}
-
-// ✅ TODO DENTRO DEL DOM
 document.addEventListener('DOMContentLoaded',function(){
 
-// 🔄 actualizar select
-actualizarCursos()
-
-// 🔐 LOGIN PROMETEO (YA FUNCIONA)
-const PASSWORD = "TLAQH2026"
-const input = document.getElementById("pinInput")
-const pantalla = document.getElementById("pantallaInicio")
-
-if(input && pantalla){
-input.addEventListener("keyup", function(){
-
-if(input.value.trim() === PASSWORD){
-pantalla.style.display = "none"
-}
-
-})
-
-}
 // 📅 CALENDARIO
 calendar = new FullCalendar.Calendar(
 document.getElementById('calendar'),
@@ -955,6 +902,7 @@ calendar.removeAllEvents()
 for(let id in eventosData){
 
 let e = eventosData[id]
+
 let inscrito = inscripcionesData[id]
 
 let eventoFinal = {
@@ -1003,7 +951,21 @@ renderCalendar()
 
 })
 
-// 🟢 INSCRIPCIÓN
+// 🔄 actualizar select
+actualizarCursos()
+
+// 🔐 LOGIN PROMETEO
+const PASSWORD = "TLAQH2026"
+const input = document.getElementById("pinInput")
+const pantalla = document.getElementById("pantallaInicio")
+
+input.addEventListener("input", function(){
+if(input.value.trim() === PASSWORD){
+pantalla.style.display = "none"
+}
+})
+
+// 🟢 INSCRIPCIÓN (YA BIEN PUESTA)
 document.getElementById("formulario")
 .addEventListener("submit",function(e){
 
@@ -1019,7 +981,6 @@ nombre: nombre,
 correo: correo
 })
 .then(() => {
-
 console.log("✅ INSCRIPCIÓN GUARDADA:", curso)
 
 // 🔄 actualizar select
@@ -1033,7 +994,7 @@ evento.setProp("title", evento.title + " | Inscrito: " + nombre)
 evento.setProp("backgroundColor", "#B22222")
 }
 
-// 📧 correos
+// 📧 correos (🔥 AHORA SÍ EN EL LUGAR CORRECTO)
 emailjs.send("service_u8bx9dj","template_0yx01mn",{
 nombre: nombre,
 correo: correo,
@@ -1044,8 +1005,6 @@ emailjs.send("service_u8bx9dj","template_jssulea",{
 nombre: nombre,
 correo: correo,
 curso: nombreCurso
-})
-
 })
 
 })
@@ -1098,31 +1057,22 @@ document.getElementById("seccionCrear").style.display="none"
 
 let lista = document.getElementById("seccionInscritos")
 
-db.collection("inscripciones").onSnapshot(async snapshot => {
+db.collection("inscripciones").onSnapshot(snapshot => {
 
 lista.innerHTML=""
 
-for (const doc of snapshot.docs){
+snapshot.forEach(doc => {
 
 let data = doc.data()
 
-// 🔥 TRAER EL NOMBRE DEL EVENTO
-let eventoDoc = await db.collection("eventos").doc(doc.id).get()
-
-let tituloEvento = "Sin nombre"
-
-if(eventoDoc.exists){
-tituloEvento = eventoDoc.data().title
-}
-
 lista.innerHTML += `
 <div>
-<b>${tituloEvento}</b> → ${data.nombre}
+<b>${doc.id}</b> → ${data.nombre}
 <button onclick="eliminarInscripcion('${doc.id}')">Eliminar</button>
 </div>
 `
 
-}
+})
 
 })
 
@@ -1267,6 +1217,15 @@ mostrarActividades()
 actualizarCursos()
 
 }
+document.addEventListener("DOMContentLoaded", function(){
+
+const btnEnviar = document.getElementById("btnEnviar")
+
+if(btnEnviar){
+btnEnviar.disabled = false
+}
+
+})
 </script>
 
 </body>
