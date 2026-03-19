@@ -825,8 +825,12 @@ Entrar
 </div>
 
 <!-- MODAL EDITAR ACTIVIDAD -->
-<img src="https://i.ibb.co/FZtb0Vk/tlaq-png.png" class="tlacuache-admin">
-
+<img
+  src="https://i.ibb.co/FZtb0Vk/tlaq-png.png"
+  class="tlacuache-admin"
+  onclick="abrirCanva()"
+  style="cursor:pointer;"
+>
 <button onclick="abrirLogin()" style="
 position:fixed;
 bottom:20px;
@@ -1292,8 +1296,40 @@ mostrarActividades()
 actualizarCursos()
 
 }
+function abrirCanva(){
+  document.getElementById("iframeCanva").src =
+    "https://www.canva.com/design/DAHEaI-_T90/YNFCfSVXztwYUWFB2KOq1Q/view?embed";
+  document.getElementById("modalCanva").style.display = "flex";
+}
 
+function cerrarCanva(){
+  document.getElementById("modalCanva").style.display = "none";
+  document.getElementById("iframeCanva").src = "";
+}
 </script>
+<div id="modalCanva" class="modal">
+  <div class="modal-contenido" style="width:90%; max-width:1000px; height:80vh; padding:0">
 
+    <button onclick="cerrarCanva()" style="
+      position:absolute;
+      top:10px;
+      right:15px;
+      background:none;
+      border:none;
+      font-size:24px;
+      cursor:pointer;
+      z-index:10;
+    ">✕</button>
+
+    <iframe
+      id="iframeCanva"
+      src=""
+      style="width:100%; height:100%; border:none; border-radius:20px;"
+      allowfullscreen
+      loading="lazy">
+    </iframe>
+
+  </div>
+</div>
 </body>
 </html>
