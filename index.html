@@ -701,8 +701,7 @@ Selecciona el tema de tu preferencia y verifica en el calendario las instruccion
 
 <select id="curso"></select>
 <input type="password" id="password" placeholder="Contraseña de acceso">
-<button type="submit">ENVIAR INSCRIPCIÓN</button>
-
+<button id="btnEnviar" type="submit">ENVIAR INSCRIPCIÓN</button>
 </form>
 
 </div>
@@ -887,26 +886,23 @@ let inscripciones = JSON.parse(localStorage.getItem("inscripciones")) || {}
 let calendar
 
 document.addEventListener('DOMContentLoaded',function(){
-const passInput = document.getElementById("password")
-passInput.addEventListener("input", () => {
-
-if(passInput.value === "MPSS2026"){ // puedes cambiarla
-document.addEventListener('DOMContentLoaded',function(){
 
 const passInput = document.getElementById("password")
 const btnEnviar = document.getElementById("btnEnviar")
 
+if(btnEnviar){
+btnEnviar.disabled = true
+}
+
 passInput.addEventListener("input", () => {
 
 if(passInput.value === "MPSS2026"){
-btnEnviar.disabled = false
+if(btnEnviar) btnEnviar.disabled = false
 } else {
-btnEnviar.disabled = true
+if(btnEnviar) btnEnviar.disabled = true
 }
 
-})} else {
-btnEnviar.disabled = true
-}
+})
 
 })
 calendar = new FullCalendar.Calendar(
@@ -1256,7 +1252,7 @@ pantalla.style.display = "none"
 }
 
 })
-
+})
 </script>
 
 </body>
