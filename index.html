@@ -954,11 +954,9 @@ const pantalla = document.getElementById("pantallaInicio")
 
 input.addEventListener("keyup", function(){
 
-if(input.value.trim() === PASSWORD)
-  pantalla.style.display = "none"
+if(input.value.trim() === PASSWORD){
+pantalla.style.display = "none"
 }
-
-})
 
 })
 function actualizarCursos(){
