@@ -1228,18 +1228,6 @@ mostrarActividades()
 
 }
 
-let eventoCalendario = calendar.getEventById(editID)
-
-eventoCalendario.setProp("title",evento.title)
-eventoCalendario.setStart(evento.start)
-calendar.refetchEvents()
-calendar.render()
-cerrarEditar()
-
-mostrarActividades()
-
-}
-
 function cerrarEditar(){
 
 document.getElementById("modalEditar").style.display="none"
