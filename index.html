@@ -967,11 +967,14 @@ inscripciones[curso]=nombre
 
 localStorage.setItem("inscripciones",JSON.stringify(inscripciones))
 
-let evento=calendar.getEventById(curso)
+let evento = calendar.getEventById(curso)
 
-evento.setProp("title",evento.title+" | Inscrito: "+nombre)
-evento.setProp("backgroundColor","#B22222")
-
+if(evento){
+evento.setProp("title", evento.title + " | Inscrito: " + nombre)
+evento.setProp("backgroundColor", "#B22222")
+} else {
+console.log("Evento no encontrado:", curso)
+}
 // correo para administrador
 emailjs.send("service_u8bx9dj","template_0yx01mn",{
 nombre: nombre,
