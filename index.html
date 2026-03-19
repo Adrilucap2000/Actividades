@@ -871,6 +871,8 @@ emailjs.init("JbLq6Pz4o5CfG8tfQ");
 })();
 
 let calendar
+
+document.addEventListener('DOMContentLoaded',function(){
 // 🔄 actualizar select
 actualizarCursos()
 
@@ -884,8 +886,6 @@ if(input.value.trim() === PASSWORD){
 pantalla.style.display = "none"
 }
 })
-
-document.addEventListener('DOMContentLoaded',function(){
 
 // 📅 CALENDARIO
 calendar = new FullCalendar.Calendar(
