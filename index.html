@@ -6,7 +6,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
   /* PESTAÑAS ADMIN */
 
@@ -502,11 +502,144 @@ cursor:not-allowed;
 opacity:0.6;
 box-shadow:none;
 }
+/* LOGIN */
+
+#pantallaInicio{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:99999;
+
+background:
+linear-gradient(rgba(90,10,20,0.95),rgba(90,10,20,0.95)),
+url("https://i.imgur.com/hTT1t8L.jpeg");
+
+background-size:cover;
+background-position:center;
+}
+
+/* CONTENIDO */
+.login-contenido{
+text-align:center;
+position:relative;
+z-index:2;
+}
+
+/* CÍRCULO DORADO */
+.circulo{
+width:270px;
+height:270px;
+border-radius:50%;
+padding:12px;
+
+background: radial-gradient(circle,#FFD700,#b8860b);
+
+box-shadow:
+0 0 25px #FFD700,
+0 0 70px #FFD700,
+0 0 140px rgba(255,215,0,0.7);
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+animation: brillo 3s infinite ease-in-out;
+}
+
+/* IMAGEN */
+#mascota{
+width:100%;
+height:100%;
+object-fit:cover;
+object-position:center;
+border-radius:50%;
+}
+
+/* ANIMACIÓN GLOW */
+@keyframes brillo{
+0%{box-shadow:0 0 25px #FFD700;}
+50%{box-shadow:0 0 80px #FFD700,0 0 150px #FFD700;}
+100%{box-shadow:0 0 25px #FFD700;}
+}
+
+/* TEXTO ESTILO AMSTERDAM */
+.titulo{
+font-family: 'Great Vibes', cursive;
+font-size:70px;
+color:#FFD700;
+margin-top:30px;
+
+text-shadow:
+0 0 10px #FFD700,
+0 0 20px #FFD700,
+0 0 40px rgba(255,215,0,0.7);
+}
+
+/* INPUT OCULTO */
+#pinInput{
+opacity:0;
+position:absolute;
+pointer-events:none;
+}
+  /* LOGIN TIPO MICROSOFT */
+
+document.addEventListener("DOMContentLoaded", function(){
+
+const PASSWORD = "TLAQH2026"
+
+const input = document.getElementById("pinInput")
+const pantalla = document.getElementById("pantallaInicio")
+
+/* ESCRITURA INVISIBLE */
+document.addEventListener("keydown", function(e){
+
+if(e.key.length === 1){
+input.value += e.key
+}
+
+if(e.key === "Backspace"){
+input.value = input.value.slice(0,-1)
+}
+
+/* AUTO LOGIN */
+if(input.value === PASSWORD){
+pantalla.style.display = "none"
+}
+
+})
+
+})
 </style>
 </head>
 
 <body>
+<!-- LOGIN INICIO -->
+<div id="pantallaInicio">
 
+  <div class="destellos"></div>
+
+  <div class="login-contenido">
+
+    <!-- CÍRCULO -->
+    <div class="circulo">
+      <img src="https://i.ibb.co/PZ34qS77/BIENVENIDO.png" id="mascota">
+    </div>
+
+    <!-- TEXTO -->
+    <h1 class="titulo">Prometeo</h1>
+
+    <!-- INPUT OCULTO -->
+    <input id="pinInput" type="password">
+
+  </div>
+
+</div>
 <div class="destellos"></div>
 
 <header class="encabezado">
