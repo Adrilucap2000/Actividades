@@ -910,12 +910,12 @@ select.appendChild(option)
 
 // ✅ TODO DENTRO DEL DOM (🔥 CLAVE)
 document.addEventListener('DOMContentLoaded',function(){
+const input = document.getElementById("pinInput")
 
 // 🔄 actualizar select
 actualizarCursos()
 
 // 🔐 LOGIN FIREBASE
-const input = document.getElementById("pinInput")
 const pantalla = document.getElementById("pantallaInicio")
 
 if(input && pantalla){
