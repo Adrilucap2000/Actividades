@@ -982,10 +982,11 @@ correo: correo
 })
 .then(() => {
 console.log("✅ INSCRIPCIÓN GUARDADA:", curso)
-})
 
+// 🔄 actualizar select
 actualizarCursos()
 
+// 🔄 actualizar evento en calendario
 let evento = calendar.getEventById(curso)
 
 if(evento){
@@ -993,9 +994,7 @@ evento.setProp("title", evento.title + " | Inscrito: " + nombre)
 evento.setProp("backgroundColor", "#B22222")
 }
 
-})
-
-// correos
+// 📧 correos (🔥 AHORA SÍ EN EL LUGAR CORRECTO)
 emailjs.send("service_u8bx9dj","template_0yx01mn",{
 nombre: nombre,
 correo: correo,
@@ -1010,38 +1009,7 @@ curso: nombreCurso
 
 })
 
-}) // ✅ SOLO UN CIERRE
-
-function actualizarCursos(){
-
-let select = document.getElementById("curso")
-select.innerHTML = ""
-
-db.collection("eventos").get().then(snapshot => {
-
-snapshot.forEach(async doc => {
-
-let e = doc.data()
-
-let insc = await db.collection("inscripciones").doc(doc.id).get()
-
-let option = document.createElement("option")
-option.value = doc.id
-
-if(insc.exists){
-option.textContent = e.title + " (LLENO)"
-option.disabled = true
-} else {
-option.textContent = e.title
-}
-
-select.appendChild(option)
-
 })
-
-})
-
-}
 /* MODAL */
 
 function mostrarModal(titulo,texto){
