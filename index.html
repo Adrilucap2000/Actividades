@@ -871,6 +871,19 @@ emailjs.init("JbLq6Pz4o5CfG8tfQ");
 })();
 
 let calendar
+// 🔄 actualizar select
+actualizarCursos()
+
+// 🔐 LOGIN PROMETEO
+const PASSWORD = "TLAQH2026"
+const input = document.getElementById("pinInput")
+const pantalla = document.getElementById("pantallaInicio")
+
+input.addEventListener("input", function(){
+if(input.value.trim() === PASSWORD){
+pantalla.style.display = "none"
+}
+})
 
 document.addEventListener('DOMContentLoaded',function(){
 
@@ -949,20 +962,6 @@ inscripcionesData[doc.id] = doc.data()
 
 renderCalendar()
 
-})
-
-// 🔄 actualizar select
-actualizarCursos()
-
-// 🔐 LOGIN PROMETEO
-const PASSWORD = "TLAQH2026"
-const input = document.getElementById("pinInput")
-const pantalla = document.getElementById("pantallaInicio")
-
-input.addEventListener("input", function(){
-if(input.value.trim() === PASSWORD){
-pantalla.style.display = "none"
-}
 })
 
 // 🟢 INSCRIPCIÓN (YA BIEN PUESTA)
