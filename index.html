@@ -1033,11 +1033,13 @@ e.preventDefault()
 let nombre = document.getElementById("nombre").value
 let correo = document.getElementById("correo").value
 let curso = document.getElementById("curso").value
+  let celular = document.getElementById("celular").value 
 let nombreCurso = document.getElementById("curso").selectedOptions[0].text
 
 db.collection("inscripciones").doc(curso).set({
 nombre: nombre,
-correo: correo
+correo: correo,
+celular: celular
 })
 .then(() => {
 
