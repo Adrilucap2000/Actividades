@@ -848,6 +848,7 @@ ADMIN
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script>
@@ -863,6 +864,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+    const auth = firebase.auth()
 </script>
 <script>
 
@@ -912,20 +914,40 @@ document.addEventListener('DOMContentLoaded',function(){
 // 🔄 actualizar select
 actualizarCursos()
 
-// 🔐 LOGIN PROMETEO (YA FUNCIONA)
-const PASSWORD = "TLAQH2026"
+// 🔐 LOGIN PROMETEO (FIREBASE)
 const input = document.getElementById("pinInput")
 const pantalla = document.getElementById("pantallaInicio")
 
 if(input && pantalla){
+
 input.addEventListener("keyup", function(){
 
-if(input.value.trim() === PASSWORD){
+if(input.value.length >= 6){
+
+auth.signInWithEmailAndPassword("admin@prometeo.com", input.value)
+.then(() => {
 pantalla.style.display = "none"
+})
+.catch(() => {})
+
 }
 
 })
 
+auth.onAuthStateChanged(user => {
+if(user){
+pantalla.style.display = "none"
+}
+})
+
+}
+
+}) // 🔥 ESTE TE FALTABA
+
+// 🔓 FUERA DEL DOM
+function cerrarSesion(){
+auth.signOut()
+location.reload()
 }
 // 📅 CALENDARIO
 calendar = new FullCalendar.Calendar(
@@ -1051,6 +1073,7 @@ curso: nombreCurso
 })
 
 })
+
 /* MODAL */
 
 function mostrarModal(titulo,texto){
@@ -1267,6 +1290,7 @@ mostrarActividades()
 actualizarCursos()
 
 }
+  
 </script>
 
 </body>
