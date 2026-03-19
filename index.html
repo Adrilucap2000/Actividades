@@ -525,17 +525,22 @@ z-index:2;
 width:270px;
 height:270px;
 border-radius:50%;
-padding:2px;
+padding:12px;
 
 background: radial-gradient(circle,#FFD700,#b8860b);
 
-/* brillo más elegante */
 box-shadow:
-0 0 12px #FFD700,
-0 0 30px rgba(255,215,0,0.7),
-0 0 60px rgba(255,215,0,0.4);
+0 0 10px #FFD700,
+0 0 25px rgba(255,215,0,0.5),
+0 0 50px rgba(255,215,0,0.3);
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+animation: brillo 3s infinite ease-in-out;
 }
-  
+
 /* IMAGEN */
 #mascota{
 width:100%;
@@ -547,20 +552,15 @@ border-radius:50%;
 
 /* ANIMACIÓN GLOW */
 @keyframes brillo{
-0%{
-box-shadow:0 0 12px #FFD700;
-}
-50%{
-box-shadow:0 0 50px rgba(255,215,0,0.9);
-}
-100%{
-box-shadow:0 0 12px #FFD700;
-}
+0%{box-shadow:0 0 10px #FFD700;}
+50%{box-shadow:0 0 40px rgba(255,215,0,0.6);}
+100%{box-shadow:0 0 10px #FFD700;}
 }
 
 /* TEXTO ESTILO AMSTERDAM */
 .titulo{
 font-family: 'Great Vibes', cursive;
+transform: rotate(-2deg);
 font-size: 65px;
 color: #FFD700;
 margin-top: 25px;
@@ -850,13 +850,11 @@ ADMIN
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
 <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-<script>
+  <script>
 const firebaseConfig = {
   apiKey: "AIzaSyBnqZEuuv0V_CAmR_gBqPCQ3bgyS1ny_RI",
   authDomain: "calendario-mpss.firebaseapp.com",
@@ -868,24 +866,31 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
 const db = firebase.firestore();
+    const auth = firebase.auth()
+</script>
+<script>
 
+(function(){
 emailjs.init("JbLq6Pz4o5CfG8tfQ");
+})();
 
-let calendar;
+let calendar
 
-// 🔄 CARGAR CURSOS
+// ✅ FUNCIÓN ARRIBA (CRÍTICO)
 function actualizarCursos(){
+
 let select = document.getElementById("curso")
 if(!select) return
 
 select.innerHTML = ""
 
 db.collection("eventos").get().then(snapshot => {
+
 snapshot.forEach(async doc => {
+
 let e = doc.data()
+
 let insc = await db.collection("inscripciones").doc(doc.id).get()
 
 let option = document.createElement("option")
@@ -899,35 +904,54 @@ option.textContent = e.title
 }
 
 select.appendChild(option)
+
 })
+
 })
+
 }
 
-// 🚀 INICIO
-document.addEventListener('DOMContentLoaded', function(){
+// ✅ TODO DENTRO DEL DOM
+document.addEventListener('DOMContentLoaded',function(){
 
-// 🔐 FORZAR LOGIN (opcional)
-auth.signOut()
+// 🔄 actualizar select
+actualizarCursos()
 
+// 🔐 LOGIN PROMETEO (FIREBASE)
 const input = document.getElementById("pinInput")
 const pantalla = document.getElementById("pantallaInicio")
 
 if(input && pantalla){
 
-  input.addEventListener("input", function(){
+input.addEventListener("keyup", function(){
 
-    if(input.value === "123456"){ // PIN entrada
-      pantalla.style.display = "none"
-    } 
-    else if(input.value.length >= 6){
-      alert("PIN incorrecto")
-      input.value = ""
-    }
+if(input.value.length >= 6){
 
-  })
+auth.signInWithEmailAndPassword("admin@prometeo.com", input.value)
+.then(() => {
+pantalla.style.display = "none"
+})
+.catch(() => {})
 
 }
 
+})
+
+auth.onAuthStateChanged(user => {
+if(user){
+pantalla.style.display = "none"
+}
+})
+
+}
+
+}) // 🔥 ESTE TE FALTABA
+
+// 🔓 FUERA DEL DOM
+function cerrarSesion(){
+auth.signOut()
+location.reload()
+}
 // 📅 CALENDARIO
 calendar = new FullCalendar.Calendar(
 document.getElementById('calendar'),
@@ -946,15 +970,15 @@ info.event.extendedProps.description
 
 calendar.render()
 
-actualizarCursos()
-
 let eventosData = {}
 let inscripcionesData = {}
 
 function renderCalendar(){
+
 calendar.removeAllEvents()
 
 for(let id in eventosData){
+
 let e = eventosData[id]
 let inscrito = inscripcionesData[id]
 
@@ -965,6 +989,7 @@ start: e.start,
 description: e.description
 }
 
+// 🔥 SI EXISTE INSCRIPCIÓN
 if(inscrito && inscrito.nombre){
 eventoFinal.title = e.title + " | " + inscrito.nombre
 eventoFinal.backgroundColor = "#B22222"
@@ -972,27 +997,38 @@ eventoFinal.borderColor = "#B22222"
 }
 
 calendar.addEvent(eventoFinal)
-}
+
 }
 
-// 🔥 realtime
+}
+
+// 🔥 eventos en tiempo real
 db.collection("eventos").onSnapshot(snapshot => {
+
 eventosData = {}
+
 snapshot.forEach(doc=>{
 eventosData[doc.id] = doc.data()
 })
+
 renderCalendar()
+
 })
 
+// 🔥 inscripciones en tiempo real
 db.collection("inscripciones").onSnapshot(snapshot => {
+
 inscripcionesData = {}
+
 snapshot.forEach(doc=>{
 inscripcionesData[doc.id] = doc.data()
 })
+
 renderCalendar()
+
 })
 
-// 🟢 FORMULARIO
+// 🟢 INSCRIPCIÓN
 document.getElementById("formulario")
 .addEventListener("submit",function(e){
 
@@ -1009,8 +1045,12 @@ correo: correo
 })
 .then(() => {
 
+console.log("✅ INSCRIPCIÓN GUARDADA:", curso)
+
+// 🔄 actualizar select
 actualizarCursos()
 
+// 🔄 actualizar evento en calendario
 let evento = calendar.getEventById(curso)
 
 if(evento){
@@ -1018,6 +1058,7 @@ evento.setProp("title", evento.title + " | Inscrito: " + nombre)
 evento.setProp("backgroundColor", "#B22222")
 }
 
+// 📧 correos
 emailjs.send("service_u8bx9dj","template_0yx01mn",{
 nombre: nombre,
 correo: correo,
@@ -1036,45 +1077,224 @@ curso: nombreCurso
 
 })
 
-// 🔓 LOGOUT
-function cerrarSesion(){
-auth.signOut()
-location.reload()
-}
+/* MODAL */
 
-// 🪟 MODALES
 function mostrarModal(titulo,texto){
+
 modalActividad.style.display="flex"
 tituloActividad.innerText=titulo
 descripcionActividad.innerText=texto
+
 }
 
 function cerrarModal(){
 modalActividad.style.display="none"
 }
 
-// 🔐 ADMIN
-function abrirLogin(){
-document.getElementById("adminLogin").style.display="flex"
-}
+/* ADMIN */
 
+function abrirLogin(){
+adminLogin.style.display="flex"
+}
 function cerrarLogin(){
-document.getElementById("adminLogin").style.display="none"
+adminLogin.style.display="none"
 }
 function verificarAdmin(){
 
-let pass = document.getElementById("adminPass").value.trim()
+if(adminPass.value==="MPSS2026"){
 
-if(pass === "MPSS2026"){ // 👈 tu contraseña admin
+adminLogin.style.display="none"
+adminPanel.style.display="flex"
 
-document.getElementById("adminLogin").style.display = "none"
-document.getElementById("adminPanel").style.display = "flex"
-
-}else{
-alert("Contraseña incorrecta")
 }
 
 }
+
+function cerrarAdmin(){
+adminPanel.style.display="none"
+}
+
+/* PARTICIPANTES */
+
+function mostrarInscritos(){
+
+document.getElementById("seccionActividades").style.display="none"
+document.getElementById("seccionInscritos").style.display="block"
+document.getElementById("seccionCrear").style.display="none"
+
+let lista = document.getElementById("seccionInscritos")
+
+db.collection("inscripciones").onSnapshot(async snapshot => {
+
+lista.innerHTML=""
+
+for (const doc of snapshot.docs){
+
+let data = doc.data()
+
+// 🔥 TRAER EL NOMBRE DEL EVENTO
+let eventoDoc = await db.collection("eventos").doc(doc.id).get()
+
+let tituloEvento = "Sin nombre"
+
+if(eventoDoc.exists){
+tituloEvento = eventoDoc.data().title
+}
+
+lista.innerHTML += `
+<div>
+<b>${tituloEvento}</b> → ${data.nombre}
+<button onclick="eliminarInscripcion('${doc.id}')">Eliminar</button>
+</div>
+`
+
+}
+
+})
+
+}
+function eliminarInscripcion(id){
+
+db.collection("inscripciones").doc(id).delete()
+
+actualizarCursos()
+
+}
+function mostrarCrear(){
+
+document.getElementById("seccionActividades").style.display="none"
+document.getElementById("seccionInscritos").style.display="none"
+document.getElementById("seccionCrear").style.display="block"
+
+}
+
+/* ACTIVIDADES */
+
+function mostrarActividades(){
+
+document.getElementById("seccionActividades").style.display="block"
+document.getElementById("seccionInscritos").style.display="none"
+document.getElementById("seccionCrear").style.display="none"
+
+let lista = document.getElementById("listaActividades")
+
+db.collection("eventos").onSnapshot(snapshot => {
+
+lista.innerHTML=""
+
+snapshot.forEach(doc => {
+
+let e = doc.data()
+
+lista.innerHTML += `
+<div style="margin:10px;padding:10px;border-bottom:1px solid #ccc">
+
+<b>${e.title}</b>
+
+<button class="boton-mini" onclick="editarActividad('${doc.id}')">
+Editar
+</button>
+
+<button onclick="eliminarActividad('${doc.id}')">
+
+Eliminar
+</button>
+
+</div>
+`
+
+})
+
+})
+
+}
+function crearActividad(){
+
+let titulo=document.getElementById("nuevoTitulo").value
+let descripcion=document.getElementById("nuevaDescripcion").value
+let fecha=document.getElementById("nuevaFecha").value
+
+if(!titulo || !fecha){
+alert("Completa título y fecha")
+return
+}
+
+let nuevaActividad={
+id:"act"+Date.now(),
+title:titulo,
+start:fecha,
+description:descripcion
+}
+
+db.collection("eventos").doc(nuevaActividad.id).set({
+title: titulo,
+start: fecha,
+description: descripcion
+})
+actualizarCursos()
+
+document.getElementById("curso").value = nuevaActividad.id
+
+mostrarActividades()
+
+document.getElementById("nuevoTitulo").value=""
+document.getElementById("nuevaDescripcion").value=""
+document.getElementById("nuevaFecha").value=""
+
+}
+
+
+let editID=null
+
+function editarActividad(id){
+
+editID = id
+
+db.collection("eventos").doc(id).get().then(doc => {
+
+let evento = doc.data()
+
+document.getElementById("editTitulo").value = evento.title
+document.getElementById("editDescripcion").value = evento.description
+document.getElementById("editFecha").value = evento.start
+
+document.getElementById("modalEditar").style.display="flex"
+
+})
+
+}
+
+function guardarEdicion(){
+
+let titulo = document.getElementById("editTitulo").value
+let descripcion = document.getElementById("editDescripcion").value
+let fecha = document.getElementById("editFecha").value
+
+db.collection("eventos").doc(editID).update({
+title: titulo,
+description: descripcion,
+start: fecha
+}).then(() => {
+cerrarEditar()
+})
+
+}
+
+function cerrarEditar(){
+document.getElementById("modalEditar").style.display="none"
+}
+
+
+function eliminarActividad(id){
+
+db.collection("eventos").doc(id).delete()
+
+mostrarActividades()
+actualizarCursos()
+
+}
+  
 </script>
+
 </body>
 </html>
