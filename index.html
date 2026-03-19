@@ -948,8 +948,7 @@ snapshot.forEach(doc => {
 
 let e = doc.data()
 
-db.collection("inscripciones").doc(e.id).get().then(insc => {
-
+db.collection("inscripciones").doc(doc.id)
 let option = document.createElement("option")
 option.value = e.id
 
