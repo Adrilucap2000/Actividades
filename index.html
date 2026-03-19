@@ -525,22 +525,17 @@ z-index:2;
 width:270px;
 height:270px;
 border-radius:50%;
-padding:12px;
+padding:5px;
 
 background: radial-gradient(circle,#FFD700,#b8860b);
 
+/* brillo más elegante */
 box-shadow:
-0 0 10px #FFD700,
-0 0 25px rgba(255,215,0,0.5),
-0 0 50px rgba(255,215,0,0.3);
-
-display:flex;
-justify-content:center;
-align-items:center;
-
-animation: brillo 3s infinite ease-in-out;
+0 0 12px #FFD700,
+0 0 30px rgba(255,215,0,0.7),
+0 0 60px rgba(255,215,0,0.4);
 }
-
+  
 /* IMAGEN */
 #mascota{
 width:100%;
@@ -552,15 +547,20 @@ border-radius:50%;
 
 /* ANIMACIÓN GLOW */
 @keyframes brillo{
-0%{box-shadow:0 0 10px #FFD700;}
-50%{box-shadow:0 0 40px rgba(255,215,0,0.6);}
-100%{box-shadow:0 0 10px #FFD700;}
+0%{
+box-shadow:0 0 12px #FFD700;
+}
+50%{
+box-shadow:0 0 50px rgba(255,215,0,0.9);
+}
+100%{
+box-shadow:0 0 12px #FFD700;
+}
 }
 
 /* TEXTO ESTILO AMSTERDAM */
 .titulo{
 font-family: 'Great Vibes', cursive;
-transform: rotate(-2deg);
 font-size: 65px;
 color: #FFD700;
 margin-top: 25px;
