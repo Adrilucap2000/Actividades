@@ -966,23 +966,6 @@ select.appendChild(option)
 
 }
 
-function restaurarInscripciones(){
-
-Object.keys(inscripciones).forEach(curso=>{
-
-let evento=calendar.getEventById(curso)
-
-if(evento){
-
-evento.setProp("title",evento.title+" | Inscrito: "+inscripciones[curso])
-evento.setProp("backgroundColor","#B22222")
-
-}
-
-})
-
-}
-
 /* INSCRIPCIÓN */
 
 document.getElementById("formulario")
@@ -1100,23 +1083,6 @@ function mostrarCrear(){
 document.getElementById("seccionActividades").style.display="none"
 document.getElementById("seccionInscritos").style.display="none"
 document.getElementById("seccionCrear").style.display="block"
-
-}
-
-function eliminarInscripcion(curso){
-
-delete inscripciones[curso]
-
-localStorage.setItem("inscripciones",JSON.stringify(inscripciones))
-
-let evento = calendar.getEventById(curso)
-
-if(evento){
-evento.setProp("title", evento.title.split("|")[0])
-evento.setProp("backgroundColor", "#D4AF37")
-}
-
-mostrarInscritos()
 
 }
 
