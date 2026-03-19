@@ -920,8 +920,26 @@ const pantalla = document.getElementById("pantallaInicio")
 
 if(input && pantalla){
 
-input.addEventListener("keyup", function(){
+input.addEventListener("input", function(){
 
+console.log("ESCRIBIENDO:", input.value)
+
+if(input.value.length >= 6){
+
+console.log("INTENTANDO LOGIN...")
+
+auth.signInWithEmailAndPassword("admin@prometeo.com", input.value)
+.then(() => {
+console.log("LOGIN OK")
+pantalla.style.display = "none"
+})
+.catch((error) => {
+console.log("ERROR LOGIN:", error.message)
+})
+
+}
+
+})
 if(input.value.length >= 6){
 
 auth.signInWithEmailAndPassword("admin@prometeo.com", input.value)
