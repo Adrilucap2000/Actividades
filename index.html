@@ -897,7 +897,24 @@ db.collection("eventos").onSnapshot(snapshot => {
 calendar.removeAllEvents()
 
 snapshot.forEach(doc => {
-calendar.addEvent(doc.data())
+
+let evento = doc.data()
+
+// 🔥 escuchar inscripción en tiempo real
+db.collection("inscripciones").doc(evento.id)
+.onSnapshot(insc => {
+
+let eventoFinal = {...evento}
+
+if(insc.exists){
+eventoFinal.title = evento.title + " | Inscrito: " + insc.data().nombre
+eventoFinal.backgroundColor = "#B22222"
+}
+
+calendar.addEvent(eventoFinal)
+
+})
+
 })
 
 })
@@ -927,11 +944,21 @@ snapshot.forEach(doc => {
 
 let e = doc.data()
 
+db.collection("inscripciones").doc(e.id).get().then(insc => {
+
 let option = document.createElement("option")
 option.value = e.id
+
+if(insc.exists){
+option.textContent = e.title + " (LLENO)"
+option.disabled = true
+} else {
 option.textContent = e.title
+}
 
 select.appendChild(option)
+
+})
 
 })
 
@@ -977,7 +1004,7 @@ db.collection("inscripciones").doc(curso).set({
 nombre: nombre,
 correo: correo
 })
-
+actualizarCursos()
 let evento = calendar.getEventById(curso)
 
 if(evento){
@@ -1046,22 +1073,24 @@ function mostrarInscritos(){
 document.getElementById("seccionActividades").style.display="none"
 document.getElementById("seccionInscritos").style.display="block"
 document.getElementById("seccionCrear").style.display="none"
-let lista=document.getElementById("seccionInscritos")
+
+let lista = document.getElementById("seccionInscritos")
+
+db.collection("inscripciones").onSnapshot(snapshot => {
 
 lista.innerHTML=""
 
-Object.keys(inscripciones).forEach(curso=>{
+snapshot.forEach(doc => {
 
-let evento = calendar.getEventById(curso)
+let data = doc.data()
 
-let titulo = evento ? evento.title.split("|")[0] : curso
-
-lista.innerHTML+=`
+lista.innerHTML += `
 <div>
-<b>${titulo}</b> → ${inscripciones[curso]}
-<button onclick="eliminarInscripcion('${curso}')">Eliminar</button>
+<b>${doc.id}</b> → ${data.nombre}
 </div>
 `
+
+})
 
 })
 
@@ -1099,11 +1128,9 @@ document.getElementById("seccionActividades").style.display="block"
 document.getElementById("seccionInscritos").style.display="none"
 document.getElementById("seccionCrear").style.display="none"
 
-let lista=document.getElementById("listaActividades")
+let lista = document.getElementById("listaActividades")
 
-lista.innerHTML=""
-
-db.collection("eventos").get().then(snapshot => {
+db.collection("eventos").onSnapshot(snapshot => {
 
 lista.innerHTML=""
 
@@ -1130,6 +1157,7 @@ Eliminar
 })
 
 })
+
 }
 function crearActividad(){
 
@@ -1185,16 +1213,20 @@ document.getElementById("modalEditar").style.display="flex"
 
 function guardarEdicion(){
 
-let evento = eventos.find(e=>e.id===editID)
+let titulo = document.getElementById("editTitulo").value
+let descripcion = document.getElementById("editDescripcion").value
+let fecha = document.getElementById("editFecha").value
 
-evento.title=document.getElementById("editTitulo").value
-evento.description=document.getElementById("editDescripcion").value
-evento.start=document.getElementById("editFecha").value
+db.collection("eventos").doc(editID).update({
+title: titulo,
+description: descripcion,
+start: fecha
+})
 
-localStorage.setItem(
-"eventos",
-JSON.stringify(eventos)
-)
+cerrarEditar()
+mostrarActividades()
+
+}
 
 let eventoCalendario = calendar.getEventById(editID)
 
@@ -1217,13 +1249,7 @@ document.getElementById("modalEditar").style.display="none"
 
 function eliminarActividad(id){
 
-eventos = eventos.filter(e=>e.id!==id)
-
-localStorage.setItem("eventos",JSON.stringify(eventos))
-
-let evento = calendar.getEventById(id)
-
-if(evento) evento.remove()
+db.collection("eventos").doc(id).delete()
 
 mostrarActividades()
 actualizarCursos()
