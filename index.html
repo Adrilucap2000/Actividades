@@ -886,21 +886,6 @@ let inscripciones = JSON.parse(localStorage.getItem("inscripciones")) || {}
 let calendar
 document.addEventListener('DOMContentLoaded',function(){
 
-// 🔐 BOTÓN FORMULARIO
-const passInput = document.getElementById("password")
-const btnEnviar = document.getElementById("btnEnviar")
-
-if(btnEnviar){
-btnEnviar.disabled = true
-}
-
-passInput.addEventListener("input", () => {
-if(passInput.value === "MPSS2026"){
-btnEnviar.disabled = false
-} else {
-btnEnviar.disabled = true
-}
-})
 
 // 📅 CALENDARIO
 calendar = new FullCalendar.Calendar(
@@ -1240,7 +1225,15 @@ mostrarActividades()
 actualizarCursos()
 
 }
+document.addEventListener("DOMContentLoaded", function(){
 
+const btnEnviar = document.getElementById("btnEnviar")
+
+if(btnEnviar){
+btnEnviar.disabled = false
+}
+
+})
 </script>
 
 </body>
