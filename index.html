@@ -1051,67 +1051,6 @@ info.event.extendedProps?.description || ""
 
 },
 
-// 👉 CLICK EN EVENTO (EDITAR)
-eventClick:function(info){
-
-if(info.event.extendedProps.tipo === "anotacion"){
-
-if(!modoEscritura) return
-if(inputActivo) return
-
-let el = info.el
-
-let input = document.createElement("input")
-input.type = "text"
-input.value = info.event.title.replace("📝 ","")
-input.style.width = "100%"
-input.style.fontSize = "12px"
-
-inputActivo = input
-
-el.style.display = "none"
-el.parentNode.appendChild(input)
-input.focus()
-
-// guardar
-input.addEventListener("keydown", function(e){
-
-if(e.key === "Enter"){
-
-let nuevo = input.value.trim()
-
-if(nuevo){
-db.collection("anotaciones")
-.doc(info.event.id)
-.update({ texto: nuevo })
-}
-
-input.remove()
-el.style.display = ""
-inputActivo = null
-
-}
-
-})
-
-// cancelar
-input.addEventListener("blur", function(){
-input.remove()
-el.style.display = ""
-inputActivo = null
-})
-
-return
-}
-
-// evento normal
-mostrarModal(
-info.event.title,
-info.event.extendedProps?.description || ""
-)
-
-},
-
 // 👉 CLICK DERECHO = ELIMINAR
 eventDidMount: function(info){
 
@@ -1123,9 +1062,6 @@ e.preventDefault()
 if(!modoEscritura) return
 
 abrirModalEliminar(info.event.id)
-db.collection("anotaciones")
-.doc(info.event.id)
-.delete()
 }
 
 })
