@@ -972,30 +972,29 @@ let texto = input.value.trim()
 
 if(texto){
 
-// 🔥 guardar en Firebase
+// 🔥 1. GUARDAR EN FIREBASE
 db.collection("anotaciones").add({
 fecha: info.dateStr,
 texto: texto
 })
 
-// 🔥 mostrar inmediato (CLAVE)
-calendar.addEvent({
-title: "📝 " + texto,
-start: info.dateStr,
-allDay: true,
-backgroundColor: '#1E3A8A',
-textColor: 'white',
-extendedProps: { tipo: "anotacion" }
-})
-
-}
-
+// 🔥 2. MOSTRAR INMEDIATO (AQUÍ VA LO QUE PREGUNTAS)
+db.collection("anotaciones").add({
+fecha: info.dateStr,
+texto: texto
+}).then(() => {
 input.remove()
 inputActivo = null
+})
+}
+
+// 🔥 limpiar input
+input.remove()
+inputActivo = null
+
 }
 
 })
-
 // ❌ NO BLUR
 
 },
