@@ -425,17 +425,20 @@ position:relative;
 /*SIDEBAR ADMIN */
 
 #adminPanel{
-  display:none;
-  position:fixed;
-  top:0;
-  left:0;
-  width:260px;
-  height:100vh;
-  background:rgba(0,0,0,0.55);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+
+  background: rgba(0,0,0,0.6);
   backdrop-filter: blur(8px);
-  z-index:3;
-  padding:20px;
-  box-shadow: 5px 0 25px rgba(0,0,0,0.6);
+
+  padding: 20px;
+  box-sizing: border-box;
+
+  z-index: 9999;
+  display: none; /* controlado por JS */
 }
   /* INPUT CONTRASEÑA ADMIN */
 
@@ -830,9 +833,7 @@ cursor:pointer;
 </div>
 <!-- PANEL ADMIN -->
 
-<div id="adminPanel" class="modal">
-
-<div class="modal-contenido">
+<div id="adminPanel">
 
 <h2>Panel Administrador</h2>
 
@@ -1164,7 +1165,7 @@ function verificarAdmin(){
   if(adminPass.value === "MPSS2026"){
 
     adminLogin.style.display = "none"
-    adminPanel.style.display = "block" // 👈 sidebar, no modal
+    adminPanel.style.display = "block" 
     activarModoAdmin()
 
   }
