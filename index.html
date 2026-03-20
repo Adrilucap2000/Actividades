@@ -880,6 +880,7 @@ let calendar
 let esAdmin = false
 let modoEscritura = false
 let inputActivo = null
+let idAEliminar = null
 // ✅ FUNCIÓN ARRIBA (CRÍTICO)
 function actualizarCursos(){
 
@@ -1121,7 +1122,7 @@ e.preventDefault()
 
 if(!modoEscritura) return
 
-if(confirm("¿Eliminar nota?")){
+abrirModalEliminar(info.event.id)
 db.collection("anotaciones")
 .doc(info.event.id)
 .delete()
@@ -1291,7 +1292,26 @@ descripcionActividad.innerText=texto
 function cerrarModal(){
 modalActividad.style.display="none"
 }
+function abrirModalEliminar(id){
+  idAEliminar = id
+  document.getElementById("modalEliminar").style.display = "flex"
+}
 
+function cerrarModalEliminar(){
+  idAEliminar = null
+  document.getElementById("modalEliminar").style.display = "none"
+}
+
+function confirmarEliminar(){
+
+  if(idAEliminar){
+    db.collection("anotaciones")
+    .doc(idAEliminar)
+    .delete()
+  }
+
+  cerrarModalEliminar()
+}
 /* ADMIN */
 
 function abrirLogin(){
@@ -1571,6 +1591,24 @@ function cerrarCanva(){
       allowfullscreen
       loading="lazy">
     </iframe>
+
+  </div>
+</div>
+  <div id="modalEliminar" class="modal">
+  <div class="modal-contenido">
+
+    <h2>¿Eliminar anotación?</h2>
+    <p>Esta acción no se puede deshacer</p>
+
+    <br>
+
+    <button class="boton-admin" onclick="confirmarEliminar()">
+      Sí, eliminar
+    </button>
+
+    <button class="boton-admin" onclick="cerrarModalEliminar()" style="background:#555">
+      Cancelar
+    </button>
 
   </div>
 </div>
