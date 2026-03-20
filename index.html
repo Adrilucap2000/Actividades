@@ -1050,60 +1050,6 @@ info.event.extendedProps?.description || ""
 
 },
 
-// 👉 CLICK DERECHO = ELIMINAR
-calendar = new FullCalendar.Calendar(
-document.getElementById('calendar'),
-{
-initialView:'dayGridMonth',
-locale:'es',
-buttonText:{today:'Hoy'},
-events: [],
-
-// 👉 CLICK EN DÍA (ESCRIBIR)
-dateClick: function(info){
-
-if(inputActivo){
-inputActivo.remove()
-inputActivo = null
-}
-
-if(!esAdmin || !modoEscritura) return
-
-let contenedor = info.dayEl.querySelector(".fc-daygrid-day-events")
-
-let input = document.createElement("input")
-input.type = "text"
-input.placeholder = "Escribir..."
-input.style.width = "100%"
-input.style.fontSize = "12px"
-
-inputActivo = input
-
-contenedor.appendChild(input)
-input.focus()
-
-input.addEventListener("keydown", function(e){
-
-if(e.key === "Enter"){
-
-let texto = input.value.trim()
-
-if(texto){
-db.collection("anotaciones").add({
-fecha: info.dateStr,
-texto: texto
-})
-}
-
-input.remove()
-inputActivo = null
-
-}
-
-})
-
-},
-
 // 👉 CLICK EN EVENTO (EDITAR)
 eventClick:function(info){
 
