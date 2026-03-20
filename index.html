@@ -422,7 +422,21 @@ width:400px;
 text-align:center;
 position:relative;
 }
+/*SIDEBAR ADMIN */
 
+#adminPanel{
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:260px;
+  height:100vh;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter: blur(8px);
+  z-index:3;
+  padding:20px;
+  box-shadow: 5px 0 25px rgba(0,0,0,0.6);
+}
   /* INPUT CONTRASEÑA ADMIN */
 
 #adminLogin input{
@@ -674,6 +688,15 @@ box-shadow:
 /* MODO ADMIN */
 .overlay-admin{
   background-color: rgba(90,10,20,0.35);
+}
+  /* ===== MODO ADMIN: ocultar formulario ===== */
+body.admin-mode .formulario{
+  display:none;
+}
+  /* ===== MODO ADMIN: ajustar layout ===== */
+body.admin-mode .contenedor{
+  margin-left:260px;
+  transition: margin-left 0.5s ease;
 }
 </style>
 </head>
@@ -1122,27 +1145,40 @@ adminLogin.style.display="none"
 }
 function verificarAdmin(){
 
-if(adminPass.value==="MPSS2026"){
+  if(adminPass.value === "MPSS2026"){
 
-adminLogin.style.display="none"
-adminPanel.style.display="flex"
-activarModoAdmin()
+    adminLogin.style.display = "none"
+    adminPanel.style.display = "block" // 👈 sidebar, no modal
+    activarModoAdmin()
+
+  }
 }
 
-}
 function activarModoAdmin(){
   isAdmin = true
+  document.body.classList.add("admin-mode")
+
+  document.querySelector(".titulo-cinzel").innerText = "ADMINISTRADOR"
+  document.querySelector(".subtitulo").innerText = "Calendario de actividades"
+
   console.log("🛡️ MODO ADMIN ACTIVADO")
 }
+
 function cerrarAdmin(){
-adminPanel.style.display="none"
-salirModoAdmin()
+  adminPanel.style.display = "none"
+  salirModoAdmin()
 }
+
 function salirModoAdmin(){
   isAdmin = false
+  document.body.classList.remove("admin-mode")
+
+  document.querySelector(".titulo-cinzel").innerText = "BIENVENIDOS"
+  document.querySelector(".subtitulo").innerText = "Inscripción a temas"
+
   console.log("👤 MODO USUARIO")
 }
-/* PARTICIPANTES */
+  /* PARTICIPANTES */
 
 function mostrarInscritos(){
 
