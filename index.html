@@ -958,25 +958,10 @@ if(info.event.extendedProps.tipo === "anotacion"){
 
 if(!modoEscritura) return
 
-let opcion = prompt("1 = editar | 2 = eliminar")
-
-if(opcion === "1"){
-
-let nuevoTexto = prompt("Editar:", info.event.title.replace("📝 ",""))
-
-if(nuevoTexto){
-db.collection("anotaciones")
-.doc(info.event.id)
-.update({ texto: nuevoTexto })
-}
-
-}
-
-if(opcion === "2"){
+// 🔥 ELIMINAR DIRECTO (SIN PREGUNTAR)
 db.collection("anotaciones")
 .doc(info.event.id)
 .delete()
-}
 
 return
 }
@@ -988,16 +973,18 @@ info.event.extendedProps?.description || ""
 )
 
 }
-
-}) 
+})
   calendar.render()
 
 let eventosData = {}
 let inscripcionesData = {}
 
 function renderCalendar(){
-
-calendar.removeAllEvents()
+calendar.getEvents().forEach(e => {
+if(e.extendedProps.tipo !== "anotacion"){
+e.remove()
+}
+})
 
 for(let id in eventosData){
 
@@ -1053,7 +1040,7 @@ db.collection("anotaciones").onSnapshot(snapshot => {
 
 if(!esAdmin) return
 
-// limpiar solo visual
+// limpiar solo anotaciones
 calendar.getEvents().forEach(e => {
 if(e.extendedProps.tipo === "anotacion"){
 e.remove()
