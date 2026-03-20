@@ -371,11 +371,16 @@ box-shadow:0 15px 40px rgba(0,0,0,0.35);
 }
 
 .fc-event-title{
-white-space:normal !important;
-overflow:hidden;
-font-size:12px;
+white-space: normal !important;
+word-wrap: break-word;
+font-size:11px;
 }
-
+  
+.fc-daygrid-event{
+display: block;
+white-space: normal !important;
+}
+  
 .fc-event{
 padding:4px;
 background:#D4AF37;
@@ -1006,13 +1011,21 @@ if(info.event.extendedProps.tipo === "anotacion"){
 
 if(!modoEscritura) return
 
+let nuevoTexto = prompt("Editar nota:", info.event.title.replace("📝 ",""))
+
+if(nuevoTexto === null) return
+
+// 🔥 actualizar en Firebase
 db.collection("anotaciones")
 .doc(info.event.id)
-.delete()
+.update({
+texto: nuevoTexto
+})
 
 return
 }
 
+// eventos normales
 mostrarModal(
 info.event.title,
 info.event.extendedProps?.description || ""
@@ -1087,7 +1100,7 @@ renderCalendar()
 })
 db.collection("anotaciones").onSnapshot(snapshot => {
 
-// limpiar solo anotaciones
+// 🔥 borrar SOLO anotaciones anteriores
 calendar.getEvents().forEach(e => {
 if(e.extendedProps.tipo === "anotacion"){
 e.remove()
@@ -1097,6 +1110,9 @@ e.remove()
 snapshot.forEach(doc => {
 
 let a = doc.data()
+
+// 🔥 evitar duplicados (extra seguro)
+if(calendar.getEventById(doc.id)) return
 
 calendar.addEvent({
 id: doc.id,
