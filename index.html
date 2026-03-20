@@ -718,6 +718,9 @@ box-shadow:
       <button class="tab-admin" onclick="mostrarCrear()">Crear actividad</button>
       <button class="tab-admin" onclick="mostrarInscritos()">Participantes</button>
       <button class="tab-admin" onclick="activarModoAnotaciones()">Anotaciones</button>
+      <button class="tab-admin" id="btnAnotaciones" onclick="toggleAnotaciones()">
+Anotaciones
+</button>
     </div>
 
     <div id="seccionActividades">
@@ -872,6 +875,7 @@ emailjs.init("JbLq6Pz4o5CfG8tfQ");
 let calendar
 let modoAnotaciones = false
 let esAdmin = false
+let modoEscritura = false
 function activarModoAnotaciones(){
   modoAnotaciones = true
   alert("Modo anotaciones activado. Haz clic en un día del calendario.")
@@ -942,9 +946,10 @@ buttonText:{today:'Hoy'},
 events: [],
 dateClick: function(info){
 
-if(!modoAnotaciones) return
+// 🔒 solo si eres admin Y activaste anotaciones
+if(!esAdmin || !modoEscritura) return
 
-let texto = prompt("Escribe tu anotación:")
+let texto = prompt("Escribe:")
 
 if(texto){
 
@@ -955,16 +960,41 @@ texto: texto
 
 }
 
+},
+
 modoAnotaciones = false
 
 },
 eventClick:function(info){
+
+// 🔥 SI ES ANOTACIÓN
+if(info.event.extendedProps.tipo === "anotacion"){
+
+// solo permitir editar si estás en modo escritura
+if(!modoEscritura) return
+
+let nuevoTexto = prompt("Editar:", info.event.title.replace("📝 ",""))
+
+if(nuevoTexto){
+
+db.collection("anotaciones")
+.doc(info.event.id)
+.update({
+texto: nuevoTexto
+})
+
+}
+
+return
+}
+
+// 👇 EVENTOS NORMALES (los tuyos del calendario)
 mostrarModal(
 info.event.title,
-info.event.extendedProps.description
+info.event.extendedProps?.description || ""
 )
+
 }
-})
 
 calendar.render()
 
@@ -1029,16 +1059,25 @@ db.collection("anotaciones").onSnapshot(snapshot => {
 
 if(!esAdmin) return
 
+// limpiar solo visual
+calendar.getEvents().forEach(e => {
+if(e.extendedProps.tipo === "anotacion"){
+e.remove()
+}
+})
+
 snapshot.forEach(doc => {
 
 let a = doc.data()
 
 calendar.addEvent({
+id: doc.id,
 title: "📝 " + a.texto,
 start: a.fecha,
 allDay: true,
-display: 'background',
-color: '#1E3A8A'
+backgroundColor: '#1E3A8A',
+textColor: 'white',
+extendedProps: { tipo: "anotacion" }
 })
 
 })
@@ -1141,7 +1180,14 @@ btn.onclick = cerrarAdmin
 }
 
 function cerrarAdmin(){
+esAdmin = false
+modoEscritura = false
 
+let btn = document.getElementById("btnAnotaciones")
+if(btn){
+btn.innerText = "Anotaciones"
+btn.style.background = ""
+}
 // ocultar panel
 document.getElementById("adminPanel").style.display = "none"
 
@@ -1331,6 +1377,21 @@ db.collection("eventos").doc(id).delete()
 
 mostrarActividades()
 actualizarCursos()
+
+}
+function toggleAnotaciones(){
+
+modoEscritura = !modoEscritura
+
+let btn = document.getElementById("btnAnotaciones")
+
+if(modoEscritura){
+btn.innerText = "Salir de anotaciones"
+btn.style.background = "#B22222"
+}else{
+btn.innerText = "Anotaciones"
+btn.style.background = ""
+}
 
 }
 function abrirCanva(){
