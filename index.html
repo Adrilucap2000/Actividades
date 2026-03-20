@@ -736,8 +736,6 @@ box-shadow:
 
     <br>
 
-    <button class="boton-admin" onclick="cerrarAdmin()">Salir</button>
-
   </div>
 
 </div>
@@ -831,7 +829,7 @@ Entrar
   onclick="abrirCanva()"
   style="cursor:pointer;"
 >
-<button onclick="abrirLogin()" style="
+<button id="btnAdmin" onclick="abrirLogin()" style="
 position:fixed;
 bottom:20px;
 right:20px;
@@ -842,10 +840,8 @@ border:none;
 border-radius:10px;
 cursor:pointer;
 z-index:9999;
-  ">
+">
 ADMIN
-
-
 </button>
 
 
@@ -1111,25 +1107,36 @@ if(adminPass.value==="MPSS2026"){
 
 adminLogin.style.display="none"
 
-// 🔥 OCULTAR FORMULARIO
+// ocultar formulario
 document.getElementById("formularioUI").style.display = "none"
 
-// 🔥 MOSTRAR PANEL ADMIN
+// mostrar panel admin
 document.getElementById("adminPanel").style.display = "block"
+
+// 🔥 CAMBIAR BOTÓN A SALIR
+let btn = document.getElementById("btnAdmin")
+btn.innerText = "SALIR"
+btn.onclick = cerrarAdmin
 
 }
 
 }
 function cerrarAdmin(){
 
-// ocultar panel admin
+function cerrarAdmin(){
+
+// ocultar panel
 document.getElementById("adminPanel").style.display = "none"
 
-// mostrar formulario otra vez
+// mostrar formulario
 document.getElementById("formularioUI").style.display = "block"
 
-}
+// 🔥 RESTAURAR BOTÓN ADMIN
+let btn = document.getElementById("btnAdmin")
+btn.innerText = "ADMIN"
+btn.onclick = abrirLogin
 
+}
 /* PARTICIPANTES */
 
 function mostrarInscritos(){
