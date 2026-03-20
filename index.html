@@ -944,13 +944,16 @@ dateClick: function(info){
 
 if(!esAdmin || !modoEscritura) return
 
+let texto = prompt("Escribe:")
+
+if(texto){
 db.collection("anotaciones").add({
 fecha: info.dateStr,
-texto: "Nueva nota"
+texto: texto
 })
+}
 
 },
-
 // 👉 CLICK EN EVENTO
 eventClick:function(info){
 
@@ -980,8 +983,10 @@ let eventosData = {}
 let inscripcionesData = {}
 
 function renderCalendar(){
+
+// 🔥 BORRAR SOLO EVENTOS NORMALES (NO anotaciones)
 calendar.getEvents().forEach(e => {
-if(e.extendedProps.tipo !== "anotacion"){
+if(!e.extendedProps.tipo){
 e.remove()
 }
 })
@@ -998,7 +1003,6 @@ start: e.start,
 description: e.description
 }
 
-// 🔥 SI EXISTE INSCRIPCIÓN
 if(inscrito && inscrito.nombre){
 eventoFinal.title = e.title + " | " + inscrito.nombre
 eventoFinal.backgroundColor = "#B22222"
@@ -1010,7 +1014,6 @@ calendar.addEvent(eventoFinal)
 }
 
 }
-
 // 🔥 eventos en tiempo real
 db.collection("eventos").onSnapshot(snapshot => {
 
@@ -1037,8 +1040,6 @@ renderCalendar()
 
 })
 db.collection("anotaciones").onSnapshot(snapshot => {
-
-if(!esAdmin) return
 
 // limpiar solo anotaciones
 calendar.getEvents().forEach(e => {
