@@ -143,19 +143,22 @@ box-shadow:
 /* BODY */
 
 body{
-body{
-  font-family:Arial;
-
-  background-image:
-  linear-gradient(
-    to bottom,
-    rgba(90,10,20,0.95),
-    rgba(90,10,20,0.75)
-  ),
-  url("https://i.imgur.com/hTT1t8L.jpeg");
-
-  background-size:cover;
-  background-position:center;
+font-family:Arial;
+background:
+linear-gradient(
+to bottom,
+rgba(90,10,20,0.95) 0%,
+rgba(90,10,20,0.85) 50%,
+rgba(90,10,20,0.75) 100%
+),
+url("https://i.imgur.com/hTT1t8L.jpeg");
+background-size:cover;
+background-position:center;
+background-attachment:scroll;
+background-repeat: no-repeat;
+min-height: 100vh;
+padding:20px;
+overflow-x:hidden;
 }
 
 /* ESTRELLAS */
@@ -666,28 +669,6 @@ box-shadow:
 
 #seccionInscritos::-webkit-scrollbar-track{
   background: rgba(0,0,0,0.2);
-}
- body.admin-mode{
-  background-image:
-  linear-gradient(
-    to bottom,
-    rgba(0,0,40,0.95),
-    rgba(0,0,100,0.85)
-  ),
-  url("https://i.imgur.com/hTT1t8L.jpeg");
-}
-  body.admin-mode .destellos{
-  background-image:
-  radial-gradient(#4DA3FF 2px, transparent 2px),
-  radial-gradient(#6FBFFF 1px, transparent 1px),
-  radial-gradient(#A8D8FF 1px, transparent 1px);
-}
-body.admin-mode::before{
-  background-image: radial-gradient(#4DA3FF 1px, transparent 1px);
-  opacity: 0.2;
-}
-  body{
-  transition: all 0.5s ease;
 }
 </style>
 </head>
@@ -1323,7 +1304,6 @@ function verificarAdmin(){
 if(adminPass.value==="MPSS2026"){
 
 adminLogin.style.display="none"
-  document.body.classList.add("admin-mode")
 document.getElementById("tituloPrincipal").innerText = "ADMINISTRADOR"
 document.getElementById("subtituloPrincipal").innerText = "Calendario de actividades"
 // ocultar formulario
@@ -1343,7 +1323,7 @@ btn.onclick = cerrarAdmin
 }
 
 function cerrarAdmin(){
-document.body.classList.remove("admin-mode")
+
 esAdmin = false
 modoEscritura = false
 
