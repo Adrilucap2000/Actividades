@@ -689,20 +689,56 @@ box-shadow:
 
 <div class="formulario">
 
-<h1>Formulario de selección</h1>
+  <!-- FORMULARIO NORMAL -->
+  <div id="formularioUI">
 
-<p class="texto-explicacion">
-Selecciona el tema de tu preferencia y verifica en el calendario las instrucciones
-</p>
+    <h1>Formulario de selección</h1>
 
-<form id="formulario">
+    <p class="texto-explicacion">
+    Selecciona el tema de tu preferencia y verifica en el calendario las instrucciones
+    </p>
 
-<input type="text" id="nombre"  placeholder="Nombre" required>
-<input type="email" id="correo" placeholder="Correo" required>
-<input type="Cellphone" id="celular"  placeholder="Celular" required>
-<select id="curso"></select>
-<button id="btnEnviar" type="submit">ENVIAR INSCRIPCIÓN</button>
-</form>
+    <form id="formulario">
+      <input type="text" id="nombre"  placeholder="Nombre" required>
+      <input type="email" id="correo" placeholder="Correo" required>
+      <input type="Cellphone" id="celular"  placeholder="Celular" required>
+      <select id="curso"></select>
+      <button id="btnEnviar" type="submit">ENVIAR INSCRIPCIÓN</button>
+    </form>
+
+  </div>
+
+  <!-- PANEL ADMIN (OCULTO AL INICIO) -->
+  <div id="adminPanel" style="display:none">
+
+    <h2>Panel Administrador</h2>
+
+    <div class="tabs-admin">
+      <button class="tab-admin" onclick="mostrarActividades()">Actividades</button>
+      <button class="tab-admin" onclick="mostrarCrear()">Crear actividad</button>
+      <button class="tab-admin" onclick="mostrarInscritos()">Participantes</button>
+    </div>
+
+    <div id="seccionActividades">
+      <div id="listaActividades"></div>
+    </div>
+
+    <div id="seccionCrear" style="display:none">
+      <h3>Agregar nueva actividad</h3>
+      <input id="nuevoTitulo" placeholder="Título">
+      <input id="nuevaDescripcion" placeholder="Descripción">
+      <input id="nuevaFecha" type="date">
+      <br><br>
+      <button class="boton-admin" onclick="crearActividad()">Guardar actividad</button>
+    </div>
+
+    <div id="seccionInscritos" style="display:none"></div>
+
+    <br>
+
+    <button class="boton-admin" onclick="cerrarAdmin()">Salir</button>
+
+  </div>
 
 </div>
 
@@ -762,30 +798,6 @@ Entrar
 </div>
 
 </div>
-
-<!-- PANEL ADMIN -->
-
-<div id="adminPanel" class="modal">
-
-<div class="modal-contenido">
-
-<h2>Panel Administrador</h2>
-
-<div class="tabs-admin">
-
-<button class="tab-admin" onclick="mostrarActividades()">Actividades</button>
-
-<button class="tab-admin" onclick="mostrarCrear()">Crear actividad</button>
-
-<button class="tab-admin" onclick="mostrarInscritos()">Participantes</button>
-
-</div>
-<div id="seccionActividades">
-
-<div id="listaActividades"></div>
-
-</div>
-
 
 <div id="seccionCrear" style="display:none">
 
@@ -1098,14 +1110,24 @@ function verificarAdmin(){
 if(adminPass.value==="MPSS2026"){
 
 adminLogin.style.display="none"
-adminPanel.style.display="flex"
+
+// 🔥 OCULTAR FORMULARIO
+document.getElementById("formularioUI").style.display = "none"
+
+// 🔥 MOSTRAR PANEL ADMIN
+document.getElementById("adminPanel").style.display = "block"
 
 }
 
 }
-
 function cerrarAdmin(){
-adminPanel.style.display="none"
+
+// ocultar panel admin
+document.getElementById("adminPanel").style.display = "none"
+
+// mostrar formulario otra vez
+document.getElementById("formularioUI").style.display = "block"
+
 }
 
 /* PARTICIPANTES */
