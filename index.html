@@ -945,13 +945,17 @@ buttonText:{today:'Hoy'},
 events: [],
 
 // 👉 CLICK EN DÍA
+if(inputActivo){
+inputActivo.remove()
+inputActivo = null
+}
 dateClick: function(info){
 
 if(!esAdmin || !modoEscritura) return
 if(inputActivo) return
 
 // ✅ contenedor correcto
-let contenedor = info.dayEl.querySelector(".fc-daygrid-day-events")
+let contenedor = info.dayEl
 
 let input = document.createElement("input")
 input.type = "text"
@@ -1011,21 +1015,36 @@ if(info.event.extendedProps.tipo === "anotacion"){
 
 if(!modoEscritura) return
 
-let nuevoTexto = prompt("Editar nota:", info.event.title.replace("📝 ",""))
+let opcion = prompt("1 = editar | 2 = eliminar")
 
-if(nuevoTexto === null) return
+if(!opcion) return
 
-// 🔥 actualizar en Firebase
+// ✏️ EDITAR
+if(opcion === "1"){
+
+let nuevo = prompt("Editar nota:", info.event.title.replace("📝 ",""))
+
+if(nuevo){
 db.collection("anotaciones")
 .doc(info.event.id)
-.update({
-texto: nuevoTexto
-})
+.update({ texto: nuevo })
+}
 
 return
 }
 
-// eventos normales
+// 🗑 ELIMINAR
+if(opcion === "2"){
+
+db.collection("anotaciones")
+.doc(info.event.id)
+.delete()
+
+return
+}
+
+}
+
 mostrarModal(
 info.event.title,
 info.event.extendedProps?.description || ""
