@@ -263,20 +263,14 @@ font-family:'Cinzel Decorative';
 color:white;
 font-size:22px;
 }
-
-
-/* CONTENEDOR */
-
 .contenedor{
-display:grid;
-grid-template-columns:1fr 2px 2fr;
+display:flex; /* 🔥 CAMBIO CLAVE */
 gap:30px;
 max-width:1200px;
 margin:auto;
 position:relative;
 z-index:2;
 }
-
 .divisor{
 background:rgba(255,255,255,0.6);
 }
@@ -319,6 +313,7 @@ padding:30px;
 border-radius:15px;
 color:white;
 width:380px;
+flex-shrink:0;
 }
 
 .formulario h1{
@@ -368,6 +363,7 @@ background:white;
 padding:20px;
 border-radius:18px;
 box-shadow:0 15px 40px rgba(0,0,0,0.35);
+flex:1;
 }
 
 .fc-event-title{
@@ -437,7 +433,7 @@ position:relative;
   padding: 20px;
   box-sizing: border-box;
 
-  z-index: 9999;
+  z-index: 1000;
   display: none; /* controlado por JS */
 }
   /* INPUT CONTRASEÑA ADMIN */
@@ -699,7 +695,7 @@ body.admin-mode .formulario{
   /* ===== MODO ADMIN: ajustar layout ===== */
 body.admin-mode .contenedor{
   margin-left:260px;
-  transition: margin-left 0.5s ease;
+  transition: margin-left 0.4s ease;
 }
   /* ===== LIMPIEZA SIDEBAR ADMIN ===== */
 
