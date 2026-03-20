@@ -717,6 +717,7 @@ box-shadow:
       <button class="tab-admin" onclick="mostrarActividades()">Actividades</button>
       <button class="tab-admin" onclick="mostrarCrear()">Crear actividad</button>
       <button class="tab-admin" onclick="mostrarInscritos()">Participantes</button>
+      <button class="tab-admin" onclick="activarModoAnotaciones()">Anotaciones</button>
     </div>
 
     <div id="seccionActividades">
@@ -869,7 +870,13 @@ emailjs.init("JbLq6Pz4o5CfG8tfQ");
 })();
 
 let calendar
-
+let modoAnotaciones = false
+let esAdmin = false
+function activarModoAnotaciones(){
+  modoAnotaciones = true
+  alert("Modo anotaciones activado. Haz clic en un día del calendario.")
+}
+  
 // ✅ FUNCIÓN ARRIBA (CRÍTICO)
 function actualizarCursos(){
 
@@ -933,6 +940,24 @@ initialView:'dayGridMonth',
 locale:'es',
 buttonText:{today:'Hoy'},
 events: [],
+dateClick: function(info){
+
+if(!modoAnotaciones) return
+
+let texto = prompt("Escribe tu anotación:")
+
+if(texto){
+
+db.collection("anotaciones").add({
+fecha: info.dateStr,
+texto: texto
+})
+
+}
+
+modoAnotaciones = false
+
+},
 eventClick:function(info){
 mostrarModal(
 info.event.title,
@@ -998,6 +1023,25 @@ inscripcionesData[doc.id] = doc.data()
 })
 
 renderCalendar()
+
+})
+db.collection("anotaciones").onSnapshot(snapshot => {
+
+if(!esAdmin) return
+
+snapshot.forEach(doc => {
+
+let a = doc.data()
+
+calendar.addEvent({
+title: "📝 " + a.texto,
+start: a.fecha,
+allDay: true,
+display: 'background',
+color: '#1E3A8A'
+})
+
+})
 
 })
 
@@ -1086,7 +1130,7 @@ document.getElementById("formularioUI").style.display = "none"
 
 // mostrar panel admin
 document.getElementById("adminPanel").style.display = "block"
-
+esAdmin = true
 // 🔥 CAMBIAR BOTÓN A SALIR
 let btn = document.getElementById("btnAdmin")
 btn.innerText = "SALIR"
