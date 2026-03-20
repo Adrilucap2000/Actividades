@@ -946,8 +946,7 @@ events: [],
 
 // 👉 CLICK EN DÍA
 dateClick: function(info){
-
-// 🔥 limpiar input anterior
+// limpiar input anterior
 if(inputActivo){
 inputActivo.remove()
 inputActivo = null
@@ -955,8 +954,7 @@ inputActivo = null
 
 if(!esAdmin || !modoEscritura) return
 
-let contenedor = info.dayEl
-
+let contenedor = info.dayEl.querySelector(".fc-daygrid-day-events")
 let input = document.createElement("input")
 input.type = "text"
 input.placeholder = "Escribir..."
@@ -997,42 +995,88 @@ inputActivo = null
 
 },
 // 👉 CLICK EN EVENTO
-eventClick:function(info){
+eventDidMount: function(info){
 
 if(info.event.extendedProps.tipo === "anotacion"){
 
+info.el.addEventListener("contextmenu", function(e){
+e.preventDefault()
+
 if(!modoEscritura) return
 
-let opcion = prompt("1 = editar | 2 = eliminar")
-
-if(!opcion) return
-
-// ✏️ EDITAR
-if(opcion === "1"){
-
-let nuevo = prompt("Editar nota:", info.event.title.replace("📝 ",""))
-
-if(nuevo){
-db.collection("anotaciones")
-.doc(info.event.id)
-.update({ texto: nuevo })
-}
-
-return
-}
-
-// 🗑 ELIMINAR
-if(opcion === "2"){
+if(confirm("¿Eliminar nota?")){
 
 db.collection("anotaciones")
 .doc(info.event.id)
 .delete()
 
+}
+
+})
+
+}
+
+}
+// evitar múltiples inputs
+if(inputActivo) return
+
+let el = info.el
+
+let input = document.createElement("input")
+input.type = "text"
+input.value = info.event.title.replace("📝 ","")
+input.style.width = "100%"
+input.style.fontSize = "12px"
+input.style.border = "none"
+input.style.outline = "none"
+
+inputActivo = input
+
+// ocultar texto actual
+el.style.display = "none"
+
+// meter input en el mismo lugar
+el.parentNode.appendChild(input)
+input.focus()
+
+// 👉 GUARDAR
+input.addEventListener("keydown", function(e){
+
+if(e.key === "Enter"){
+
+let nuevo = input.value.trim()
+
+if(nuevo){
+
+db.collection("anotaciones")
+.doc(info.event.id)
+.update({
+texto: nuevo
+})
+
+}
+
+input.remove()
+el.style.display = ""
+inputActivo = null
+
+}
+
+})
+
+// 👉 CANCELAR (click afuera)
+input.addEventListener("blur", function(){
+
+input.remove()
+el.style.display = ""
+inputActivo = null
+
+})
+
 return
 }
 
-}
-
+// 👉 eventos normales
 mostrarModal(
 info.event.title,
 info.event.extendedProps?.description || ""
