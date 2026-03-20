@@ -698,6 +698,13 @@ body.admin-mode .contenedor{
   margin-left:260px;
   transition: margin-left 0.5s ease;
 }
+  /* ===== LIMPIEZA SIDEBAR ADMIN ===== */
+
+#adminPanel .modal-contenido{
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
 </style>
 </head>
 
@@ -788,30 +795,39 @@ cursor:pointer;
 
 <div id="adminLogin" class="modal">
 
-<div class="modal-contenido">
-<button onclick="cerrarLogin()" style="
-position:absolute;
-top:10px;
-right:15px;
-background:none;
-border:none;
-font-size:22px;
-cursor:pointer;
-">✕</button>
-<h2>Administrador</h2>
+<div id="adminPanel">
 
-<input type="password" id="adminPass" placeholder="Contraseña">
+  <h2>Panel Administrador</h2>
 
-<br><br>
+  <div class="tabs-admin">
+    <button class="tab-admin" onclick="mostrarActividades()">Actividades</button>
+    <button class="tab-admin" onclick="mostrarCrear()">Crear actividad</button>
+    <button class="tab-admin" onclick="mostrarInscritos()">Participantes</button>
+  </div>
 
-<button class="boton-admin" style="margin-top:10px" onclick="verificarAdmin()">
-Entrar
-</button>
-  
+  <div id="seccionActividades">
+    <div id="listaActividades"></div>
+  </div>
+
+  <div id="seccionCrear" style="display:none">
+    <h3>Agregar nueva actividad</h3>
+
+    <input id="nuevoTitulo" placeholder="Título">
+    <input id="nuevaDescripcion" placeholder="Descripción">
+    <input id="nuevaFecha" type="date">
+
+    <br><br>
+    <button class="boton-admin" onclick="crearActividad()">Guardar actividad</button>
+  </div>
+
+  <div id="seccionInscritos" style="display:none"></div>
+
+  <br>
+
+  <button class="boton-admin" onclick="cerrarAdmin()">Salir</button>
+
 </div>
-
 </div>
-
 <!-- PANEL ADMIN -->
 
 <div id="adminPanel" class="modal">
