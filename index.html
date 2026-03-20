@@ -945,16 +945,16 @@ buttonText:{today:'Hoy'},
 events: [],
 
 // 👉 CLICK EN DÍA
+dateClick: function(info){
+
+// 🔥 limpiar input anterior
 if(inputActivo){
 inputActivo.remove()
 inputActivo = null
 }
-dateClick: function(info){
 
 if(!esAdmin || !modoEscritura) return
-if(inputActivo) return
 
-// ✅ contenedor correcto
 let contenedor = info.dayEl
 
 let input = document.createElement("input")
@@ -981,13 +981,6 @@ let texto = input.value.trim()
 
 if(texto){
 
-// 🔥 1. GUARDAR EN FIREBASE
-db.collection("anotaciones").add({
-fecha: info.dateStr,
-texto: texto
-})
-
-// 🔥 2. MOSTRAR INMEDIATO (AQUÍ VA LO QUE PREGUNTAS)
 db.collection("anotaciones").add({
 fecha: info.dateStr,
 texto: texto
@@ -995,19 +988,14 @@ texto: texto
 input.remove()
 inputActivo = null
 })
-}
 
-// 🔥 limpiar input
-input.remove()
-inputActivo = null
+}
 
 }
 
 })
-// ❌ NO BLUR
 
 },
-
 // 👉 CLICK EN EVENTO
 eventClick:function(info){
 
