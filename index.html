@@ -651,10 +651,36 @@ box-shadow:
 #seccionInscritos::-webkit-scrollbar-track{
   background: rgba(0,0,0,0.2);
 }
+  /* =========================
+   OVERLAY DE MODO
+   ========================= */
+
+#modeOverlay{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* no bloquea clics */
+  z-index: 1;           /* encima del fondo, debajo del contenido */
+  transition: background-color 0.8s ease;
+}
+
+/* MODO USUARIO */
+.overlay-user{
+  background-color: rgba(255,255,255,0.03);
+}
+
+/* MODO ADMIN */
+.overlay-admin{
+  background-color: rgba(90,10,20,0.35);
+}
 </style>
 </head>
 
 <body>
+<!-- OVERLAY DE MODO -->
+<div id="modeOverlay" class="overlay-user"></div>
 <div id="pantallaInicio">
 
   <div class="destellos"></div>
