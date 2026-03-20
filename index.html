@@ -263,14 +263,20 @@ font-family:'Cinzel Decorative';
 color:white;
 font-size:22px;
 }
+
+
+/* CONTENEDOR */
+
 .contenedor{
-display:flex; /* 🔥 CAMBIO CLAVE */
+display:grid;
+grid-template-columns:1fr 2px 2fr;
 gap:30px;
 max-width:1200px;
 margin:auto;
 position:relative;
 z-index:2;
 }
+
 .divisor{
 background:rgba(255,255,255,0.6);
 }
@@ -313,7 +319,6 @@ padding:30px;
 border-radius:15px;
 color:white;
 width:380px;
-flex-shrink:0;
 }
 
 .formulario h1{
@@ -363,7 +368,6 @@ background:white;
 padding:20px;
 border-radius:18px;
 box-shadow:0 15px 40px rgba(0,0,0,0.35);
-flex:1;
 }
 
 .fc-event-title{
@@ -418,24 +422,7 @@ width:400px;
 text-align:center;
 position:relative;
 }
-/*SIDEBAR ADMIN */
 
-#adminPanel{
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 260px;
-  height: 100vh;
-
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(8px);
-
-  padding: 20px;
-  box-sizing: border-box;
-
-  z-index: 1000;
-  display: none; /* controlado por JS */
-}
   /* INPUT CONTRASEÑA ADMIN */
 
 #adminLogin input{
@@ -664,56 +651,10 @@ box-shadow:
 #seccionInscritos::-webkit-scrollbar-track{
   background: rgba(0,0,0,0.2);
 }
-  /* =========================
-   OVERLAY DE MODO
-   ========================= */
-
-#modeOverlay{
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none; /* no bloquea clics */
-  z-index: 1;           /* encima del fondo, debajo del contenido */
-  transition: background-color 0.8s ease;
-}
-
-/* MODO USUARIO */
-.overlay-user{
-  background-color: rgba(255,255,255,0.03);
-}
-
-/* MODO ADMIN */
-.overlay-admin{
-  background-color: rgba(90,10,20,0.35);
-}
-  /* ===== MODO ADMIN: ocultar formulario ===== */
-body.admin-mode .formulario{
-  display:none;
-}
-  body.admin-mode #calendar{
-  width:100%;
-}
-  /* ===== MODO ADMIN: ajustar layout ===== */
-body.admin-mode .contenedor{
-  margin-left:260px;
-  max-width:none; 
-  width:calc(100% - 260px); 
-}
-  /* ===== LIMPIEZA SIDEBAR ADMIN ===== */
-
-#adminPanel .modal-contenido{
-  background: none;
-  box-shadow: none;
-  padding: 0;
-}
 </style>
 </head>
 
 <body>
-<!-- OVERLAY DE MODO -->
-<div id="modeOverlay" class="overlay-user"></div>
 <div id="pantallaInicio">
 
   <div class="destellos"></div>
@@ -794,9 +735,39 @@ cursor:pointer;
 
 </div>
 
+<!-- LOGIN ADMIN -->
+
+<div id="adminLogin" class="modal">
+
+<div class="modal-contenido">
+<button onclick="cerrarLogin()" style="
+position:absolute;
+top:10px;
+right:15px;
+background:none;
+border:none;
+font-size:22px;
+cursor:pointer;
+">✕</button>
+<h2>Administrador</h2>
+
+<input type="password" id="adminPass" placeholder="Contraseña">
+
+<br><br>
+
+<button class="boton-admin" style="margin-top:10px" onclick="verificarAdmin()">
+Entrar
+</button>
+  
+</div>
+
+</div>
+
 <!-- PANEL ADMIN -->
 
-<div id="adminPanel">
+<div id="adminPanel" class="modal">
+
+<div class="modal-contenido">
 
 <h2>Panel Administrador</h2>
 
@@ -917,7 +888,6 @@ emailjs.init("JbLq6Pz4o5CfG8tfQ");
 
 let calendar
 
-  let isAdmin = false
 // ✅ FUNCIÓN ARRIBA (CRÍTICO)
 function actualizarCursos(){
 
@@ -1118,48 +1088,27 @@ modalActividad.style.display="none"
 /* ADMIN */
 
 function abrirLogin(){
-  adminPanel.style.display = "block";
-  activarModoAdmin();
+adminLogin.style.display="flex"
 }
 function cerrarLogin(){
 adminLogin.style.display="none"
 }
 function verificarAdmin(){
 
-  if(adminPass.value === "MPSS2026"){
+if(adminPass.value==="MPSS2026"){
 
-    adminLogin.style.display = "none"
-    adminPanel.style.display = "block" 
-    activarModoAdmin()
+adminLogin.style.display="none"
+adminPanel.style.display="flex"
 
-  }
 }
 
-function activarModoAdmin(){
-  isAdmin = true
-  document.body.classList.add("admin-mode")
-
-  document.querySelector(".titulo-cinzel").innerText = "ADMINISTRADOR"
-  document.querySelector(".subtitulo").innerText = "Calendario de actividades"
-
-  console.log("🛡️ MODO ADMIN ACTIVADO")
 }
 
 function cerrarAdmin(){
-  adminPanel.style.display = "none"
-  salirModoAdmin()
+adminPanel.style.display="none"
 }
 
-function salirModoAdmin(){
-  isAdmin = false
-  document.body.classList.remove("admin-mode")
-
-  document.querySelector(".titulo-cinzel").innerText = "BIENVENIDOS"
-  document.querySelector(".subtitulo").innerText = "Inscripción a temas"
-
-  console.log("👤 MODO USUARIO")
-}
-  /* PARTICIPANTES */
+/* PARTICIPANTES */
 
 function mostrarInscritos(){
 
