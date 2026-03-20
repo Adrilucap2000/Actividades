@@ -1266,25 +1266,7 @@ document.getElementById("formularioUI").style.display = "none"
 // mostrar panel admin
 document.getElementById("adminPanel").style.display = "block"
 esAdmin = true
-if(ultimoSnapshotAnotaciones){
 
-ultimoSnapshotAnotaciones.forEach(doc => {
-
-let a = doc.data()
-
-calendar.addEvent({
-id: doc.id,
-title: "📝 " + a.texto,
-start: a.fecha,
-allDay: true,
-backgroundColor: '#1E3A8A',
-textColor: 'white',
-extendedProps: { tipo: "anotacion" }
-})
-
-})
-
-}
 // 🔥 CAMBIAR BOTÓN A SALIR
 let btn = document.getElementById("btnAdmin")
 btn.innerText = "SALIR"
