@@ -943,20 +943,25 @@ events: [],
 dateClick: function(info){
 
 if(!esAdmin || !modoEscritura) return
-
 if(inputActivo) return
 
-let celda = info.dayEl
+// ✅ contenedor correcto
+let contenedor = info.dayEl.querySelector(".fc-daygrid-day-events")
 
 let input = document.createElement("input")
 input.type = "text"
 input.placeholder = "Escribir..."
-input.style.width = "90%"
+input.style.width = "100%"
 input.style.fontSize = "12px"
+input.style.border = "none"
+input.style.outline = "none"
+input.style.background = "#fff"
+input.style.borderRadius = "4px"
+input.style.padding = "2px"
 
 inputActivo = input
 
-celda.appendChild(input)
+contenedor.appendChild(input)
 input.focus()
 
 input.addEventListener("keydown", function(e){
@@ -966,10 +971,23 @@ if(e.key === "Enter"){
 let texto = input.value.trim()
 
 if(texto){
+
+// 🔥 guardar en Firebase
 db.collection("anotaciones").add({
 fecha: info.dateStr,
 texto: texto
 })
+
+// 🔥 mostrar inmediato (CLAVE)
+calendar.addEvent({
+title: "📝 " + texto,
+start: info.dateStr,
+allDay: true,
+backgroundColor: '#1E3A8A',
+textColor: 'white',
+extendedProps: { tipo: "anotacion" }
+})
+
 }
 
 input.remove()
@@ -978,16 +996,11 @@ inputActivo = null
 
 })
 
-input.addEventListener("blur", function(){
-if(inputActivo){
-input.remove()
-inputActivo = null
-}
-})
+// ❌ NO BLUR
 
 },
 
-// 👉 CLICK EN EVENTO (IMPORTANTE)
+// 👉 CLICK EN EVENTO
 eventClick:function(info){
 
 if(info.event.extendedProps.tipo === "anotacion"){
@@ -1007,7 +1020,6 @@ info.event.extendedProps?.description || ""
 )
 
 }
-
 } // 🔥 ESTA CIERRA EL OBJETO
 
 ) // 🔥 ESTA CIERRA EL CONSTRUCTOR
