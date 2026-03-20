@@ -1173,24 +1173,27 @@ btn.onclick = cerrarAdmin
 }
 
 function cerrarAdmin(){
+
 esAdmin = false
 modoEscritura = false
 
-let btn = document.getElementById("btnAnotaciones")
-if(btn){
-btn.innerText = "Anotaciones"
-btn.style.background = ""
+// botón anotaciones
+let btnAnot = document.getElementById("btnAnotaciones")
+if(btnAnot){
+btnAnot.innerText = "Anotaciones"
+btnAnot.style.background = ""
 }
+
 // ocultar panel
 document.getElementById("adminPanel").style.display = "none"
 
 // mostrar formulario
 document.getElementById("formularioUI").style.display = "block"
 
-// 🔥 RESTAURAR BOTÓN ADMIN
-let btn = document.getElementById("btnAdmin")
-btn.innerText = "ADMIN"
-btn.onclick = abrirLogin
+// botón admin
+let btnAdmin = document.getElementById("btnAdmin")
+btnAdmin.innerText = "ADMIN"
+btnAdmin.onclick = abrirLogin
 
 }
 /* PARTICIPANTES */
