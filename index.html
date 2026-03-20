@@ -914,6 +914,7 @@ emailjs.init("JbLq6Pz4o5CfG8tfQ");
 
 let calendar
 
+  let isAdmin = false
 // ✅ FUNCIÓN ARRIBA (CRÍTICO)
 function actualizarCursos(){
 
@@ -1125,15 +1126,22 @@ if(adminPass.value==="MPSS2026"){
 
 adminLogin.style.display="none"
 adminPanel.style.display="flex"
-
+activarModoAdmin()
 }
 
 }
-
+function activarModoAdmin(){
+  isAdmin = true
+  console.log("🛡️ MODO ADMIN ACTIVADO")
+}
 function cerrarAdmin(){
 adminPanel.style.display="none"
+salirModoAdmin()
 }
-
+function salirModoAdmin(){
+  isAdmin = false
+  console.log("👤 MODO USUARIO")
+}
 /* PARTICIPANTES */
 
 function mostrarInscritos(){
