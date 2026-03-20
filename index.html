@@ -1132,20 +1132,19 @@ renderCalendar()
 
 })
 db.collection("anotaciones").onSnapshot(snapshot => {
-if(!esAdmin) return
-// 🔥 borrar SOLO anotaciones anteriores
+
+// 🔥 siempre escucha, pero decide si mostrar
 calendar.getEvents().forEach(e => {
 if(e.extendedProps.tipo === "anotacion"){
 e.remove()
 }
 })
 
+if(!esAdmin) return
+
 snapshot.forEach(doc => {
 
 let a = doc.data()
-
-// 🔥 evitar duplicados (extra seguro)
-if(calendar.getEventById(doc.id)) return
 
 calendar.addEvent({
 id: doc.id,
@@ -1266,7 +1265,6 @@ document.getElementById("formularioUI").style.display = "none"
 // mostrar panel admin
 document.getElementById("adminPanel").style.display = "block"
 esAdmin = true
-cargarAnotaciones()
 // 🔥 CAMBIAR BOTÓN A SALIR
 let btn = document.getElementById("btnAdmin")
 btn.innerText = "SALIR"
@@ -1360,15 +1358,6 @@ document.getElementById("seccionInscritos").style.display="none"
 document.getElementById("seccionCrear").style.display="block"
 
 }
-function cargarAnotaciones(){
-
-db.collection("anotaciones").get().then(snapshot => {
-
-calendar.getEvents().forEach(e => {
-if(e.extendedProps.tipo === "anotacion"){
-e.remove()
-}
-})
 
 snapshot.forEach(doc => {
 
