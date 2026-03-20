@@ -143,22 +143,19 @@ box-shadow:
 /* BODY */
 
 body{
-font-family:Arial;
-background:
-linear-gradient(
-to bottom,
-rgba(90,10,20,0.95) 0%,
-rgba(90,10,20,0.85) 50%,
-rgba(90,10,20,0.75) 100%
-),
-url("https://i.imgur.com/hTT1t8L.jpeg");
-background-size:cover;
-background-position:center;
-background-attachment:scroll;
-background-repeat: no-repeat;
-min-height: 100vh;
-padding:20px;
-overflow-x:hidden;
+body{
+  font-family:Arial;
+
+  background-image:
+  linear-gradient(
+    to bottom,
+    rgba(90,10,20,0.95),
+    rgba(90,10,20,0.75)
+  ),
+  url("https://i.imgur.com/hTT1t8L.jpeg");
+
+  background-size:cover;
+  background-position:center;
 }
 
 /* ESTRELLAS */
@@ -670,18 +667,14 @@ box-shadow:
 #seccionInscritos::-webkit-scrollbar-track{
   background: rgba(0,0,0,0.2);
 }
-  body.admin-mode{
-  background:
+ body.admin-mode{
+  background-image:
   linear-gradient(
     to bottom,
-    rgba(10,20,60,0.95) 0%,
-    rgba(20,30,80,0.85) 50%,
-    rgba(30,40,100,0.75) 100%
+    rgba(0,0,40,0.95),
+    rgba(0,0,100,0.85)
   ),
   url("https://i.imgur.com/hTT1t8L.jpeg");
-
-  background-size:cover;
-  background-position:center;
 }
   body.admin-mode .destellos{
   background-image:
