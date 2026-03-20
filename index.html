@@ -944,10 +944,6 @@ dateClick: function(info){
 
 if(!esAdmin || !modoEscritura) return
 
-dateClick: function(info){
-
-if(!esAdmin || !modoEscritura) return
-
 db.collection("anotaciones").add({
 fecha: info.dateStr,
 texto: "Nueva nota"
@@ -964,7 +960,6 @@ if(!modoEscritura) return
 
 let opcion = prompt("1 = editar | 2 = eliminar")
 
-// ✏️ EDITAR
 if(opcion === "1"){
 
 let nuevoTexto = prompt("Editar:", info.event.title.replace("📝 ",""))
@@ -977,13 +972,10 @@ db.collection("anotaciones")
 
 }
 
-// 🗑 ELIMINAR
 if(opcion === "2"){
-
 db.collection("anotaciones")
 .doc(info.event.id)
 .delete()
-
 }
 
 return
@@ -996,6 +988,8 @@ info.event.extendedProps?.description || ""
 )
 
 }
+
+}) 
   calendar.render()
 
 let eventosData = {}
