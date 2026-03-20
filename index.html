@@ -1132,7 +1132,7 @@ renderCalendar()
 
 })
 db.collection("anotaciones").onSnapshot(snapshot => {
-
+if(!esAdmin) return
 // 🔥 borrar SOLO anotaciones anteriores
 calendar.getEvents().forEach(e => {
 if(e.extendedProps.tipo === "anotacion"){
@@ -1280,11 +1280,18 @@ function cerrarAdmin(){
 esAdmin = false
 modoEscritura = false
 
+// 🔥 borrar anotaciones del calendario
+calendar.getEvents().forEach(e => {
+  if(e.extendedProps.tipo === "anotacion"){
+    e.remove()
+  }
+})
+
 // botón anotaciones
 let btnAnot = document.getElementById("btnAnotaciones")
 if(btnAnot){
-btnAnot.innerText = "Anotaciones"
-btnAnot.style.background = ""
+  btnAnot.innerText = "Anotaciones"
+  btnAnot.style.background = ""
 }
 
 // ocultar panel
