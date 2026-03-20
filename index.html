@@ -1133,15 +1133,36 @@ renderCalendar()
 
 })
 db.collection("anotaciones").onSnapshot(snapshot => {
+
 ultimoSnapshotAnotaciones = snapshot
-// 🔥 siempre escucha, pero decide si mostrar
+
+if(!esAdmin) return // 🔥 primero validas
+
+// 🔥 luego borras
 calendar.getEvents().forEach(e => {
 if(e.extendedProps.tipo === "anotacion"){
 e.remove()
 }
 })
 
-if(!esAdmin) return
+// 🔥 luego dibujas
+snapshot.forEach(doc => {
+
+let a = doc.data()
+
+calendar.addEvent({
+id: doc.id,
+title: "📝 " + a.texto,
+start: a.fecha,
+allDay: true,
+backgroundColor: '#1E3A8A',
+textColor: 'white',
+extendedProps: { tipo: "anotacion" }
+})
+
+})
+
+})
 
 snapshot.forEach(doc => {
 
