@@ -944,51 +944,58 @@ dateClick: function(info){
 
 if(!esAdmin || !modoEscritura) return
 
-let texto = prompt("Escribe:")
+dateClick: function(info){
 
-if(texto){
+if(!esAdmin || !modoEscritura) return
 
 db.collection("anotaciones").add({
 fecha: info.dateStr,
-texto: texto
+texto: "Nueva nota"
 })
-
-}
 
 },
 
 // 👉 CLICK EN EVENTO
 eventClick:function(info){
 
-// 🔥 SI ES ANOTACIÓN
 if(info.event.extendedProps.tipo === "anotacion"){
 
 if(!modoEscritura) return
 
+let opcion = prompt("1 = editar | 2 = eliminar")
+
+// ✏️ EDITAR
+if(opcion === "1"){
+
 let nuevoTexto = prompt("Editar:", info.event.title.replace("📝 ",""))
 
 if(nuevoTexto){
+db.collection("anotaciones")
+.doc(info.event.id)
+.update({ texto: nuevoTexto })
+}
+
+}
+
+// 🗑 ELIMINAR
+if(opcion === "2"){
 
 db.collection("anotaciones")
 .doc(info.event.id)
-.update({
-texto: nuevoTexto
-})
+.delete()
 
 }
 
 return
 }
 
-// 👇 EVENTOS NORMALES
+// eventos normales
 mostrarModal(
 info.event.title,
 info.event.extendedProps?.description || ""
 )
 
 }
-
-})
   calendar.render()
 
 let eventosData = {}
