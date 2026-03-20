@@ -694,9 +694,8 @@ box-shadow:
 
 <header class="encabezado">
 
-<h1 class="titulo-cinzel">BIENVENIDOS</h1>
-
-<h2 class="subtitulo">Inscripción a temas</h2>
+<h1 id="tituloPrincipal" class="titulo-cinzel">BIENVENIDOS</h1>
+<h2 id="subtituloPrincipal" class="subtitulo">Inscripción a temas</h2>
 
 </header>
 
@@ -1301,7 +1300,8 @@ function verificarAdmin(){
 if(adminPass.value==="MPSS2026"){
 
 adminLogin.style.display="none"
-
+document.getElementById("tituloPrincipal").innerText = "ADMINISTRADOR"
+document.getElementById("subtituloPrincipal").innerText = "Calendario de actividades"
 // ocultar formulario
 document.getElementById("formularioUI").style.display = "none"
 
@@ -1339,7 +1339,8 @@ if(btnAnot){
 
 // ocultar panel
 document.getElementById("adminPanel").style.display = "none"
-
+document.getElementById("tituloPrincipal").innerText = "BIENVENIDOS"
+document.getElementById("subtituloPrincipal").innerText = "Inscripción a temas"
 // mostrar formulario
 document.getElementById("formularioUI").style.display = "block"
 
