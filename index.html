@@ -944,26 +944,21 @@ dateClick: function(info){
 
 if(!esAdmin || !modoEscritura) return
 
-// evitar duplicar input
 if(inputActivo) return
 
-// obtener celda del calendario
 let celda = info.dayEl
 
-// crear input
 let input = document.createElement("input")
 input.type = "text"
 input.placeholder = "Escribir..."
 input.style.width = "90%"
 input.style.fontSize = "12px"
 
-// guardar referencia
 inputActivo = input
 
 celda.appendChild(input)
 input.focus()
 
-// guardar al presionar ENTER
 input.addEventListener("keydown", function(e){
 
 if(e.key === "Enter"){
@@ -971,12 +966,10 @@ if(e.key === "Enter"){
 let texto = input.value.trim()
 
 if(texto){
-
 db.collection("anotaciones").add({
 fecha: info.dateStr,
 texto: texto
 })
-
 }
 
 input.remove()
@@ -985,7 +978,6 @@ inputActivo = null
 
 })
 
-// cancelar si pierde foco
 input.addEventListener("blur", function(){
 if(inputActivo){
 input.remove()
@@ -994,7 +986,33 @@ inputActivo = null
 })
 
 },
-  calendar.render()
+
+// 👉 CLICK EN EVENTO (IMPORTANTE)
+eventClick:function(info){
+
+if(info.event.extendedProps.tipo === "anotacion"){
+
+if(!modoEscritura) return
+
+db.collection("anotaciones")
+.doc(info.event.id)
+.delete()
+
+return
+}
+
+mostrarModal(
+info.event.title,
+info.event.extendedProps?.description || ""
+)
+
+}
+
+} // 🔥 ESTA CIERRA EL OBJETO
+
+) // 🔥 ESTA CIERRA EL CONSTRUCTOR
+
+calendar.render()
 
 let eventosData = {}
 let inscripcionesData = {}
