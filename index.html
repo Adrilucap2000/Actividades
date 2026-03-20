@@ -1358,26 +1358,6 @@ document.getElementById("seccionInscritos").style.display="none"
 document.getElementById("seccionCrear").style.display="block"
 
 }
-
-snapshot.forEach(doc => {
-
-let a = doc.data()
-
-calendar.addEvent({
-id: doc.id,
-title: "📝 " + a.texto,
-start: a.fecha,
-allDay: true,
-backgroundColor: '#1E3A8A',
-textColor: 'white',
-extendedProps: { tipo: "anotacion" }
-})
-
-})
-
-})
-
-}
 /* ACTIVIDADES */
 
 function mostrarActividades(){
