@@ -505,27 +505,22 @@ background:#FFF5CC !important;
 background:#7A1E2C !important;
 border:none !important;
 }
-/* 🟡 DISPONIBLES (default) */
-.fc-daygrid-event{
+/* 🟡 DISPONIBLE */
+.fc-event.disponible{
   background:#D4AF37 !important;
   border-color:#D4AF37 !important;
   color:black !important;
 }
 
-/* 🔴 OCUPADAS */
-.fc-daygrid-event.fc-event-start.fc-event-end{
-  /* base */
-}
-
-/* 👉 cuando tienen nombre (ocupadas) */
-.fc-daygrid-event:has(.fc-event-title:contains("|")){
+/* 🔴 OCUPADO */
+.fc-event.ocupado{
   background:#B22222 !important;
   border-color:#B22222 !important;
   color:white !important;
 }
 
-/* 🔵 ANOTACIONES */
-.fc-daygrid-event:has(.fc-event-title:contains("📝")){
+/* 🔵 NOTA */
+.fc-event.nota{
   background:#A6D9E2 !important;
   border-color:#A6D9E2 !important;
   color:black !important;
@@ -1300,27 +1295,25 @@ e.remove()
 
 for(let id in eventosData){
 
-let e = eventosData[id]
-let inscrito = inscripcionesData[id]
+  let e = eventosData[id]
+  let inscrito = inscripcionesData[id]
 
-let eventoFinal = {
-  id: id,
-  title: e.title,
-  start: e.start,
-  description: e.description,
-  classNames: ['disponible'] // 👈 default
+  let eventoFinal = {
+    id: id,
+    title: e.title,
+    start: e.start,
+    description: e.description,
+    classNames: ['disponible']
+  }
+
+  if(inscrito && inscrito.nombre){
+    eventoFinal.title = e.title + " | " + inscrito.nombre
+    eventoFinal.classNames = ['ocupado']
+  }
+
+  // 🔥 ESTO VA ADENTRO
+  calendar.addEvent(eventoFinal)
 }
-
-if(inscrito && inscrito.nombre){
-  eventoFinal.title = e.title + " | " + inscrito.nombre
-  eventoFinal.classNames = ['ocupado']
-}
-}
-
-calendar.addEvent(eventoFinal)
-
-}
-
 }
 // 🔥 eventos en tiempo real
 db.collection("eventos").onSnapshot(snapshot => {
@@ -1370,7 +1363,7 @@ id: doc.id,
 title: "📝 " + a.texto,
 start: a.fecha,
 allDay: true,
-backgroundColor: '#A6D9E2',
+classNames: ['nota']
 textColor: 'black',
 extendedProps: { tipo: "anotacion" }
 })
