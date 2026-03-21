@@ -691,23 +691,26 @@ box-shadow:
 @media (max-width: 768px){
 
   .contenedor{
-    grid-template-columns: 1fr;
+    display:flex;
+    flex-direction: column;
   }
 
   .divisor{
     display:none;
   }
 
-  .formulario{
-    width:100%;
-  }
-
-  /* 🔥 CALENDARIO */
   #calendar{
+    order:1;
+    margin-bottom:20px;
     width:100%;
     margin-top:20px;
     padding:10px;
     height:auto;
+  }
+
+  .formulario{
+    order:2;
+    width:100%;
   }
 
   /* 🔥 ALTURA MÁS GRANDE */
@@ -719,6 +722,8 @@ box-shadow:
   .fc{
     font-size:12px;
   }
+
+}
 
   /* 🔥 TÍTULO */
   .fc-toolbar-title{
