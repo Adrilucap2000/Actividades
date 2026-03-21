@@ -506,14 +506,14 @@ background:#FFF5CC !important;
 background:#7A1E2C !important;
 border:none !important;
 }
-/* 🟡 ACTIVIDADES DISPONIBLES */
-.fc-event{
+/* 🟡 SOLO ACTIVIDADES DISPONIBLES */
+.fc-event:not([style*="#B22222"]):not([style*="#A6D9E2"]){
   background:#D4AF37 !important;
   border-color:#D4AF37 !important;
   color:black !important;
 }
 
-/* 🔴 ACTIVIDAD OCUPADA (YA TIENES EN JS PERO REFUERZA) */
+/* 🔴 OCUPADAS */
 .fc-event[style*="#B22222"]{
   background:#B22222 !important;
   border-color:#B22222 !important;
@@ -521,7 +521,7 @@ border:none !important;
 }
 
 /* 🔵 ANOTACIONES */
-.fc-event[style*="#1E3A8A"]{
+.fc-event[style*="#A6D9E2"]{
   background:#A6D9E2 !important;
   border-color:#A6D9E2 !important;
   color:black !important;
