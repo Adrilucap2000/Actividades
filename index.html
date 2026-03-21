@@ -322,17 +322,26 @@ font-size:22px;
 /* CONTENEDOR */
 
 .contenedor{
-display:grid;
-grid-template-columns:1fr 2px 1fr;
-gap:30px;
-max-width:1400px;
-margin:auto;
-position:relative;
-z-index:2;
+  display:grid;
+  grid-template-columns: 1fr 2px 1fr;
+  gap:30px;
+
+  max-width:1200px; /* 🔥 importante */
+  margin:auto;
+
+  align-items:start; /* 🔥 evita que se estire raro */
 }
 
 .divisor{
-background:rgba(255,255,255,0.6);
+  width:2px;
+  border-radius:2px;
+
+  background:linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255,255,255,0.8),
+    transparent
+  );
 }
 
 /* FORMULARIO */
@@ -440,7 +449,7 @@ transform:scale(1.05);
   box-shadow:0 15px 40px rgba(0,0,0,0.35);
 
   width:100%;
-  max-width:100%;
+  max-width:700%;
   margin:auto;
 }
 }
