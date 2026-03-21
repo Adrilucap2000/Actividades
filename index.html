@@ -553,23 +553,30 @@ box-shadow:none;
 /* LOGIN */
 
 #pantallaInicio{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-z-index:99999;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  min-height:100dvh; /* 🔥 CLAVE */
 
-background:
-linear-gradient(rgba(90,10,20,0.95),rgba(90,10,20,0.95)),
-url("https://i.imgur.com/hTT1t8L.jpeg");
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
 
-background-size:cover;
-background-position:center;
+  z-index:99999;
+
+  background:
+  linear-gradient(rgba(90,10,20,0.95),rgba(90,10,20,0.95)),
+  url("https://i.imgur.com/hTT1t8L.jpeg");
+
+  background-size:cover;
+  background-position:center;
+
+  overflow:hidden; /* 🔥 evita movimiento */
+}
+  input, textarea{
+  font-size:16px;
 }
 
 /* CONTENIDO */
@@ -705,8 +712,14 @@ box-shadow:
     flex-direction:column;
     width:100% !important;
   }
+@media (max-width: 768px){
 
-  /* 🔥 CLAVE PARA QUE NO SE CORTE */
+  .contenedor{
+    display:flex !important;
+    flex-direction:column;
+    width:100% !important;
+  }
+
   .contenedor > *{
     width:100% !important;
     max-width:100% !important;
@@ -726,22 +739,26 @@ box-shadow:
   .formulario{
     width:100%;
     max-width:100%;
+    padding:20px;
+    box-sizing:border-box;
   }
 
-  /* 🔥 ESTO ARREGLA EL BRINCO DEL LOGIN */
+  /* 🔥 TEXTO RESPONSIVO */
+  h1{
+    font-size:32px !important;
+    text-align:center;
+  }
+
+  /* 🔥 LOGIN ESTABLE */
   #pantallaInicio{
-    width:100vw;
-    height:100vh;
+    min-height:100dvh;
     overflow:hidden;
   }
 
-  /* 🔥 EVITA DESBORDES */
+  /* 🔥 EVITA CORTES */
   html, body{
     overflow-x:hidden;
-  }
-
-  .fc-view-harness{
-    min-height: 500px;
+    width:100%;
   }
 
   .fc{
