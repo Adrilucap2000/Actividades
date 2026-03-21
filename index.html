@@ -1650,12 +1650,18 @@ function cerrarModalEliminarActividad(){
   document.getElementById("modalEliminarActividad").style.display = "none"
 }
 
-function confirmarEliminarActividad(){
+async function confirmarEliminarActividad(){
 
   if(idActividadAEliminar){
-    db.collection("eventos")
-    .doc(idActividadAEliminar)
-    .delete()
+
+    await db.collection("eventos")
+      .doc(idActividadAEliminar)
+      .delete()
+
+    await db.collection("inscripciones")
+      .doc(idActividadAEliminar)
+      .delete()
+
   }
 
   cerrarModalEliminarActividad()
