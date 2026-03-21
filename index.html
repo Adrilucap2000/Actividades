@@ -484,7 +484,6 @@ transform:scale(1.05);
 
 /* 🔥 ASEGURA QUE EL EVENTO CREZCA */
 
-.fc-daygrid-event{
   display:flex;
   align-items:center;
   justify-content:center;
@@ -499,11 +498,6 @@ transform:scale(1.05);
   transform:scale(1.05);
   cursor:pointer;
 }
-.fc-daygrid-event{
-  background:#D4AF37 !important;
-  border-color:#D4AF37 !important;
-  color:black !important;
-}
 .fc-day-today{
 background:#FFF5CC !important;
 }
@@ -512,7 +506,26 @@ background:#FFF5CC !important;
 background:#7A1E2C !important;
 border:none !important;
 }
+/* 🟡 ACTIVIDADES DISPONIBLES */
+.fc-event{
+  background:#D4AF37 !important;
+  border-color:#D4AF37 !important;
+  color:black !important;
+}
 
+/* 🔴 ACTIVIDAD OCUPADA (YA TIENES EN JS PERO REFUERZA) */
+.fc-event[style*="#B22222"]{
+  background:#B22222 !important;
+  border-color:#B22222 !important;
+  color:white !important;
+}
+
+/* 🔵 ANOTACIONES */
+.fc-event[style*="#1E3A8A"]{
+  background:#A6D9E2 !important;
+  border-color:#A6D9E2 !important;
+  color:black !important;
+}
 /* MODAL */
 
 .modal{
@@ -1352,8 +1365,8 @@ id: doc.id,
 title: "📝 " + a.texto,
 start: a.fecha,
 allDay: true,
-backgroundColor: '#1E3A8A',
-textColor: 'white',
+backgroundColor: '#A6D9E2',
+textColor: 'black',
 extendedProps: { tipo: "anotacion" }
 })
 
