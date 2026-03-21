@@ -921,34 +921,31 @@ let modoActividades = false
 // ✅ FUNCIÓN ARRIBA (CRÍTICO)
 function actualizarCursos(){
 
-let select = document.getElementById("curso")
-if(!select) return
+  let select = document.getElementById("curso")
+  if(!select) return
 
-select.innerHTML = ""
+  select.innerHTML = ""
 
-db.collection("eventos").get().then(snapshot => {
+  db.collection("eventos").get().then(snapshot => {
 
-snapshot.forEach(async doc => {
+    snapshot.forEach(async doc => {
 
-let e = doc.data()
+      let e = doc.data()
 
-let insc = await db.collection("inscripciones").doc(doc.id).get()
+      let insc = await db.collection("inscripciones").doc(doc.id).get()
 
-let option = document.createElement("option")
-option.value = doc.id
+      // 🔥 SI YA ESTÁ LLENO → NO LO AGREGAS
+      if(insc.exists) return
 
-if(insc.exists){
-option.textContent = e.title + " (LLENO)"
-option.disabled = true
-} else {
-option.textContent = e.title
-}
+      let option = document.createElement("option")
+      option.value = doc.id
+      option.textContent = e.title
 
-select.appendChild(option)
+      select.appendChild(option)
 
-})
+    })
 
-})
+  })
 
 }
 
