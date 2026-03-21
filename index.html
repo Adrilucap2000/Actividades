@@ -166,7 +166,14 @@ box-shadow:
 *{
   box-sizing: border-box;
 }
-
+html, body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+}
+  *{
+  max-width:100%;
+}
 body{
   font-family:Arial;
   background:
@@ -196,7 +203,9 @@ body{
     background-repeat:no-repeat;
     padding:10px !important;
   }
-
+body{
+  overflow-x:hidden !important;
+}
   html, body{
     width:100%;
     overflow-x:hidden;
@@ -457,6 +466,10 @@ transform:scale(1.05);
   width:100%;
   max-width:850px; /* 🔥 ESTE ES EL ARREGLO REAL */
   margin:auto;
+}
+  .fc{
+  width:100% !important;
+  overflow:hidden;
 }
 .fc-event-title{
 white-space: normal !important;
@@ -775,6 +788,7 @@ box-shadow:
     width:100%;
     margin:20px 0;
     padding:10px;
+    max-width:100% !important;
   }
 
   .formulario{
