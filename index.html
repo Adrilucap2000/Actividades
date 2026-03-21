@@ -1340,7 +1340,35 @@ inscripcionesData[doc.id] = doc.data()
 renderCalendar()
 
 })
+// 🔵 ANOTACIONES EN TIEMPO REAL
+db.collection("anotaciones").onSnapshot(snapshot => {
 
+  ultimoSnapshotAnotaciones = snapshot
+
+  // 🔥 borrar solo anotaciones
+  calendar.getEvents().forEach(e => {
+    if(e.extendedProps.tipo === "anotacion"){
+      e.remove()
+    }
+  })
+
+  // 🔥 volver a dibujar
+  snapshot.forEach(doc => {
+
+    let a = doc.data()
+
+    calendar.addEvent({
+      id: doc.id,
+      title: "📝 " + a.texto,
+      start: a.fecha,
+      allDay: true,
+      classNames: ['nota'],
+      extendedProps: { tipo: "anotacion" }
+    })
+
+  })
+
+})
 // 🟢 INSCRIPCIÓN
 document.getElementById("formulario")
 .addEventListener("submit",function(e){
