@@ -1662,7 +1662,8 @@ function confirmarEliminarActividad(){
 
   </div>
 </div>
-  <div id="modalEliminar" class="modal">
+  <!-- 🔵 MODAL ELIMINAR ANOTACIÓN -->
+<div id="modalEliminar" class="modal">
   <div class="modal-contenido">
 
     <h2>¿Eliminar anotación?</h2>
@@ -1680,20 +1681,20 @@ function confirmarEliminarActividad(){
 
   </div>
 </div>
-  <!-- 🔵 MODAL ELIMINAR ANOTACIÓN -->
-<div id="modalEliminar" class="modal">
+  <!-- 🔴 MODAL ELIMINAR ACTIVIDAD -->
+<div id="modalEliminarActividad" class="modal">
   <div class="modal-contenido">
 
-    <h2>¿Eliminar anotación?</h2>
+    <h2>¿Eliminar actividad?</h2>
     <p>Esta acción no se puede deshacer</p>
 
     <br>
 
-    <button class="boton-admin" onclick="confirmarEliminar()">
+    <button class="boton-admin" onclick="confirmarEliminarActividad()">
       Sí, eliminar
     </button>
 
-    <button class="boton-admin" onclick="cerrarModalEliminar()" style="background:#555">
+    <button class="boton-admin" onclick="cerrarModalEliminarActividad()" style="background:#555">
       Cancelar
     </button>
 
