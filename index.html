@@ -388,17 +388,13 @@ box-shadow:0 15px 40px rgba(0,0,0,0.35);
 }
 
 .fc-event-title{
-white-space: normal !important;
-word-break: break-word;
-font-size:10px; /* 🔥 más compacto */
-line-height:1.2;
+  white-space: normal !important;
+  word-break: break-word;
+  font-size:12px;
+  line-height:1.1;
 }
   .fc-daygrid-day-frame{
 max-height:110px;
-overflow-y:auto;
-}
-.fc-daygrid-day-frame{
-max-height:100px;
 overflow-y:auto;
 }
 .fc-daygrid-event{
@@ -992,7 +988,6 @@ initialView:'dayGridMonth',
 locale:'es',
 buttonText:{today:'Hoy'},
 events: [],
-dayMaxEvents: true,
 
 // 👉 CLICK EN DÍA (ESCRIBIR)
 dateClick: function(info){
@@ -1118,6 +1113,17 @@ info.event.extendedProps?.description || ""
 
 // 👉 CLICK DERECHO = ELIMINAR
 eventDidMount: function(info){
+  // 🔥 AUTO AJUSTAR TEXTO
+let titleEl = info.el.querySelector('.fc-event-title')
+
+if(titleEl){
+  let size = 12
+
+  while(titleEl.scrollHeight > info.el.clientHeight && size > 7){
+    size--
+    titleEl.style.fontSize = size + "px"
+  }
+}
 // 🔥 ACTIVIDADES
 if(!info.event.extendedProps.tipo){
 
@@ -1171,15 +1177,19 @@ title: e.title,
 start: e.start,
 description: e.description
 }
-
 if(inscrito && inscrito.nombre){
-eventoFinal.title = e.title + " | " + inscrito.nombre
-eventoFinal.backgroundColor = "#B22222"
-eventoFinal.borderColor = "#B22222"
+
+  if(!e.title.includes(inscrito.nombre)){
+    eventoFinal.title = e.title + " | " + inscrito.nombre
+  }else{
+    eventoFinal.title = e.title
+  }
+
+  eventoFinal.backgroundColor = "#B22222"
+  eventoFinal.borderColor = "#B22222"
 }
 
 calendar.addEvent(eventoFinal)
-
 }
 
 }
