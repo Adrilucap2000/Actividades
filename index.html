@@ -8,6 +8,27 @@
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
+#seccionInscritos{
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+}
+
+#seccionInscritos::-webkit-scrollbar{
+  width: 8px;
+}
+
+#seccionInscritos::-webkit-scrollbar-thumb{
+  background: #D4AF37;
+  border-radius: 10px;
+}
+
+#seccionInscritos::-webkit-scrollbar-track{
+  background: rgba(0,0,0,0.2);
+}
   /* PESTAÑAS ADMIN */
 
 .tabs-admin{
@@ -668,87 +689,7 @@ box-shadow:
 0 0 10px #FFD700,
 0 0 25px rgba(255,215,0,0.6);
 }
-   /* SCROLL PARA PARTICIPANTES (ADMIN) */
-#seccionInscritos{
-  max-height: 300px;      /* ajusta a tu gusto */
-  overflow-y: auto;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.05);
-  #seccionInscritos::-webkit-scrollbar{
-  width: 8px;
-}
 
-#seccionInscritos::-webkit-scrollbar-thumb{
-  background: #D4AF37;
-  border-radius: 10px;
-}
-
-#seccionInscritos::-webkit-scrollbar-track{
-  background: rgba(0,0,0,0.2);
-}
-  #calendar{
-    order:1;
-    margin-bottom:20px;
-    width:100%;
-    margin-top:20px;
-    padding:10px;
-    height:auto;
-  }
-
-  .formulario{
-    order:2;
-    width:100%;
-  }
-
-  /* 🔥 ALTURA MÁS GRANDE */
-  .fc-view-harness{
-    min-height: 500px;
-  }
-
-  /* 🔥 GENERAL */
-  .fc{
-    font-size:12px;
-  }
-
-}
-
-  /* 🔥 TÍTULO */
-  .fc-toolbar-title{
-    font-size:18px;
-  }
-
-  /* 🔥 DÍAS */
-  .fc-daygrid-day-number{
-    font-size:12px;
-  }
-
-  /* 🔥 EVENTOS TEXTO */
-  .fc-event-title{
-    font-size:10px !important;
-    line-height:1.1;
-    word-break: break-word;
-  }
-
-  /* 🔥 CAJAS */
-  .fc-event{
-    padding:2px;
-    font-size:10px;
-  }
-
-  /* 🔥 BOTONES */
-  .fc-button{
-    font-size:10px !important;
-    padding:4px 6px !important;
-  }
-
-}
-<style>
-
-/* TODO tu CSS actual */
-
-/* 🔥 AQUÍ PEGAS ESTO */
 @media (max-width: 768px){
 
   .contenedor{
@@ -805,8 +746,6 @@ box-shadow:
   }
 
 }
-
-</style>
 </style>
 </head>
 
