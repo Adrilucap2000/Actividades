@@ -275,9 +275,9 @@ font-size:22px;
 
 .contenedor{
 display:grid;
-grid-template-columns:1fr 2px 2fr;
+grid-template-columns:0.8fr 2px 2.2fr;
 gap:30px;
-max-width:1200px;
+max-width:1400px;
 margin:auto;
 position:relative;
 z-index:2;
@@ -389,7 +389,25 @@ white-space: normal !important;
 word-wrap: break-word;
 font-size:11px;
 }
-  
+/* 🔥 TEXTO QUE SE ADAPTA A LA CELDA */
+
+.fc-event-title{
+  white-space: normal !important;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height:1.1;
+}
+
+/* 🔥 ASEGURA QUE EL EVENTO CREZCA */
+.fc-daygrid-event{
+  display: block;
+  white-space: normal !important;
+}
+
+/* 🔥 EVITA QUE SE CORTE */
+.fc-event{
+  height:auto !important;
+}  
 .fc-daygrid-event{
 display: block;
 white-space: normal !important;
@@ -684,19 +702,51 @@ box-shadow:
     width:100%;
   }
 
+  /* 🔥 CALENDARIO */
   #calendar{
     width:100%;
     margin-top:20px;
+    padding:10px;
+    height:auto;
   }
 
-  /* 🔥 MEJORAR TEXTO DEL CALENDARIO */
+  /* 🔥 ALTURA MÁS GRANDE */
+  .fc-view-harness{
+    min-height: 500px;
+  }
+
+  /* 🔥 GENERAL */
+  .fc{
+    font-size:12px;
+  }
+
+  /* 🔥 TÍTULO */
   .fc-toolbar-title{
-    font-size:16px;
+    font-size:18px;
   }
 
+  /* 🔥 DÍAS */
+  .fc-daygrid-day-number{
+    font-size:12px;
+  }
+
+  /* 🔥 EVENTOS TEXTO */
+  .fc-event-title{
+    font-size:10px !important;
+    line-height:1.1;
+    word-break: break-word;
+  }
+
+  /* 🔥 CAJAS */
   .fc-event{
-    font-size:10px;
     padding:2px;
+    font-size:10px;
+  }
+
+  /* 🔥 BOTONES */
+  .fc-button{
+    font-size:10px !important;
+    padding:4px 6px !important;
   }
 
 }
