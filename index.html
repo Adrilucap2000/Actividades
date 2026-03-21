@@ -732,7 +732,7 @@ box-shadow:
     <h1 class="titulo-formulario">Panel Administrador</h1>
 
     <div class="tabs-admin">
-      <button class="tab-admin" onclick="mostrarActividades()">Actividades</button>
+      <button class="tab-admin" onclick="toggleActividades()" id="btnActividades"> Actividades </button>
       <button class="tab-admin" onclick="mostrarCrear()">Crear actividad</button>
       <button class="tab-admin" onclick="mostrarInscritos()">Participantes</button>
       <button class="tab-admin" id="btnAnotaciones" onclick="toggleAnotaciones()">
@@ -884,7 +884,28 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 </script>
 <script>
+function toggleActividades(){
 
+modoActividades = !modoActividades
+
+let btn = document.getElementById("btnActividades")
+
+if(modoActividades){
+
+  btn.innerText = "Salir de actividades"
+  btn.style.background = "#B22222"
+
+  // apagar anotaciones
+  modoEscritura = false
+
+}else{
+
+  btn.innerText = "Actividades"
+  btn.style.background = ""
+
+}
+
+}
 (function(){
 emailjs.init("JbLq6Pz4o5CfG8tfQ");
 })();
@@ -895,6 +916,7 @@ let modoEscritura = false
 let inputActivo = null
 let idAEliminar = null
 let ultimoSnapshotAnotaciones = null
+let modoActividades = false
 // ✅ FUNCIÓN ARRIBA (CRÍTICO)
 function actualizarCursos(){
 
@@ -961,7 +983,22 @@ events: [],
 
 // 👉 CLICK EN DÍA (ESCRIBIR)
 dateClick: function(info){
+// 🔥 MODO ACTIVIDADES
+if(esAdmin && modoActividades){
 
+let titulo = prompt("Título de la actividad")
+if(!titulo) return
+
+let descripcion = prompt("Descripción")
+
+db.collection("eventos").add({
+  title: titulo,
+  start: info.dateStr,
+  description: descripcion
+})
+
+return
+}
 if(inputActivo){
 inputActivo.remove()
 inputActivo = null
@@ -1056,7 +1093,19 @@ inputActivo = null
 
 return
 }
+// 👉 SI ES ADMIN Y ES ACTIVIDAD
+if(esAdmin && !info.event.extendedProps.tipo){
 
+editID = info.event.id
+
+document.getElementById("editTitulo").value = info.event.title
+document.getElementById("editDescripcion").value = info.event.extendedProps.description || ""
+document.getElementById("editFecha").value = info.event.startStr
+
+document.getElementById("modalEditar").style.display="flex"
+
+return
+}
 // evento normal
 mostrarModal(
 info.event.title,
@@ -1067,7 +1116,19 @@ info.event.extendedProps?.description || ""
 
 // 👉 CLICK DERECHO = ELIMINAR
 eventDidMount: function(info){
+// 🔥 ACTIVIDADES
+if(esAdmin && !info.event.extendedProps.tipo){
 
+info.el.addEventListener("contextmenu", function(e){
+e.preventDefault()
+
+if(confirm("¿Eliminar actividad?")){
+  db.collection("eventos").doc(info.event.id).delete()
+}
+
+})
+
+}
 if(info.event.extendedProps.tipo === "anotacion"){
 
 info.el.addEventListener("contextmenu", function(e){
@@ -1533,7 +1594,7 @@ actualizarCursos()
 
 }
 function toggleAnotaciones(){
-
+modoActividades = false
 modoEscritura = !modoEscritura
 
 let btn = document.getElementById("btnAnotaciones")
