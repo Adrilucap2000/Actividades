@@ -736,6 +736,9 @@ box-shadow:
       <button class="tab-admin" onclick="mostrarCrear()">Crear actividad</button>
       <button class="tab-admin" onclick="mostrarInscritos()">Participantes</button>
       <button class="tab-admin" id="btnAnotaciones" onclick="toggleAnotaciones()">
+      <button class="boton-admin" onclick="crearSticker()">
+Nuevo Post-it
+</button>
 Anotaciones
 </button>
     </div>
@@ -764,7 +767,16 @@ Anotaciones
 <div class="divisor"></div>
 
 <div id="calendar"></div>
-
+<div id="zonaStickers" style="
+position:relative;
+width:100%;
+height:300px;
+margin-top:20px;
+display:none;
+border:2px dashed rgba(255,255,255,0.2);
+border-radius:10px;
+">
+</div>
 </div>
 
 <!-- MODAL ACTIVIDAD -->
@@ -885,7 +897,7 @@ const db = firebase.firestore();
 </script>
 <script>
 function toggleActividades(){
-
+document.getElementById("zonaStickers").style.display = modoActividades ? "block" : "none"
 modoActividades = !modoActividades
 
 let btn = document.getElementById("btnActividades")
@@ -1616,6 +1628,7 @@ actualizarCursos()
 
 }
 function toggleAnotaciones(){
+document.getElementById("zonaStickers").style.display = modoEscritura ? "block" : "none"
 modoActividades = false
 modoEscritura = !modoEscritura
 
@@ -1659,6 +1672,54 @@ function confirmarEliminarActividad(){
   }
 
   cerrarModalEliminarActividad()
+}
+  function crearSticker(){
+
+let zona = document.getElementById("zonaStickers")
+
+let sticker = document.createElement("div")
+
+sticker.contentEditable = true
+sticker.innerText = "Escribe aquí..."
+
+sticker.style.position = "absolute"
+sticker.style.top = "40px"
+sticker.style.left = "40px"
+sticker.style.width = "130px"
+sticker.style.height = "130px"
+sticker.style.padding = "10px"
+sticker.style.background = "#FFF59D"
+sticker.style.borderRadius = "10px"
+sticker.style.cursor = "move"
+sticker.style.boxShadow = "0 5px 15px rgba(0,0,0,0.3)"
+
+zona.appendChild(sticker)
+
+hacerArrastrable(sticker)
+
+}
+function hacerArrastrable(el){
+
+let offsetX, offsetY
+
+el.onmousedown = function(e){
+
+offsetX = e.offsetX
+offsetY = e.offsetY
+
+document.onmousemove = function(e){
+
+el.style.left = (e.pageX - offsetX) + "px"
+el.style.top = (e.pageY - offsetY) + "px"
+
+}
+
+document.onmouseup = function(){
+document.onmousemove = null
+}
+
+}
+
 }
 </script>
 <div id="modalCanva" class="modal">
