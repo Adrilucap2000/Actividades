@@ -1345,6 +1345,16 @@ db.collection("anotaciones").onSnapshot(snapshot => {
 
   ultimoSnapshotAnotaciones = snapshot
 
+  // 🔥 SI NO ES ADMIN → BORRAR Y SALIR
+  if(!esAdmin){
+    calendar.getEvents().forEach(e => {
+      if(e.extendedProps.tipo === "anotacion"){
+        e.remove()
+      }
+    })
+    return
+  }
+
   // 🔥 borrar solo anotaciones
   calendar.getEvents().forEach(e => {
     if(e.extendedProps.tipo === "anotacion"){
