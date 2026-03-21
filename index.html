@@ -275,14 +275,12 @@ font-size:22px;
 
 .contenedor{
 display:grid;
-grid-template-columns:0.9fr 2px 2.6fr;
-gap:20px;
-max-width:1400px;
+grid-template-columns:1fr 2px 2fr;
+gap:30px;
+max-width:1200px;
 margin:auto;
 position:relative;
 z-index:2;
-padding-left:10px;
-padding-right:0px;
 }
 
 .divisor{
@@ -384,15 +382,14 @@ background:white;
 padding:20px;
 border-radius:18px;
 box-shadow:0 15px 40px rgba(0,0,0,0.35);
-  min-height:700px;
 }
 
 .fc-event-title{
-  white-space: normal !important;
-  word-break: break-word;
-  font-size:12px;
-  line-height:1.1;
+white-space: normal !important;
+word-wrap: break-word;
+font-size:11px;
 }
+  
 .fc-daygrid-event{
 display: block;
 white-space: normal !important;
@@ -1109,17 +1106,6 @@ info.event.extendedProps?.description || ""
 
 // 👉 CLICK DERECHO = ELIMINAR
 eventDidMount: function(info){
-  // 🔥 AUTO AJUSTAR TEXTO
-let titleEl = info.el.querySelector('.fc-event-title')
-
-if(titleEl){
-  let size = 12
-
-  while(titleEl.scrollHeight > info.el.clientHeight && size > 7){
-    size--
-    titleEl.style.fontSize = size + "px"
-  }
-}
 // 🔥 ACTIVIDADES
 if(!info.event.extendedProps.tipo){
 
@@ -1173,19 +1159,15 @@ title: e.title,
 start: e.start,
 description: e.description
 }
+
 if(inscrito && inscrito.nombre){
-
-  if(!e.title.includes(inscrito.nombre)){
-    eventoFinal.title = e.title + " | " + inscrito.nombre
-  }else{
-    eventoFinal.title = e.title
-  }
-
-  eventoFinal.backgroundColor = "#B22222"
-  eventoFinal.borderColor = "#B22222"
+eventoFinal.title = e.title + " | " + inscrito.nombre
+eventoFinal.backgroundColor = "#B22222"
+eventoFinal.borderColor = "#B22222"
 }
 
 calendar.addEvent(eventoFinal)
+
 }
 
 }
@@ -1272,7 +1254,9 @@ actualizarCursos()
 
 // 🔄 actualizar evento en calendario
 let evento = calendar.getEventById(curso)
+
 if(evento){
+evento.setProp("title", evento.title + " | Inscrito: " + nombre)
 evento.setProp("backgroundColor", "#B22222")
 }
 
