@@ -1175,11 +1175,13 @@ description: e.description
 }
 if(inscrito && inscrito.nombre){
 
-  if(!e.title.includes(inscrito.nombre)){
-    eventoFinal.title = e.title + " | " + inscrito.nombre
-  }else{
-    eventoFinal.title = e.title
-  }
+  let tituloBase = e.title.split(" | ")[0]
+
+  eventoFinal.title = tituloBase + " | " + inscrito.nombre
+
+  eventoFinal.backgroundColor = "#B22222"
+  eventoFinal.borderColor = "#B22222"
+}
 
   eventoFinal.backgroundColor = "#B22222"
   eventoFinal.borderColor = "#B22222"
@@ -1258,27 +1260,23 @@ let curso = document.getElementById("curso").value
   let celular = document.getElementById("celular").value 
 let nombreCurso = document.getElementById("curso").selectedOptions[0].text
 
-db.collection("inscripciones").get().then(snapshot => {
+db.collection("inscripciones").doc(curso).get().then(doc => {
 
-let duplicado = false
+if(doc.exists){
 
-snapshot.forEach(doc => {
   let data = doc.data()
 
- if(
-  data.nombre.trim().toLowerCase() === nombre.trim().toLowerCase() ||
-  data.celular.trim() === celular.trim()
-){
-    duplicado = true
+  if(
+    data.nombre.trim().toLowerCase() === nombre.trim().toLowerCase() ||
+    data.celular.trim() === celular.trim()
+  ){
+    alert("⚠️ Ya estás registrado en esta actividad")
+    return
   }
-})
 
-if(duplicado){
-  alert("⚠️ Este nombre o celular ya está registrado")
-  return
 }
 
-// ✅ SI NO EXISTE, GUARDAR
+// ✅ guardar inscripción
 db.collection("inscripciones").doc(curso).set({
   nombre: nombre,
   correo: correo,
