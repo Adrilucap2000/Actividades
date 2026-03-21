@@ -986,7 +986,8 @@ events: [],
 dateClick: function(info){
 // 🔥 MODO ACTIVIDADES
 if(esAdmin && modoActividades){
-
+  return
+}
 let titulo = prompt("Título de la actividad")
 if(!titulo) return
 
