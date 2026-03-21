@@ -275,12 +275,14 @@ font-size:22px;
 
 .contenedor{
 display:grid;
-grid-template-columns:1fr 2px 2fr;
-gap:30px;
-max-width:1200px;
+grid-template-columns:0.9fr 2px 2.6fr;
+gap:20px;
+max-width:1400px;
 margin:auto;
 position:relative;
 z-index:2;
+padding-left:10px;
+padding-right:0px;
 }
 
 .divisor{
@@ -382,14 +384,23 @@ background:white;
 padding:20px;
 border-radius:18px;
 box-shadow:0 15px 40px rgba(0,0,0,0.35);
+  min-height:700px;
 }
 
 .fc-event-title{
 white-space: normal !important;
-word-wrap: break-word;
-font-size:11px;
+word-break: break-word;
+font-size:10px; /* 🔥 más compacto */
+line-height:1.2;
 }
-  
+  .fc-daygrid-day-frame{
+max-height:110px;
+overflow-y:auto;
+}
+.fc-daygrid-day-frame{
+max-height:100px;
+overflow-y:auto;
+}
 .fc-daygrid-event{
 display: block;
 white-space: normal !important;
@@ -981,6 +992,7 @@ initialView:'dayGridMonth',
 locale:'es',
 buttonText:{today:'Hoy'},
 events: [],
+dayMaxEvents: true,
 
 // 👉 CLICK EN DÍA (ESCRIBIR)
 dateClick: function(info){
