@@ -1340,18 +1340,6 @@ inscripcionesData[doc.id] = doc.data()
 renderCalendar()
 
 })
-db.collection("anotaciones").onSnapshot(snapshot => {
-
-ultimoSnapshotAnotaciones = snapshot
-
-if(!esAdmin) return // 🔥 primero validas
-
-// 🔥 luego borras
-calendar.getEvents().forEach(e => {
-if(e.extendedProps.tipo === "anotacion"){
-e.remove()
-}
-})
 
 // 🔥 luego dibujas
 snapshot.forEach(doc => {
