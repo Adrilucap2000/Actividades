@@ -987,19 +987,7 @@ dateClick: function(info){
 // 🔥 MODO ACTIVIDADES
 if(esAdmin && modoActividades){
   return
-}
-let titulo = prompt("Título de la actividad")
-if(!titulo) return
 
-let descripcion = prompt("Descripción")
-
-db.collection("eventos").add({
-  title: titulo,
-  start: info.dateStr,
-  description: descripcion
-})
-
-return
 }
 if(inputActivo){
 inputActivo.remove()
