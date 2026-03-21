@@ -915,6 +915,7 @@ let esAdmin = false
 let modoEscritura = false
 let inputActivo = null
 let idAEliminar = null
+let idActividadAEliminar = null
 let ultimoSnapshotAnotaciones = null
 let modoActividades = false
 // ✅ FUNCIÓN ARRIBA (CRÍTICO)
@@ -1122,9 +1123,7 @@ if(esAdmin && !info.event.extendedProps.tipo){
 info.el.addEventListener("contextmenu", function(e){
 e.preventDefault()
 
-if(confirm("¿Eliminar actividad?")){
-  db.collection("eventos").doc(info.event.id).delete()
-}
+abrirModalEliminarActividad(info.event.id)
 
 })
 
@@ -1618,6 +1617,26 @@ function cerrarCanva(){
   document.getElementById("modalCanva").style.display = "none";
   document.getElementById("iframeCanva").src = "";
 }
+  function abrirModalEliminarActividad(id){
+  idActividadAEliminar = id
+  document.getElementById("modalEliminarActividad").style.display = "flex"
+}
+
+function cerrarModalEliminarActividad(){
+  idActividadAEliminar = null
+  document.getElementById("modalEliminarActividad").style.display = "none"
+}
+
+function confirmarEliminarActividad(){
+
+  if(idActividadAEliminar){
+    db.collection("eventos")
+    .doc(idActividadAEliminar)
+    .delete()
+  }
+
+  cerrarModalEliminarActividad()
+}
 </script>
 <div id="modalCanva" class="modal">
   <div class="modal-contenido" 
@@ -1644,6 +1663,25 @@ function cerrarCanva(){
   </div>
 </div>
   <div id="modalEliminar" class="modal">
+  <div class="modal-contenido">
+
+    <h2>¿Eliminar anotación?</h2>
+    <p>Esta acción no se puede deshacer</p>
+
+    <br>
+
+    <button class="boton-admin" onclick="confirmarEliminar()">
+      Sí, eliminar
+    </button>
+
+    <button class="boton-admin" onclick="cerrarModalEliminar()" style="background:#555">
+      Cancelar
+    </button>
+
+  </div>
+</div>
+  <!-- 🔵 MODAL ELIMINAR ANOTACIÓN -->
+<div id="modalEliminar" class="modal">
   <div class="modal-contenido">
 
     <h2>¿Eliminar anotación?</h2>
