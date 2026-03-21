@@ -487,21 +487,27 @@ transform:scale(1.05);
   white-space: normal !important;
 }
 
-/* 🔥 EVITA QUE SE CORTE */
 .fc-event{
+  padding:4px;
+  background:#D4AF37;
+  border:none;
+  color:black;
+  font-weight:bold;
+
   height:auto !important;
-}  
-.fc-daygrid-event{
-display: block;
-white-space: normal !important;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  text-align:center;
 }
-  
-.fc-event{
-padding:4px;
-background:#D4AF37;
-border:none;
-color:black;
-font-weight:bold;
+
+.fc-daygrid-event{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  white-space:normal !important;
 }
 
 .fc-event:hover{
