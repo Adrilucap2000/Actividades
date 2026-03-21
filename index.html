@@ -341,17 +341,24 @@ box-shadow:
 
 }
 .formulario{
-background:rgba(0,0,0,0.25);
-backdrop-filter:blur(6px);
-padding:30px;
-border-radius:15px;
-color:white;
-width:500px;
+  background:rgba(0,0,0,0.25);
+  backdrop-filter:blur(6px);
+  padding:30px;
+  border-radius:15px;
+  color:white;
 
-/* 🔥 IMPORTANTE */
-display: flex;
-flex-direction: column;
-overflow: visible;
+  width:100%;       /* 🔥 CLAVE */
+  max-width:500px;  /* 🔥 SOLO PARA PC */
+
+  display:flex;
+  flex-direction:column;
+  overflow:visible;
+}
+.contenedor{
+  width:100%;
+}
+  body{
+  overflow-x:hidden;
 }
 .formulario h1{
 font-family:'Cinzel Decorative';
