@@ -1258,33 +1258,10 @@ let curso = document.getElementById("curso").value
   let celular = document.getElementById("celular").value 
 let nombreCurso = document.getElementById("curso").selectedOptions[0].text
 
-db.collection("inscripciones").get().then(snapshot => {
-
-let duplicado = false
-
-snapshot.forEach(doc => {
-  let data = doc.data()
-
- if(
-  data.nombre.trim().toLowerCase() === nombre.trim().toLowerCase() ||
-  data.celular.trim() === celular.trim()
-){
-    duplicado = true
-  }
-})
-
-if(duplicado){
-  alert("⚠️ Este nombre o celular ya está registrado")
-  return
-}
-
-// ✅ SI NO EXISTE, GUARDAR
 db.collection("inscripciones").doc(curso).set({
-  nombre: nombre,
-  correo: correo,
-  celular: celular
-})
-
+nombre: nombre,
+correo: correo,
+celular: celular
 })
 .then(() => {
 
@@ -1691,19 +1668,11 @@ function cerrarModalEliminarActividad(){
 
 function confirmarEliminarActividad(){
 
- if(idActividadAEliminar){
-
-  // 🔥 borrar actividad
-  db.collection("eventos")
-  .doc(idActividadAEliminar)
-  .delete()
-
-  // 🔥 borrar inscripción relacionada
-  db.collection("inscripciones")
-  .doc(idActividadAEliminar)
-  .delete()
-
-}
+  if(idActividadAEliminar){
+    db.collection("eventos")
+    .doc(idActividadAEliminar)
+    .delete()
+  }
 
   cerrarModalEliminarActividad()
 }
