@@ -670,6 +670,36 @@ box-shadow:
 #seccionInscritos::-webkit-scrollbar-track{
   background: rgba(0,0,0,0.2);
 }
+@media (max-width: 768px){
+
+  .contenedor{
+    grid-template-columns: 1fr;
+  }
+
+  .divisor{
+    display:none;
+  }
+
+  .formulario{
+    width:100%;
+  }
+
+  #calendar{
+    width:100%;
+    margin-top:20px;
+  }
+
+  /* 🔥 MEJORAR TEXTO DEL CALENDARIO */
+  .fc-toolbar-title{
+    font-size:16px;
+  }
+
+  .fc-event{
+    font-size:10px;
+    padding:2px;
+  }
+
+}
 </style>
 </head>
 
