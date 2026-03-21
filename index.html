@@ -1419,11 +1419,14 @@ db.collection("inscripciones").onSnapshot(async snapshot => {
 
 lista.innerHTML=""
 
+// 🔥 GUARDAR TODOS EN ARRAY
+let participantes = []
+
 for (const doc of snapshot.docs){
 
 let data = doc.data()
 
-// 🔥 TRAER EL NOMBRE DEL EVENTO
+// 🔥 TRAER EVENTO
 let eventoDoc = await db.collection("eventos").doc(doc.id).get()
 
 let tituloEvento = "Sin nombre"
@@ -1432,14 +1435,43 @@ if(eventoDoc.exists){
 tituloEvento = eventoDoc.data().title
 }
 
+// 🔥 GUARDAR EN ARRAY
+participantes.push({
+id: doc.id,
+nombre: data.nombre,
+correo: data.correo,
+celular: data.celular,
+evento: tituloEvento
+})
+
+}
+
+// 🔥 ORDENAR ALFABÉTICAMENTE
+participantes.sort((a,b) => 
+a.nombre.localeCompare(b.nombre)
+)
+
+// 🔥 PINTAR
+participantes.forEach(p => {
+
 lista.innerHTML += `
-<div>
-<b>${tituloEvento}</b> → ${data.nombre}
-<button onclick="eliminarInscripcion('${doc.id}')">Eliminar</button>
+<div style="margin:10px;padding:10px;border-bottom:1px solid #ccc">
+
+<b>${p.nombre}</b><br>
+📌 ${p.evento}<br>
+📧 ${p.correo}<br>
+📱 ${p.celular}
+
+<br><br>
+
+<button onclick="eliminarInscripcion('${p.id}')">
+Eliminar
+</button>
+
 </div>
 `
 
-}
+})
 
 })
 
