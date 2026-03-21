@@ -688,17 +688,6 @@ box-shadow:
 #seccionInscritos::-webkit-scrollbar-track{
   background: rgba(0,0,0,0.2);
 }
-@media (max-width: 768px){
-
-  .contenedor{
-    display:flex;
-    flex-direction: column;
-  }
-
-  .divisor{
-    display:none;
-  }
-
   #calendar{
     order:1;
     margin-bottom:20px;
@@ -755,6 +744,69 @@ box-shadow:
   }
 
 }
+<style>
+
+/* TODO tu CSS actual */
+
+/* 🔥 AQUÍ PEGAS ESTO */
+@media (max-width: 768px){
+
+  .contenedor{
+    display:flex !important;
+    flex-direction: column;
+  }
+
+  .divisor{
+    display:none;
+  }
+
+  #calendar{
+    order:-1;
+    width:100%;
+    margin:20px 0;
+    padding:10px;
+    height:auto;
+  }
+
+  .formulario{
+    width:100%;
+  }
+
+  .fc-view-harness{
+    min-height: 500px;
+  }
+
+  .fc{
+    font-size:12px;
+  }
+
+  .fc-toolbar-title{
+    font-size:18px;
+  }
+
+  .fc-daygrid-day-number{
+    font-size:12px;
+  }
+
+  .fc-event-title{
+    font-size:10px !important;
+    line-height:1.1;
+    word-break: break-word;
+  }
+
+  .fc-event{
+    padding:2px;
+    font-size:10px;
+  }
+
+  .fc-button{
+    font-size:10px !important;
+    padding:4px 6px !important;
+  }
+
+}
+
+</style>
 </style>
 </head>
 
