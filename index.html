@@ -1155,41 +1155,37 @@ let inscripcionesData = {}
 
 function renderCalendar(){
 
-// 🔥 BORRAR SOLO EVENTOS NORMALES (NO anotaciones)
-calendar.getEvents().forEach(e => {
-if(!e.extendedProps.tipo){
-e.remove()
-}
-})
+  calendar.getEvents().forEach(e => {
+    if(!e.extendedProps.tipo){
+      e.remove()
+    }
+  })
 
-for(let id in eventosData){
+  for(let id in eventosData){
 
-let e = eventosData[id]
-let inscrito = inscripcionesData[id]
+    let e = eventosData[id]
+    let inscrito = inscripcionesData[id]
 
-let eventoFinal = {
-id: id,
-title: e.title,
-start: e.start,
-description: e.description
-}
-if(inscrito && inscrito.nombre){
+    let eventoFinal = {
+      id: id,
+      title: e.title,
+      start: e.start,
+      description: e.description
+    }
 
-  let tituloBase = e.title.split(" | ")[0]
+    if(inscrito && inscrito.nombre){
 
-  eventoFinal.title = tituloBase + " | " + inscrito.nombre
+      let tituloBase = e.title.split(" | ")[0]
 
-  eventoFinal.backgroundColor = "#B22222"
-  eventoFinal.borderColor = "#B22222"
-}
+      eventoFinal.title = tituloBase + " | " + inscrito.nombre
 
-  eventoFinal.backgroundColor = "#B22222"
-  eventoFinal.borderColor = "#B22222"
-}
+      eventoFinal.backgroundColor = "#B22222"
+      eventoFinal.borderColor = "#B22222"
+    }
 
-calendar.addEvent(eventoFinal)
-}
-
+    // ✅ ESTO VA DENTRO DEL FOR
+    calendar.addEvent(eventoFinal)
+  }
 }
 // 🔥 eventos en tiempo real
 db.collection("eventos").onSnapshot(snapshot => {
