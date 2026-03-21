@@ -1155,37 +1155,39 @@ let inscripcionesData = {}
 
 function renderCalendar(){
 
-  calendar.getEvents().forEach(e => {
-    if(!e.extendedProps.tipo){
-      e.remove()
-    }
-  })
+// 🔥 BORRAR SOLO EVENTOS NORMALES (NO anotaciones)
+calendar.getEvents().forEach(e => {
+if(!e.extendedProps.tipo){
+e.remove()
+}
+})
 
-  for(let id in eventosData){
+for(let id in eventosData){
 
-    let e = eventosData[id]
-    let inscrito = inscripcionesData[id]
+let e = eventosData[id]
+let inscrito = inscripcionesData[id]
 
-    let eventoFinal = {
-      id: id,
-      title: e.title,
-      start: e.start,
-      description: e.description
-    }
+let eventoFinal = {
+id: id,
+title: e.title,
+start: e.start,
+description: e.description
+}
+if(inscrito && inscrito.nombre){
 
-    if(inscrito && inscrito.nombre){
-
-      let tituloBase = e.title.split(" | ")[0]
-
-      eventoFinal.title = tituloBase + " | " + inscrito.nombre
-
-      eventoFinal.backgroundColor = "#B22222"
-      eventoFinal.borderColor = "#B22222"
-    }
-
-    // ✅ ESTO VA DENTRO DEL FOR
-    calendar.addEvent(eventoFinal)
+  if(!e.title.includes(inscrito.nombre)){
+    eventoFinal.title = e.title + " | " + inscrito.nombre
+  }else{
+    eventoFinal.title = e.title
   }
+
+  eventoFinal.backgroundColor = "#B22222"
+  eventoFinal.borderColor = "#B22222"
+}
+
+calendar.addEvent(eventoFinal)
+}
+
 }
 // 🔥 eventos en tiempo real
 db.collection("eventos").onSnapshot(snapshot => {
@@ -1256,23 +1258,27 @@ let curso = document.getElementById("curso").value
   let celular = document.getElementById("celular").value 
 let nombreCurso = document.getElementById("curso").selectedOptions[0].text
 
-db.collection("inscripciones").doc(curso).get().then(doc => {
+db.collection("inscripciones").get().then(snapshot => {
 
-if(doc.exists){
+let duplicado = false
 
+snapshot.forEach(doc => {
   let data = doc.data()
 
-  if(
-    data.nombre.trim().toLowerCase() === nombre.trim().toLowerCase() ||
-    data.celular.trim() === celular.trim()
-  ){
-    alert("⚠️ Ya estás registrado en esta actividad")
-    return
+ if(
+  data.nombre.trim().toLowerCase() === nombre.trim().toLowerCase() ||
+  data.celular.trim() === celular.trim()
+){
+    duplicado = true
   }
+})
 
+if(duplicado){
+  alert("⚠️ Este nombre o celular ya está registrado")
+  return
 }
 
-// ✅ guardar inscripción
+// ✅ SI NO EXISTE, GUARDAR
 db.collection("inscripciones").doc(curso).set({
   nombre: nombre,
   correo: correo,
