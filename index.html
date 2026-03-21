@@ -1341,25 +1341,6 @@ renderCalendar()
 
 })
 
-// 🔥 luego dibujas
-snapshot.forEach(doc => {
-
-let a = doc.data()
-
-calendar.addEvent({
-id: doc.id,
-title: "📝 " + a.texto,
-start: a.fecha,
-allDay: true,
-classNames: ['nota'],
-textColor: 'black',
-extendedProps: { tipo: "anotacion" }
-})
-
-})
-
-})
-
 // 🟢 INSCRIPCIÓN
 document.getElementById("formulario")
 .addEventListener("submit",function(e){
