@@ -1118,10 +1118,12 @@ info.event.extendedProps?.description || ""
 // 👉 CLICK DERECHO = ELIMINAR
 eventDidMount: function(info){
 // 🔥 ACTIVIDADES
-if(esAdmin && !info.event.extendedProps.tipo){
+if(!info.event.extendedProps.tipo){
 
 info.el.addEventListener("contextmenu", function(e){
 e.preventDefault()
+
+if(!esAdmin) return // 🔥 VALIDACIÓN AQUÍ
 
 abrirModalEliminarActividad(info.event.id)
 
