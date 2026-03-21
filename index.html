@@ -327,18 +327,18 @@ font-size:22px;
 
 .contenedor{
   display:grid;
-  grid-template-columns: 1fr 2px 1fr;
-  gap:30px;
+grid-template-columns: 1.3fr 2px 1.7fr;
+  gap:40px;
 
-  max-width:1200px; /* 🔥 importante */
+  max-width:1400px; /* 🔥 ANTES 1200 */
   margin:auto;
 
-  align-items:start; /* 🔥 evita que se estire raro */
+  align-items:stretch;
 }
 
 .divisor{
   width:2px;
-  min-height:500px; /* 🔥 CLAVE */
+  min-height:600px; 
 
   background:linear-gradient(
     to bottom,
@@ -389,7 +389,7 @@ box-shadow:
   color:white;
 
   width:100%;       /* 🔥 CLAVE */
-  max-width:500px;  /* 🔥 SOLO PARA PC */
+  max-width:550px;  /* 🔥 SOLO PARA PC */
 
   display:flex;
   flex-direction:column;
@@ -455,7 +455,7 @@ transform:scale(1.05);
   box-shadow:0 15px 40px rgba(0,0,0,0.35);
 
   width:100%;
-  max-width:700px; /* 🔥 ESTE ES EL ARREGLO REAL */
+  max-width:850px; /* 🔥 ESTE ES EL ARREGLO REAL */
   margin:auto;
 }
 .fc-event-title{
