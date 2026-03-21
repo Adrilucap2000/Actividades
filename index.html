@@ -1272,9 +1272,7 @@ actualizarCursos()
 
 // 🔄 actualizar evento en calendario
 let evento = calendar.getEventById(curso)
-
 if(evento){
-evento.setProp("title", evento.title + " | Inscrito: " + nombre)
 evento.setProp("backgroundColor", "#B22222")
 }
 
