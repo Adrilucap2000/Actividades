@@ -1019,39 +1019,6 @@ ADMIN
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-/**
- * INSTRUCCIONES DE CONFIGURACIÓN DE TABLAS EN SUPABASE:
- * 
- * Copia y ejecuta el siguiente script SQL en el editor de SQL (SQL Editor) de tu consola de Supabase:
- * 
- * -- 1. Tabla de eventos
- * CREATE TABLE eventos (
- *   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
- *   title TEXT NOT NULL,
- *   description TEXT,
- *   start_date DATE NOT NULL
- * );
- * 
- * -- 2. Tabla de inscripciones (Relacionada 1 a 1 mediante FK que a la vez actúa como PK)
- * CREATE TABLE inscripciones (
- *   id UUID PRIMARY KEY REFERENCES eventos(id) ON DELETE CASCADE,
- *   nombre TEXT NOT NULL,
- *   correo TEXT,
- *   celular TEXT
- * );
- * 
- * -- 3. Tabla de anotaciones
- * CREATE TABLE anotaciones (
- *   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
- *   fecha DATE NOT NULL,
- *   texto TEXT NOT NULL
- * );
- * 
- * -- NOTA: Recuerda ir a tu consola de Supabase -> "Database" -> "Replication" -> "Source" y 
- * -- activar la replicación en Realtime para las tablas "eventos", "inscripciones" y "anotaciones"
- * -- para que las actualizaciones se sincronicen de forma automática en los navegadores conectados.
- */
-
 // CREDENCIALES DE TU PROYECTO DE SUPABASE
 const SUPABASE_URL = "YOUR_SUPABASE_URL";
 const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
@@ -1095,88 +1062,100 @@ async function actualizarCursos(){
 
   select.innerHTML = "";
 
-  const { data: eventos, error: errEv } = await supabase.from('eventos').select('*');
-  const { data: inscripciones, error: errIns } = await supabase.from('inscripciones').select('id');
+  try {
+    const { data: eventos, error: errEv } = await supabase.from('eventos').select('*');
+    const { data: inscripciones, error: errIns } = await supabase.from('inscripciones').select('id');
 
-  if(errEv || !eventos) return;
+    if(errEv || !eventos) return;
 
-  // Creamos un Set con los IDs ya registrados para exclusión rápida
-  const inscritosIds = new Set((inscripciones || []).map(i => i.id));
+    const inscritosIds = new Set((inscripciones || []).map(i => i.id));
 
-  eventos.forEach(e => {
-    if(inscritosIds.has(e.id)) return; // Si ya tiene inscripción, no se agrega al combo
+    eventos.forEach(e => {
+      if(inscritosIds.has(e.id)) return; 
 
-    let option = document.createElement("option");
-    option.value = e.id;
-    option.textContent = e.title;
-    select.appendChild(option);
-  });
+      let option = document.createElement("option");
+      option.value = e.id;
+      option.textContent = e.title;
+      select.appendChild(option);
+    });
+  } catch (err) {
+    console.warn("Error al actualizar cursos:", err);
+  }
 }
 
 // CARGA INICIAL DE DATOS DESDE SUPABASE
 async function loadEventos() {
-  const { data, error } = await supabase.from('eventos').select('*');
-  if (!error && data) {
-    eventosData = {};
-    data.forEach(item => {
-      eventosData[item.id] = {
-        title: item.title,
-        description: item.description,
-        start: item.start_date
-      };
-    });
-    renderCalendar();
-    actualizarCursos();
+  try {
+    const { data, error } = await supabase.from('eventos').select('*');
+    if (!error && data) {
+      eventosData = {};
+      data.forEach(item => {
+        eventosData[item.id] = {
+          title: item.title,
+          description: item.description,
+          start: item.start_date
+        };
+      });
+      renderCalendar();
+      actualizarCursos();
+    }
+  } catch(err) {
+    console.warn(err);
   }
 }
 
 async function loadInscripciones() {
-  const { data, error } = await supabase.from('inscripciones').select('*');
-  if (!error && data) {
-    inscripcionesData = {};
-    data.forEach(item => {
-      inscripcionesData[item.id] = {
-        nombre: item.nombre,
-        correo: item.correo,
-        celular: item.celular
-      };
-    });
-    renderCalendar();
-    actualizarCursos();
+  try {
+    const { data, error } = await supabase.from('inscripciones').select('*');
+    if (!error && data) {
+      inscripcionesData = {};
+      data.forEach(item => {
+        inscripcionesData[item.id] = {
+          nombre: item.nombre,
+          correo: item.correo,
+          celular: item.celular
+        };
+      });
+      renderCalendar();
+      actualizarCursos();
+    }
+  } catch(err) {
+    console.warn(err);
   }
 }
 
 async function loadAnotaciones() {
-  const { data, error } = await supabase.from('anotaciones').select('*');
-  if (error) return;
+  try {
+    const { data, error } = await supabase.from('anotaciones').select('*');
+    if (error) return;
 
-  anotacionesData = data || [];
+    anotacionesData = data || [];
 
-  // Borrar solo anotaciones del calendario para redibujar
-  calendar.getEvents().forEach(e => {
-    if(e.extendedProps.tipo === "anotacion"){
-      e.remove();
-    }
-  });
-
-  // Solo renderizamos anotaciones en el calendario si el administrador está activo
-  if(!esAdmin) return;
-
-  anotacionesData.forEach(a => {
-    calendar.addEvent({
-      id: a.id,
-      title: "📝 " + a.texto,
-      start: a.fecha,
-      allDay: true,
-      classNames: ['nota'],
-      extendedProps: { tipo: "anotacion" }
+    calendar.getEvents().forEach(e => {
+      if(e.extendedProps.tipo === "anotacion"){
+        e.remove();
+      }
     });
-  });
+
+    if(!esAdmin) return;
+
+    anotacionesData.forEach(a => {
+      calendar.addEvent({
+        id: a.id,
+        title: "📝 " + a.texto,
+        start: a.fecha,
+        allDay: true,
+        classNames: ['nota'],
+        extendedProps: { tipo: "anotacion" }
+      });
+    });
+  } catch(err) {
+    console.warn(err);
+  }
 }
 
 // REDIBUJAR EVENTOS DEL CALENDARIO
 function renderCalendar(){
-  // Limpiar sólo los eventos normales (no las anotaciones de notas)
   calendar.getEvents().forEach(e => {
     if(!e.extendedProps.tipo){
       e.remove();
@@ -1205,13 +1184,9 @@ function renderCalendar(){
 }
 
 // ✅ CONFIGURACIÓN DEL DOM Y EVENTOS
-document.addEventListener('DOMContentLoaded', async function(){
+document.addEventListener('DOMContentLoaded', function(){
 
-  // Carga inicial
-  await loadEventos();
-  await loadInscripciones();
-
-  // 🔐 LOGIN PROMETEO (MANUAL)
+  // 🔐 1. LOGIN PROMETEO (SE EJECUTA INMEDIATAMENTE AL INICIO, SIN IMPORTAR ERRORES DE BD)
   const PASSWORD = "TLAQH2026";
   const input = document.getElementById("pinInput");
   const pantalla = document.getElementById("pantallaInicio");
@@ -1224,7 +1199,7 @@ document.addEventListener('DOMContentLoaded', async function(){
     });
   }
 
-  // 📅 CALENDARIO
+  // 📅 2. CALENDARIO
   calendar = new FullCalendar.Calendar(
     document.getElementById('calendar'),
     {
@@ -1261,9 +1236,13 @@ document.addEventListener('DOMContentLoaded', async function(){
           if(e.key === "Enter"){
             let texto = input.value.trim();
             if(texto){
-              await supabase.from("anotaciones").insert([
-                { fecha: info.dateStr, texto: texto }
-              ]);
+              try {
+                await supabase.from("anotaciones").insert([
+                  { fecha: info.dateStr, texto: texto }
+                ]);
+              } catch(err) {
+                console.error(err);
+              }
             }
             input.remove();
             inputActivo = null;
@@ -1294,9 +1273,13 @@ document.addEventListener('DOMContentLoaded', async function(){
             if(e.key === "Enter"){
               let nuevo = input.value.trim();
               if(nuevo){
-                await supabase.from("anotaciones")
-                  .update({ texto: nuevo })
-                  .eq('id', info.event.id);
+                try {
+                  await supabase.from("anotaciones")
+                    .update({ texto: nuevo })
+                    .eq('id', info.event.id);
+                } catch(err) {
+                  console.error(err);
+                }
               }
               input.remove();
               el.style.display = "";
@@ -1333,7 +1316,6 @@ document.addEventListener('DOMContentLoaded', async function(){
 
       // 👉 CLICK DERECHO = ELIMINAR (VIA CONTEXTMENU)
       eventDidMount: function(info){
-        // Eliminar actividades
         if(!info.event.extendedProps.tipo){
           info.el.addEventListener("contextmenu", function(e){
             e.preventDefault();
@@ -1341,7 +1323,6 @@ document.addEventListener('DOMContentLoaded', async function(){
             abrirModalEliminarActividad(info.event.id);
           });
         }
-        // Eliminar anotaciones
         if(info.event.extendedProps.tipo === "anotacion"){
           info.el.addEventListener("contextmenu", function(e){
             e.preventDefault();
@@ -1355,22 +1336,37 @@ document.addEventListener('DOMContentLoaded', async function(){
 
   calendar.render();
 
-  // ✅ SISTEMA DE REALTIME DE SUPABASE (CONEXIÓN EN VIVO)
-  supabase
-    .channel('public-db-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'eventos' }, () => {
-      loadEventos();
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'inscripciones' }, () => {
-      loadInscripciones();
-      if(document.getElementById("seccionInscritos").style.display === "block") {
-        mostrarInscritos();
-      }
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'anotaciones' }, () => {
-      loadAnotaciones();
-    })
-    .subscribe();
+  // 📅 3. CARGA NO BLOQUEANTE DE SUPABASE (Si falla por credenciales vacías, no rompe la página)
+  async function inicializarDatosBase() {
+    try {
+      await loadEventos();
+      await loadInscripciones();
+    } catch (err) {
+      console.warn("Supabase no está configurado correctamente todavía.", err);
+    }
+  }
+  inicializarDatosBase();
+
+  // Realtime de Supabase
+  try {
+    supabase
+      .channel('public-db-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'eventos' }, () => {
+        loadEventos();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'inscripciones' }, () => {
+        loadInscripciones();
+        if(document.getElementById("seccionInscritos").style.display === "block") {
+          mostrarInscritos();
+        }
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'anotaciones' }, () => {
+        loadAnotaciones();
+      })
+      .subscribe();
+  } catch(err) {
+    console.warn("No se pudo iniciar el canal de Realtime.", err);
+  }
 
   // 🟢 REGISTRO DE FORMULARIO DE INSCRIPCIÓN
   document.getElementById("formulario").addEventListener("submit", async function(e){
@@ -1378,41 +1374,43 @@ document.addEventListener('DOMContentLoaded', async function(){
 
     let nombre = document.getElementById("nombre").value;
     let correo = document.getElementById("correo").value;
-    let curso = document.getElementById("curso").value; // ID de la actividad
+    let curso = document.getElementById("curso").value; 
     let celular = document.getElementById("celular").value;
     let nombreCurso = document.getElementById("curso").selectedOptions[0].text;
 
-    const { error } = await supabase.from("inscripciones").insert([{
-      id: curso,
-      nombre: nombre,
-      correo: correo,
-      celular: celular
-    }]);
+    try {
+      const { error } = await supabase.from("inscripciones").insert([{
+        id: curso,
+        nombre: nombre,
+        correo: correo,
+        celular: celular
+      }]);
 
-    if(error){
-      alert("Error al enviar la inscripción: " + error.message);
-      return;
+      if(error){
+        alert("Error al enviar la inscripción: " + error.message);
+        return;
+      }
+
+      console.log("✅ INSCRIPCIÓN GUARDADA:", curso);
+
+      await loadInscripciones();
+
+      emailjs.send("service_u8bx9dj","template_0yx01mn",{
+        nombre: nombre,
+        correo: correo,
+        celular: celular,
+        curso: nombreCurso
+      });
+
+      emailjs.send("service_u8bx9dj","template_jssulea",{
+        nombre: nombre,
+        correo: correo,
+        celular: celular,
+        curso: nombreCurso
+      });
+    } catch(err) {
+      console.error(err);
     }
-
-    console.log("✅ INSCRIPCIÓN GUARDADA:", curso);
-
-    // Actualizar datos
-    await loadInscripciones();
-
-    // 📧 Envíos mediante EmailJS
-    emailjs.send("service_u8bx9dj","template_0yx01mn",{
-      nombre: nombre,
-      correo: correo,
-      celular: celular,
-      curso: nombreCurso
-    });
-
-    emailjs.send("service_u8bx9dj","template_jssulea",{
-      nombre: nombre,
-      correo: correo,
-      celular: celular,
-      curso: nombreCurso
-    });
   });
 
 });
@@ -1439,8 +1437,12 @@ function cerrarModalEliminar(){
 }
 
 async function confirmarEliminar(){
-  if(idAEliminar){
-    await supabase.from("anotaciones").delete().eq('id', idAEliminar);
+  try {
+    if(idAEliminar){
+      await supabase.from("anotaciones").delete().eq('id', idAEliminar);
+    }
+  } catch (err) {
+    console.error(err);
   }
   cerrarModalEliminar();
 }
@@ -1463,7 +1465,7 @@ async function verificarAdmin(){
     document.getElementById("adminPanel").style.display = "block";
     
     esAdmin = true;
-    await loadAnotaciones(); // Cargar y pintar notas en el calendario
+    await loadAnotaciones(); 
 
     let btn = document.getElementById("btnAdmin");
     btn.innerText = "SALIR";
@@ -1475,7 +1477,6 @@ async function cerrarAdmin(){
   esAdmin = false;
   modoEscritura = false;
 
-  // Limpiar notas del calendario
   calendar.getEvents().forEach(e => {
     if(e.extendedProps.tipo === "anotacion"){
       e.remove();
@@ -1507,56 +1508,62 @@ async function mostrarInscritos(){
   let lista = document.getElementById("seccionInscritos");
   lista.innerHTML = "Cargando participantes...";
 
-  // Realizamos un join relacional para obtener el título del evento
-  const { data, error } = await supabase
-    .from('inscripciones')
-    .select(`
-      id,
-      nombre,
-      correo,
-      celular,
-      eventos (
-        title
-      )
-    `);
+  try {
+    const { data, error } = await supabase
+      .from('inscripciones')
+      .select(`
+        id,
+        nombre,
+        correo,
+        celular,
+        eventos (
+          title
+        )
+      `);
 
-  if(error){
-    lista.innerHTML = "Error al cargar participantes.";
-    return;
+    if(error){
+      lista.innerHTML = "Error al cargar participantes.";
+      return;
+    }
+
+    lista.innerHTML = "";
+
+    let participantes = (data || []).map(p => ({
+      id: p.id,
+      nombre: p.nombre,
+      correo: p.correo,
+      celular: p.celular,
+      evento: p.eventos ? p.eventos.title : "Sin nombre de actividad"
+    }));
+
+    participantes.sort((a,b) => a.nombre.localeCompare(b.nombre));
+
+    participantes.forEach(p => {
+      lista.innerHTML += `
+      <div style="margin:10px;padding:10px;border-bottom:1px solid #ccc;color:white;">
+        <b>${p.nombre}</b><br>
+        📌 ${p.evento}<br>
+        📧 ${p.correo}<br>
+        📱 ${p.celular}
+        <br><br>
+        <button class="boton-mini" onclick="eliminarInscripcion('${p.id}')">
+          Eliminar
+        </button>
+      </div>
+      `;
+    });
+  } catch(err) {
+    lista.innerHTML = "Error al conectar.";
   }
-
-  lista.innerHTML = "";
-
-  let participantes = (data || []).map(p => ({
-    id: p.id,
-    nombre: p.nombre,
-    correo: p.correo,
-    celular: p.celular,
-    evento: p.eventos ? p.eventos.title : "Sin nombre de actividad"
-  }));
-
-  // Ordenar alfabéticamente
-  participantes.sort((a,b) => a.nombre.localeCompare(b.nombre));
-
-  participantes.forEach(p => {
-    lista.innerHTML += `
-    <div style="margin:10px;padding:10px;border-bottom:1px solid #ccc;color:white;">
-      <b>${p.nombre}</b><br>
-      📌 ${p.evento}<br>
-      📧 ${p.correo}<br>
-      📱 ${p.celular}
-      <br><br>
-      <button class="boton-mini" onclick="eliminarInscripcion('${p.id}')">
-        Eliminar
-      </button>
-    </div>
-    `;
-  });
 }
 
 async function eliminarInscripcion(id){
-  await supabase.from("inscripciones").delete().eq('id', id);
-  await loadInscripciones();
+  try {
+    await supabase.from("inscripciones").delete().eq('id', id);
+    await loadInscripciones();
+  } catch(err) {
+    console.error(err);
+  }
 }
 
 function mostrarCrear(){
@@ -1574,27 +1581,31 @@ async function mostrarActividades(){
   let lista = document.getElementById("listaActividades");
   lista.innerHTML = "Cargando actividades...";
 
-  const { data, error } = await supabase.from('eventos').select('*');
-  if(error){
-    lista.innerHTML = "Error al cargar actividades.";
-    return;
+  try {
+    const { data, error } = await supabase.from('eventos').select('*');
+    if(error){
+      lista.innerHTML = "Error al cargar actividades.";
+      return;
+    }
+
+    lista.innerHTML = "";
+
+    data.forEach(e => {
+      lista.innerHTML += `
+      <div style="margin:10px;padding:10px;border-bottom:1px solid #ccc;color:white;">
+        <b>${e.title}</b><br><br>
+        <button class="boton-mini" onclick="editarActividad('${e.id}')">
+          Editar
+        </button>
+        <button class="boton-mini" onclick="eliminarActividad('${e.id}')">
+          Eliminar
+        </button>
+      </div>
+      `;
+    });
+  } catch(err) {
+    lista.innerHTML = "Error de conexión.";
   }
-
-  lista.innerHTML = "";
-
-  data.forEach(e => {
-    lista.innerHTML += `
-    <div style="margin:10px;padding:10px;border-bottom:1px solid #ccc;color:white;">
-      <b>${e.title}</b><br><br>
-      <button class="boton-mini" onclick="editarActividad('${e.id}')">
-        Editar
-      </button>
-      <button class="boton-mini" onclick="eliminarActividad('${e.id}')">
-        Eliminar
-      </button>
-    </div>
-    `;
-  });
 }
 
 async function crearActividad(){
@@ -1607,21 +1618,25 @@ async function crearActividad(){
     return;
   }
 
-  const { error } = await supabase.from('eventos').insert([
-    { title: titulo, description: descripcion, start_date: fecha }
-  ]);
+  try {
+    const { error } = await supabase.from('eventos').insert([
+      { title: titulo, description: descripcion, start_date: fecha }
+    ]);
 
-  if (error) {
-    alert("Error al guardar actividad: " + error.message);
-    return;
+    if (error) {
+      alert("Error al guardar actividad: " + error.message);
+      return;
+    }
+
+    await loadEventos();
+    mostrarActividades();
+
+    document.getElementById("nuevoTitulo").value = "";
+    document.getElementById("nuevaDescripcion").value = "";
+    document.getElementById("nuevaFecha").value = "";
+  } catch(err) {
+    console.error(err);
   }
-
-  await loadEventos();
-  mostrarActividades();
-
-  document.getElementById("nuevoTitulo").value = "";
-  document.getElementById("nuevaDescripcion").value = "";
-  document.getElementById("nuevaFecha").value = "";
 }
 
 let editID = null;
@@ -1629,12 +1644,16 @@ let editID = null;
 async function editarActividad(id){
   editID = id;
 
-  const { data, error } = await supabase.from('eventos').select('*').eq('id', id).single();
-  if(!error && data){
-    document.getElementById("editTitulo").value = data.title;
-    document.getElementById("editDescripcion").value = data.description || "";
-    document.getElementById("editFecha").value = data.start_date;
-    document.getElementById("modalEditar").style.display = "flex";
+  try {
+    const { data, error } = await supabase.from('eventos').select('*').eq('id', id).single();
+    if(!error && data){
+      document.getElementById("editTitulo").value = data.title;
+      document.getElementById("editDescripcion").value = data.description || "";
+      document.getElementById("editFecha").value = data.start_date;
+      document.getElementById("modalEditar").style.display = "flex";
+    }
+  } catch(err) {
+    console.error(err);
   }
 }
 
@@ -1643,15 +1662,19 @@ async function guardarEdicion(){
   let descripcion = document.getElementById("editDescripcion").value;
   let fecha = document.getElementById("editFecha").value;
 
-  const { error } = await supabase.from('eventos').update({
-    title: titulo,
-    description: descripcion,
-    start_date: fecha
-  }).eq('id', editID);
+  try {
+    const { error } = await supabase.from('eventos').update({
+      title: titulo,
+      description: descripcion,
+      start_date: fecha
+    }).eq('id', editID);
 
-  if(!error){
-    cerrarEditar();
-    await loadEventos();
+    if(!error){
+      cerrarEditar();
+      await loadEventos();
+    }
+  } catch(err) {
+    console.error(err);
   }
 }
 
@@ -1660,9 +1683,13 @@ function cerrarEditar(){
 }
 
 async function eliminarActividad(id){
-  await supabase.from('eventos').delete().eq('id', id);
-  await loadEventos();
-  mostrarActividades();
+  try {
+    await supabase.from('eventos').delete().eq('id', id);
+    await loadEventos();
+    mostrarActividades();
+  } catch(err) {
+    console.error(err);
+  }
 }
 
 function toggleAnotaciones(){
@@ -1702,12 +1729,14 @@ function cerrarModalEliminarActividad(){
 }
 
 async function confirmarEliminarActividad(){
-  if(idActividadAEliminar){
-    // Gracias a la restricción ON DELETE CASCADE de la llave foránea de PostgreSQL, 
-    // al borrar el evento se eliminará automáticamente su inscripción relacionada.
-    await supabase.from('eventos').delete().eq('id', idActividadAEliminar);
-    await loadEventos();
-    await loadInscripciones();
+  try {
+    if(idActividadAEliminar){
+      await supabase.from('eventos').delete().eq('id', idActividadAEliminar);
+      await loadEventos();
+      await loadInscripciones();
+    }
+  } catch(err) {
+    console.error(err);
   }
   cerrarModalEliminarActividad();
 }
