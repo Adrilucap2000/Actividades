@@ -871,7 +871,16 @@ box-shadow:
       <select id="curso"></select>
       <button id="btnEnviar" type="submit">ENVIAR INSCRIPCIÓN</button>
     </form>
+<p class="texto-explicacion" style="text-align:center;margin-top:20px;">
+  ¿Ya te inscribiste?
+</p>
 
+<button
+  type="button"
+  id="btnVerEquipo"
+  onclick="abrirModalEquipo()">
+  👥 VER MI EQUIPO
+</button>
   </div>
 
   <!-- PANEL ADMIN (OCULTO AL INICIO) -->
@@ -1861,6 +1870,13 @@ async function confirmarEliminarActividad(){
   }
   cerrarModalEliminarActividad();
 }
+function abrirModalEquipo(){
+  document.getElementById("modalEquipo").style.display = "flex";
+}
+
+function cerrarModalEquipo(){
+  document.getElementById("modalEquipo").style.display = "none";
+}
 </script>
 
 <div id="modalCanva" class="modal">
@@ -1926,6 +1942,42 @@ async function confirmarEliminarActividad(){
     </button>
 
   </div>
+</div>
+  <div id="modalEquipo" class="modal">
+
+  <div class="modal-contenido">
+
+    <button onclick="cerrarModalEquipo()" style="
+      position:absolute;
+      top:10px;
+      right:15px;
+      background:none;
+      border:none;
+      font-size:22px;
+      cursor:pointer;
+    ">✕</button>
+
+    <h2>Mi Equipo</h2>
+
+    <input
+      type="email"
+      id="correoBusquedaEquipo"
+      placeholder="Ingresa tu correo">
+
+    <br><br>
+
+    <button onclick="buscarEquipo()">
+      Buscar
+    </button>
+
+    <div id="resultadoEquipo" style="
+      margin-top:20px;
+      text-align:left;
+    ">
+    </div>
+
+  </div>
+
 </div>
 </body>
 </html>
