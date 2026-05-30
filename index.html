@@ -1169,19 +1169,28 @@ async function loadAnotaciones() {
 
 // RENDERIZAR EN CALENDARIO CON FILAS DE REGISTRO DINÁMICAS
 function renderCalendar(){
-  calendar.getEvents().forEach(e => {
-    if(!e.extendedProps.tipo){
-      e.remove();
-    }
-  });
 
+  // Limpiar completamente el calendario
+  calendar.removeAllEvents();
+
+  // Pintar actividades
   for(let id in actividadesData){
-    let act = actividadesData[id];
-    let registrados = participantesData.filter(p => p.actividad_id === id).length;
-    let disponibles = act.cupos_totales - registrados;
-    if (disponibles < 0) disponibles = 0;
 
-    let titleStr = `${act.title} (${disponibles}/${act.cupos_totales} cupos)`;
+    let act = actividadesData[id];
+
+    let registrados =
+      participantesData.filter(
+        p => p.actividad_id === id
+      ).length;
+
+    let disponibles =
+      act.cupos_totales - registrados;
+
+    if(disponibles < 0) disponibles = 0;
+
+    let titleStr =
+      `${act.title} (${disponibles}/${act.cupos_totales} cupos)`;
+
     let classList = ['disponible'];
 
     if(disponibles <= 0){
@@ -1201,6 +1210,21 @@ function renderCalendar(){
       }
     });
   }
+
+  // Volver a pintar anotaciones
+  anotacionesData.forEach(a => {
+    calendar.addEvent({
+      id: a.id,
+      title: "📝 " + a.texto,
+      start: a.fecha,
+      allDay: true,
+      classNames: ['nota'],
+      extendedProps: {
+        tipo: "anotacion"
+      }
+    });
+  });
+
 }
 
 // ALIAS PARA RETROCOMPATIBILIDAD CON SCRIPT ANTERIOR
@@ -1264,6 +1288,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 await supabaseClient.from("notas_admin").insert([
                   { fecha: info.dateStr, texto: texto }
                 ]);
+                await loadAnotaciones();
               } catch(err) {
                 console.error(err);
               }
@@ -1489,7 +1514,11 @@ async function confirmarEliminar(){
   if (!supabaseClient) return;
   try {
     if(idAEliminar){
-      await supabaseClient.from("notas_admin").delete().eq('id', idAEliminar);
+      await supabaseClient
+        .from("notas_admin")
+        .delete()
+        .eq('id', idAEliminar);
+      await loadAnotaciones();
     }
   } catch (err) {
     console.error(err);
