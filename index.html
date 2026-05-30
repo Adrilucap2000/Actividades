@@ -1014,766 +1014,672 @@ ADMIN
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyBnqZEuuv0V_CAmR_gBqPCQ3bgyS1ny_RI",
-  authDomain: "calendario-mpss.firebaseapp.com",
-  projectId: "calendario-mpss",
-  storageBucket: "calendario-mpss.firebasestorage.app",
-  messagingSenderId: "809122907226",
-  appId: "1:809122907226:web:c66cfc12aa8617de1fc463",
-  measurementId: "G-QD42H6MNDW"
-};
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-</script>
+<!-- SUPABASE CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+/**
+ * INSTRUCCIONES DE CONFIGURACIÓN DE TABLAS EN SUPABASE:
+ * 
+ * Copia y ejecuta el siguiente script SQL en el editor de SQL (SQL Editor) de tu consola de Supabase:
+ * 
+ * -- 1. Tabla de eventos
+ * CREATE TABLE eventos (
+ *   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ *   title TEXT NOT NULL,
+ *   description TEXT,
+ *   start_date DATE NOT NULL
+ * );
+ * 
+ * -- 2. Tabla de inscripciones (Relacionada 1 a 1 mediante FK que a la vez actúa como PK)
+ * CREATE TABLE inscripciones (
+ *   id UUID PRIMARY KEY REFERENCES eventos(id) ON DELETE CASCADE,
+ *   nombre TEXT NOT NULL,
+ *   correo TEXT,
+ *   celular TEXT
+ * );
+ * 
+ * -- 3. Tabla de anotaciones
+ * CREATE TABLE anotaciones (
+ *   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+ *   fecha DATE NOT NULL,
+ *   texto TEXT NOT NULL
+ * );
+ * 
+ * -- NOTA: Recuerda ir a tu consola de Supabase -> "Database" -> "Replication" -> "Source" y 
+ * -- activar la replicación en Realtime para las tablas "eventos", "inscripciones" y "anotaciones"
+ * -- para que las actualizaciones se sincronicen de forma automática en los navegadores conectados.
+ */
+
+// CREDENCIALES DE TU PROYECTO DE SUPABASE
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 function toggleActividades(){
-
-modoActividades = !modoActividades
-
-let btn = document.getElementById("btnActividades")
-
-if(modoActividades){
-
-  btn.innerText = "Salir de actividades"
-  btn.style.background = "#B22222"
-
-  // apagar anotaciones
-  modoEscritura = false
-
-}else{
-
-  btn.innerText = "Actividades"
-  btn.style.background = ""
-
+  modoActividades = !modoActividades;
+  let btn = document.getElementById("btnActividades");
+  if(modoActividades){
+    btn.innerText = "Salir de actividades";
+    btn.style.background = "#B22222";
+    modoEscritura = false;
+  } else {
+    btn.innerText = "Actividades";
+    btn.style.background = "";
+  }
 }
 
-}
 (function(){
-emailjs.init("JbLq6Pz4o5CfG8tfQ");
+  emailjs.init("JbLq6Pz4o5CfG8tfQ");
 })();
 
-let calendar
-let esAdmin = false
-let modoEscritura = false
-let inputActivo = null
-let idAEliminar = null
-let idActividadAEliminar = null
-let ultimoSnapshotAnotaciones = null
-let modoActividades = false
-// ✅ FUNCIÓN ARRIBA (CRÍTICO)
-function actualizarCursos(){
+let calendar;
+let esAdmin = false;
+let modoEscritura = false;
+let inputActivo = null;
+let idAEliminar = null;
+let idActividadAEliminar = null;
+let modoActividades = false;
 
-  let select = document.getElementById("curso")
-  if(!select) return
+// VARIABLES DE ALMACENAMIENTO LOCAL DE DATOS
+let eventosData = {};
+let inscripcionesData = {};
+let anotacionesData = [];
 
-  select.innerHTML = ""
+// ✅ ACTUALIZAR CURSOS (JOIN EN CLIENTE EXCLUYENDO INSCRIPCIONES YA CREADAS)
+async function actualizarCursos(){
+  let select = document.getElementById("curso");
+  if(!select) return;
 
-  db.collection("eventos").get().then(snapshot => {
+  select.innerHTML = "";
 
-    snapshot.forEach(async doc => {
+  const { data: eventos, error: errEv } = await supabase.from('eventos').select('*');
+  const { data: inscripciones, error: errIns } = await supabase.from('inscripciones').select('id');
 
-      let e = doc.data()
+  if(errEv || !eventos) return;
 
-      let insc = await db.collection("inscripciones").doc(doc.id).get()
+  // Creamos un Set con los IDs ya registrados para exclusión rápida
+  const inscritosIds = new Set((inscripciones || []).map(i => i.id));
 
-      // 🔥 SI YA ESTÁ LLENO → NO LO AGREGAS
-      if(insc.exists) return
+  eventos.forEach(e => {
+    if(inscritosIds.has(e.id)) return; // Si ya tiene inscripción, no se agrega al combo
 
-      let option = document.createElement("option")
-      option.value = doc.id
-      option.textContent = e.title
-
-      select.appendChild(option)
-
-    })
-
-  })
-
+    let option = document.createElement("option");
+    option.value = e.id;
+    option.textContent = e.title;
+    select.appendChild(option);
+  });
 }
 
-// ✅ TODO DENTRO DEL DOM
-document.addEventListener('DOMContentLoaded',function(){
-
-// 🔄 actualizar select
-actualizarCursos()
-
-// 🔐 LOGIN PROMETEO (YA FUNCIONA)
-const PASSWORD = "TLAQH2026"
-const input = document.getElementById("pinInput")
-const pantalla = document.getElementById("pantallaInicio")
-
-if(input && pantalla){
-input.addEventListener("keyup", function(){
-
-if(input.value.trim() === PASSWORD){
-pantalla.style.display = "none"
-}
-
-})
-
-}
-// 📅 CALENDARIO
-calendar = new FullCalendar.Calendar(
-document.getElementById('calendar'),
-{
-initialView:'dayGridMonth',
-locale:'es',
-buttonText:{today:'Hoy'},
-events: [],
-
-// 👉 CLICK EN DÍA (ESCRIBIR)
-dateClick: function(info){
-// 🔥 MODO ACTIVIDADES
-if(esAdmin && modoActividades){
-  return
-
-}
-if(inputActivo){
-inputActivo.remove()
-inputActivo = null
-}
-
-if(!esAdmin || !modoEscritura) return
-
-let contenedor = info.dayEl.querySelector(".fc-daygrid-day-events")
-
-let input = document.createElement("input")
-input.type = "text"
-input.placeholder = "Escribir..."
-input.style.width = "100%"
-input.style.fontSize = "12px"
-
-inputActivo = input
-
-contenedor.appendChild(input)
-input.focus()
-
-input.addEventListener("keydown", function(e){
-
-if(e.key === "Enter"){
-
-let texto = input.value.trim()
-
-if(texto){
-db.collection("anotaciones").add({
-fecha: info.dateStr,
-texto: texto
-})
-}
-
-input.remove()
-inputActivo = null
-
-}
-
-})
-
-},
-
-// 👉 CLICK EN EVENTO (EDITAR)
-eventClick:function(info){
-
-if(info.event.extendedProps.tipo === "anotacion"){
-
-if(!modoEscritura) return
-if(inputActivo) return
-
-let el = info.el
-
-let input = document.createElement("input")
-input.type = "text"
-input.value = info.event.title.replace("📝 ","")
-input.style.width = "100%"
-input.style.fontSize = "12px"
-
-inputActivo = input
-
-el.style.display = "none"
-el.parentNode.appendChild(input)
-input.focus()
-
-// guardar
-input.addEventListener("keydown", function(e){
-
-if(e.key === "Enter"){
-
-let nuevo = input.value.trim()
-
-if(nuevo){
-db.collection("anotaciones")
-.doc(info.event.id)
-.update({ texto: nuevo })
-}
-
-input.remove()
-el.style.display = ""
-inputActivo = null
-
-}
-
-})
-
-// cancelar
-input.addEventListener("blur", function(){
-input.remove()
-el.style.display = ""
-inputActivo = null
-})
-
-return
-}
-// 👉 SI ES ADMIN Y ES ACTIVIDAD
-if(esAdmin && !info.event.extendedProps.tipo){
-
-editID = info.event.id
-
-document.getElementById("editTitulo").value = info.event.title
-document.getElementById("editDescripcion").value = info.event.extendedProps.description || ""
-document.getElementById("editFecha").value = info.event.startStr
-
-document.getElementById("modalEditar").style.display="flex"
-
-return
-}
-// evento normal
-mostrarModal(
-info.event.title,
-info.event.extendedProps?.description || ""
-)
-
-},
-
-// 👉 CLICK DERECHO = ELIMINAR
-eventDidMount: function(info){
-// 🔥 ACTIVIDADES
-if(!info.event.extendedProps.tipo){
-
-info.el.addEventListener("contextmenu", function(e){
-e.preventDefault()
-
-if(!esAdmin) return // 🔥 VALIDACIÓN AQUÍ
-
-abrirModalEliminarActividad(info.event.id)
-
-})
-
-}
-if(info.event.extendedProps.tipo === "anotacion"){
-
-info.el.addEventListener("contextmenu", function(e){
-e.preventDefault()
-
-if(!modoEscritura) return
-
-abrirModalEliminar(info.event.id)
-
-})
-
-}
-
-}
-})
-calendar.render()
-
-let eventosData = {}
-let inscripcionesData = {}
-
-function renderCalendar(){
-
-// 🔥 BORRAR SOLO EVENTOS NORMALES (NO anotaciones)
-calendar.getEvents().forEach(e => {
-if(!e.extendedProps.tipo){
-e.remove()
-}
-})
-
-for(let id in eventosData){
-
-  let e = eventosData[id]
-  let inscrito = inscripcionesData[id]
-
-  let eventoFinal = {
-    id: id,
-    title: e.title,
-    start: e.start,
-    description: e.description,
-    classNames: ['disponible']
+// CARGA INICIAL DE DATOS DESDE SUPABASE
+async function loadEventos() {
+  const { data, error } = await supabase.from('eventos').select('*');
+  if (!error && data) {
+    eventosData = {};
+    data.forEach(item => {
+      eventosData[item.id] = {
+        title: item.title,
+        description: item.description,
+        start: item.start_date
+      };
+    });
+    renderCalendar();
+    actualizarCursos();
   }
-
-  if(inscrito && inscrito.nombre){
-    eventoFinal.title = e.title + " | " + inscrito.nombre
-    eventoFinal.classNames = ['ocupado']
-  }
-
-  // 🔥 ESTO VA ADENTRO
-  calendar.addEvent(eventoFinal)
 }
-}
-// 🔥 eventos en tiempo real
-db.collection("eventos").onSnapshot(snapshot => {
 
-eventosData = {}
-
-snapshot.forEach(doc=>{
-eventosData[doc.id] = doc.data()
-})
-
-renderCalendar()
-
-})
-
-// 🔥 inscripciones en tiempo real
-db.collection("inscripciones").onSnapshot(snapshot => {
-
-inscripcionesData = {}
-
-snapshot.forEach(doc=>{
-inscripcionesData[doc.id] = doc.data()
-})
-
-renderCalendar()
-
-})
-// 🔵 ANOTACIONES EN TIEMPO REAL
-db.collection("anotaciones").onSnapshot(snapshot => {
-
-  ultimoSnapshotAnotaciones = snapshot
-
-  // 🔥 SI NO ES ADMIN → BORRAR Y SALIR
-  if(!esAdmin){
-    calendar.getEvents().forEach(e => {
-      if(e.extendedProps.tipo === "anotacion"){
-        e.remove()
-      }
-    })
-    return
+async function loadInscripciones() {
+  const { data, error } = await supabase.from('inscripciones').select('*');
+  if (!error && data) {
+    inscripcionesData = {};
+    data.forEach(item => {
+      inscripcionesData[item.id] = {
+        nombre: item.nombre,
+        correo: item.correo,
+        celular: item.celular
+      };
+    });
+    renderCalendar();
+    actualizarCursos();
   }
+}
 
-  // 🔥 borrar solo anotaciones
+async function loadAnotaciones() {
+  const { data, error } = await supabase.from('anotaciones').select('*');
+  if (error) return;
+
+  anotacionesData = data || [];
+
+  // Borrar solo anotaciones del calendario para redibujar
   calendar.getEvents().forEach(e => {
     if(e.extendedProps.tipo === "anotacion"){
-      e.remove()
+      e.remove();
     }
-  })
+  });
 
-  // 🔥 volver a dibujar
-  snapshot.forEach(doc => {
+  // Solo renderizamos anotaciones en el calendario si el administrador está activo
+  if(!esAdmin) return;
 
-    let a = doc.data()
-
+  anotacionesData.forEach(a => {
     calendar.addEvent({
-      id: doc.id,
+      id: a.id,
       title: "📝 " + a.texto,
       start: a.fecha,
       allDay: true,
       classNames: ['nota'],
       extendedProps: { tipo: "anotacion" }
+    });
+  });
+}
+
+// REDIBUJAR EVENTOS DEL CALENDARIO
+function renderCalendar(){
+  // Limpiar sólo los eventos normales (no las anotaciones de notas)
+  calendar.getEvents().forEach(e => {
+    if(!e.extendedProps.tipo){
+      e.remove();
+    }
+  });
+
+  for(let id in eventosData){
+    let e = eventosData[id];
+    let inscrito = inscripcionesData[id];
+
+    let eventoFinal = {
+      id: id,
+      title: e.title,
+      start: e.start,
+      description: e.description,
+      classNames: ['disponible']
+    };
+
+    if(inscrito && inscrito.nombre){
+      eventoFinal.title = e.title + " | " + inscrito.nombre;
+      eventoFinal.classNames = ['ocupado'];
+    }
+
+    calendar.addEvent(eventoFinal);
+  }
+}
+
+// ✅ CONFIGURACIÓN DEL DOM Y EVENTOS
+document.addEventListener('DOMContentLoaded', async function(){
+
+  // Carga inicial
+  await loadEventos();
+  await loadInscripciones();
+
+  // 🔐 LOGIN PROMETEO (MANUAL)
+  const PASSWORD = "TLAQH2026";
+  const input = document.getElementById("pinInput");
+  const pantalla = document.getElementById("pantallaInicio");
+
+  if(input && pantalla){
+    input.addEventListener("keyup", function(){
+      if(input.value.trim() === PASSWORD){
+        pantalla.style.display = "none";
+      }
+    });
+  }
+
+  // 📅 CALENDARIO
+  calendar = new FullCalendar.Calendar(
+    document.getElementById('calendar'),
+    {
+      initialView:'dayGridMonth',
+      locale:'es',
+      buttonText:{today:'Hoy'},
+      events: [],
+
+      // 👉 CLICK EN DÍA (ESCRIBIR ANOTACIONES)
+      dateClick: async function(info){
+        if(esAdmin && modoActividades){
+          return;
+        }
+        if(inputActivo){
+          inputActivo.remove();
+          inputActivo = null;
+        }
+
+        if(!esAdmin || !modoEscritura) return;
+
+        let contenedor = info.dayEl.querySelector(".fc-daygrid-day-events");
+
+        let input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = "Escribir...";
+        input.style.width = "100%";
+        input.style.fontSize = "12px";
+
+        inputActivo = input;
+        contenedor.appendChild(input);
+        input.focus();
+
+        input.addEventListener("keydown", async function(e){
+          if(e.key === "Enter"){
+            let texto = input.value.trim();
+            if(texto){
+              await supabase.from("anotaciones").insert([
+                { fecha: info.dateStr, texto: texto }
+              ]);
+            }
+            input.remove();
+            inputActivo = null;
+          }
+        });
+      },
+
+      // 👉 CLICK EN EVENTO (EDITAR O REPRODUCIR)
+      eventClick: async function(info){
+        if(info.event.extendedProps.tipo === "anotacion"){
+          if(!modoEscritura) return;
+          if(inputActivo) return;
+
+          let el = info.el;
+          let input = document.createElement("input");
+          input.type = "text";
+          input.value = info.event.title.replace("📝 ","");
+          input.style.width = "100%";
+          input.style.fontSize = "12px";
+
+          inputActivo = input;
+          el.style.display = "none";
+          el.parentNode.appendChild(input);
+          input.focus();
+
+          // guardar edición de anotación
+          input.addEventListener("keydown", async function(e){
+            if(e.key === "Enter"){
+              let nuevo = input.value.trim();
+              if(nuevo){
+                await supabase.from("anotaciones")
+                  .update({ texto: nuevo })
+                  .eq('id', info.event.id);
+              }
+              input.remove();
+              el.style.display = "";
+              inputActivo = null;
+            }
+          });
+
+          // cancelar
+          input.addEventListener("blur", function(){
+            input.remove();
+            el.style.display = "";
+            inputActivo = null;
+          });
+
+          return;
+        }
+
+        // 👉 SI ES ADMIN Y ES ACTIVIDAD
+        if(esAdmin && !info.event.extendedProps.tipo){
+          editID = info.event.id;
+          document.getElementById("editTitulo").value = info.event.title;
+          document.getElementById("editDescripcion").value = info.event.extendedProps.description || "";
+          document.getElementById("editFecha").value = info.event.startStr;
+          document.getElementById("modalEditar").style.display="flex";
+          return;
+        }
+
+        // evento normal
+        mostrarModal(
+          info.event.title,
+          info.event.extendedProps?.description || ""
+        );
+      },
+
+      // 👉 CLICK DERECHO = ELIMINAR (VIA CONTEXTMENU)
+      eventDidMount: function(info){
+        // Eliminar actividades
+        if(!info.event.extendedProps.tipo){
+          info.el.addEventListener("contextmenu", function(e){
+            e.preventDefault();
+            if(!esAdmin) return;
+            abrirModalEliminarActividad(info.event.id);
+          });
+        }
+        // Eliminar anotaciones
+        if(info.event.extendedProps.tipo === "anotacion"){
+          info.el.addEventListener("contextmenu", function(e){
+            e.preventDefault();
+            if(!modoEscritura) return;
+            abrirModalEliminar(info.event.id);
+          });
+        }
+      }
+    }
+  );
+
+  calendar.render();
+
+  // ✅ SISTEMA DE REALTIME DE SUPABASE (CONEXIÓN EN VIVO)
+  supabase
+    .channel('public-db-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'eventos' }, () => {
+      loadEventos();
     })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'inscripciones' }, () => {
+      loadInscripciones();
+      if(document.getElementById("seccionInscritos").style.display === "block") {
+        mostrarInscritos();
+      }
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'anotaciones' }, () => {
+      loadAnotaciones();
+    })
+    .subscribe();
 
-  })
+  // 🟢 REGISTRO DE FORMULARIO DE INSCRIPCIÓN
+  document.getElementById("formulario").addEventListener("submit", async function(e){
+    e.preventDefault();
 
-})
-// 🟢 INSCRIPCIÓN
-document.getElementById("formulario")
-.addEventListener("submit",function(e){
+    let nombre = document.getElementById("nombre").value;
+    let correo = document.getElementById("correo").value;
+    let curso = document.getElementById("curso").value; // ID de la actividad
+    let celular = document.getElementById("celular").value;
+    let nombreCurso = document.getElementById("curso").selectedOptions[0].text;
 
-e.preventDefault()
+    const { error } = await supabase.from("inscripciones").insert([{
+      id: curso,
+      nombre: nombre,
+      correo: correo,
+      celular: celular
+    }]);
 
-let nombre = document.getElementById("nombre").value
-let correo = document.getElementById("correo").value
-let curso = document.getElementById("curso").value
-  let celular = document.getElementById("celular").value 
-let nombreCurso = document.getElementById("curso").selectedOptions[0].text
+    if(error){
+      alert("Error al enviar la inscripción: " + error.message);
+      return;
+    }
 
-db.collection("inscripciones").doc(curso).set({
-nombre: nombre,
-correo: correo,
-celular: celular
-})
-.then(() => {
+    console.log("✅ INSCRIPCIÓN GUARDADA:", curso);
 
-console.log("✅ INSCRIPCIÓN GUARDADA:", curso)
+    // Actualizar datos
+    await loadInscripciones();
 
-// 🔄 actualizar select
-actualizarCursos()
+    // 📧 Envíos mediante EmailJS
+    emailjs.send("service_u8bx9dj","template_0yx01mn",{
+      nombre: nombre,
+      correo: correo,
+      celular: celular,
+      curso: nombreCurso
+    });
 
-// 🔄 actualizar evento en calendario
+    emailjs.send("service_u8bx9dj","template_jssulea",{
+      nombre: nombre,
+      correo: correo,
+      celular: celular,
+      curso: nombreCurso
+    });
+  });
 
-// 📧 correos
-emailjs.send("service_u8bx9dj","template_0yx01mn",{
-nombre: nombre,
-correo: correo,
-celular: celular,
-curso: nombreCurso
-})
+});
 
-emailjs.send("service_u8bx9dj","template_jssulea",{
-nombre: nombre,
-correo: correo,
-celular: celular,
-curso: nombreCurso
-})
-
-})
-
-})
-
-})
-/* MODAL */
-
-function mostrarModal(titulo,texto){
-
-modalActividad.style.display="flex"
-tituloActividad.innerText=titulo
-descripcionActividad.innerText=texto
-
+/* MODALES */
+function mostrarModal(titulo, texto){
+  modalActividad.style.display="flex";
+  tituloActividad.innerText=titulo;
+  descripcionActividad.innerText=texto;
 }
 
 function cerrarModal(){
-modalActividad.style.display="none"
+  modalActividad.style.display="none";
 }
+
 function abrirModalEliminar(id){
-  idAEliminar = id
-  document.getElementById("modalEliminar").style.display = "flex"
+  idAEliminar = id;
+  document.getElementById("modalEliminar").style.display = "flex";
 }
 
 function cerrarModalEliminar(){
-  idAEliminar = null
-  document.getElementById("modalEliminar").style.display = "none"
+  idAEliminar = null;
+  document.getElementById("modalEliminar").style.display = "none";
 }
 
-function confirmarEliminar(){
-
+async function confirmarEliminar(){
   if(idAEliminar){
-    db.collection("anotaciones")
-    .doc(idAEliminar)
-    .delete()
+    await supabase.from("anotaciones").delete().eq('id', idAEliminar);
   }
-
-  cerrarModalEliminar()
+  cerrarModalEliminar();
 }
-/* ADMIN */
 
+/* ADMINISTRADOR */
 function abrirLogin(){
-adminLogin.style.display="flex"
+  adminLogin.style.display="flex";
 }
+
 function cerrarLogin(){
-adminLogin.style.display="none"
-}
-function cargarAnotacionesAdmin(){
-
-if(!ultimoSnapshotAnotaciones) return
-
-// limpiar solo anotaciones
-calendar.getEvents().forEach(e => {
-if(e.extendedProps.tipo === "anotacion"){
-e.remove()
-}
-})
-
-// volver a dibujar
-ultimoSnapshotAnotaciones.forEach(doc => {
-
-let a = doc.data()
-
-calendar.addEvent({
-  id: doc.id,
-  title: "📝 " + a.texto,
-  start: a.fecha,
-  allDay: true,
-  classNames: ['nota'], // 👈 usa esto SIEMPRE
-  extendedProps: { tipo: "anotacion" }
-})
-
-})
-
-}
-function verificarAdmin(){
-
-if(adminPass.value==="MPSS2026"){
-
-adminLogin.style.display="none"
-document.getElementById("tituloPrincipal").innerText = "ADMINISTRADOR"
-document.getElementById("subtituloPrincipal").innerText = "Calendario de actividades"
-// ocultar formulario
-document.getElementById("formularioUI").style.display = "none"
-
-// mostrar panel admin
-document.getElementById("adminPanel").style.display = "block"
-esAdmin = true
-cargarAnotacionesAdmin()
-// 🔥 CAMBIAR BOTÓN A SALIR
-let btn = document.getElementById("btnAdmin")
-btn.innerText = "SALIR"
-btn.onclick = cerrarAdmin
-
+  adminLogin.style.display="none";
 }
 
-}
+async function verificarAdmin(){
+  if(adminPass.value==="MPSS2026"){
+    adminLogin.style.display="none";
+    document.getElementById("tituloPrincipal").innerText = "ADMINISTRADOR";
+    document.getElementById("subtituloPrincipal").innerText = "Calendario de actividades";
+    document.getElementById("formularioUI").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+    
+    esAdmin = true;
+    await loadAnotaciones(); // Cargar y pintar notas en el calendario
 
-function cerrarAdmin(){
-
-esAdmin = false
-modoEscritura = false
-
-// 🔥 borrar anotaciones del calendario
-calendar.getEvents().forEach(e => {
-  if(e.extendedProps.tipo === "anotacion"){
-    e.remove()
+    let btn = document.getElementById("btnAdmin");
+    btn.innerText = "SALIR";
+    btn.onclick = cerrarAdmin;
   }
-})
-
-// botón anotaciones
-let btnAnot = document.getElementById("btnAnotaciones")
-if(btnAnot){
-  btnAnot.innerText = "Anotaciones"
-  btnAnot.style.background = ""
 }
 
-// ocultar panel
-document.getElementById("adminPanel").style.display = "none"
-document.getElementById("tituloPrincipal").innerText = "BIENVENIDOS"
-document.getElementById("subtituloPrincipal").innerText = "Inscripción a temas"
-// mostrar formulario
-document.getElementById("formularioUI").style.display = "block"
+async function cerrarAdmin(){
+  esAdmin = false;
+  modoEscritura = false;
 
-// botón admin
-let btnAdmin = document.getElementById("btnAdmin")
-btnAdmin.innerText = "ADMIN"
-btnAdmin.onclick = abrirLogin
+  // Limpiar notas del calendario
+  calendar.getEvents().forEach(e => {
+    if(e.extendedProps.tipo === "anotacion"){
+      e.remove();
+    }
+  });
 
+  let btnAnot = document.getElementById("btnAnotaciones");
+  if(btnAnot){
+    btnAnot.innerText = "Anotaciones";
+    btnAnot.style.background = "";
+  }
+
+  document.getElementById("adminPanel").style.display = "none";
+  document.getElementById("tituloPrincipal").innerText = "BIENVENIDOS";
+  document.getElementById("subtituloPrincipal").innerText = "Inscripción a temas";
+  document.getElementById("formularioUI").style.display = "block";
+
+  let btnAdmin = document.getElementById("btnAdmin");
+  btnAdmin.innerText = "ADMIN";
+  btnAdmin.onclick = abrirLogin;
 }
+
 /* PARTICIPANTES */
+async function mostrarInscritos(){
+  document.getElementById("seccionActividades").style.display="none";
+  document.getElementById("seccionInscritos").style.display="block";
+  document.getElementById("seccionCrear").style.display="none";
 
-function mostrarInscritos(){
+  let lista = document.getElementById("seccionInscritos");
+  lista.innerHTML = "Cargando participantes...";
 
-document.getElementById("seccionActividades").style.display="none"
-document.getElementById("seccionInscritos").style.display="block"
-document.getElementById("seccionCrear").style.display="none"
+  // Realizamos un join relacional para obtener el título del evento
+  const { data, error } = await supabase
+    .from('inscripciones')
+    .select(`
+      id,
+      nombre,
+      correo,
+      celular,
+      eventos (
+        title
+      )
+    `);
 
-let lista = document.getElementById("seccionInscritos")
+  if(error){
+    lista.innerHTML = "Error al cargar participantes.";
+    return;
+  }
 
-db.collection("inscripciones").onSnapshot(async snapshot => {
+  lista.innerHTML = "";
 
-lista.innerHTML=""
+  let participantes = (data || []).map(p => ({
+    id: p.id,
+    nombre: p.nombre,
+    correo: p.correo,
+    celular: p.celular,
+    evento: p.eventos ? p.eventos.title : "Sin nombre de actividad"
+  }));
 
-// 🔥 GUARDAR TODOS EN ARRAY
-let participantes = []
+  // Ordenar alfabéticamente
+  participantes.sort((a,b) => a.nombre.localeCompare(b.nombre));
 
-for (const doc of snapshot.docs){
-
-let data = doc.data()
-
-// 🔥 TRAER EVENTO
-let eventoDoc = await db.collection("eventos").doc(doc.id).get()
-
-let tituloEvento = "Sin nombre"
-
-if(eventoDoc.exists){
-tituloEvento = eventoDoc.data().title
+  participantes.forEach(p => {
+    lista.innerHTML += `
+    <div style="margin:10px;padding:10px;border-bottom:1px solid #ccc;color:white;">
+      <b>${p.nombre}</b><br>
+      📌 ${p.evento}<br>
+      📧 ${p.correo}<br>
+      📱 ${p.celular}
+      <br><br>
+      <button class="boton-mini" onclick="eliminarInscripcion('${p.id}')">
+        Eliminar
+      </button>
+    </div>
+    `;
+  });
 }
 
-// 🔥 GUARDAR EN ARRAY
-participantes.push({
-id: doc.id,
-nombre: data.nombre,
-correo: data.correo,
-celular: data.celular,
-evento: tituloEvento
-})
-
+async function eliminarInscripcion(id){
+  await supabase.from("inscripciones").delete().eq('id', id);
+  await loadInscripciones();
 }
 
-// 🔥 ORDENAR ALFABÉTICAMENTE
-participantes.sort((a,b) => 
-a.nombre.localeCompare(b.nombre)
-)
-
-// 🔥 PINTAR
-participantes.forEach(p => {
-
-lista.innerHTML += `
-<div style="margin:10px;padding:10px;border-bottom:1px solid #ccc">
-
-<b>${p.nombre}</b><br>
-📌 ${p.evento}<br>
-📧 ${p.correo}<br>
-📱 ${p.celular}
-
-<br><br>
-
-<button onclick="eliminarInscripcion('${p.id}')">
-Eliminar
-</button>
-
-</div>
-`
-
-})
-
-})
-
-}
-function eliminarInscripcion(id){
-
-db.collection("inscripciones").doc(id).delete()
-
-actualizarCursos()
-
-}
 function mostrarCrear(){
-
-document.getElementById("seccionActividades").style.display="none"
-document.getElementById("seccionInscritos").style.display="none"
-document.getElementById("seccionCrear").style.display="block"
-
+  document.getElementById("seccionActividades").style.display="none";
+  document.getElementById("seccionInscritos").style.display="none";
+  document.getElementById("seccionCrear").style.display="block";
 }
+
 /* ACTIVIDADES */
+async function mostrarActividades(){
+  document.getElementById("seccionActividades").style.display="block";
+  document.getElementById("seccionInscritos").style.display="none";
+  document.getElementById("seccionCrear").style.display="none";
 
-function mostrarActividades(){
+  let lista = document.getElementById("listaActividades");
+  lista.innerHTML = "Cargando actividades...";
 
-document.getElementById("seccionActividades").style.display="block"
-document.getElementById("seccionInscritos").style.display="none"
-document.getElementById("seccionCrear").style.display="none"
+  const { data, error } = await supabase.from('eventos').select('*');
+  if(error){
+    lista.innerHTML = "Error al cargar actividades.";
+    return;
+  }
 
-let lista = document.getElementById("listaActividades")
+  lista.innerHTML = "";
 
-db.collection("eventos").onSnapshot(snapshot => {
-
-lista.innerHTML=""
-
-snapshot.forEach(doc => {
-
-let e = doc.data()
-
-lista.innerHTML += `
-<div style="margin:10px;padding:10px;border-bottom:1px solid #ccc">
-
-<b>${e.title}</b>
-
-<button class="boton-mini" onclick="editarActividad('${doc.id}')">
-Editar
-</button>
-
-<button onclick="eliminarActividad('${doc.id}')">
-
-Eliminar
-</button>
-
-</div>
-`
-
-})
-
-})
-
-}
-function crearActividad(){
-
-let titulo=document.getElementById("nuevoTitulo").value
-let descripcion=document.getElementById("nuevaDescripcion").value
-let fecha=document.getElementById("nuevaFecha").value
-
-if(!titulo || !fecha){
-alert("Completa título y fecha")
-return
+  data.forEach(e => {
+    lista.innerHTML += `
+    <div style="margin:10px;padding:10px;border-bottom:1px solid #ccc;color:white;">
+      <b>${e.title}</b><br><br>
+      <button class="boton-mini" onclick="editarActividad('${e.id}')">
+        Editar
+      </button>
+      <button class="boton-mini" onclick="eliminarActividad('${e.id}')">
+        Eliminar
+      </button>
+    </div>
+    `;
+  });
 }
 
-let nuevaActividad={
-id:"act"+Date.now(),
-title:titulo,
-start:fecha,
-description:descripcion
+async function crearActividad(){
+  let titulo = document.getElementById("nuevoTitulo").value;
+  let descripcion = document.getElementById("nuevaDescripcion").value;
+  let fecha = document.getElementById("nuevaFecha").value;
+
+  if(!titulo || !fecha){
+    alert("Completa título y fecha");
+    return;
+  }
+
+  const { error } = await supabase.from('eventos').insert([
+    { title: titulo, description: descripcion, start_date: fecha }
+  ]);
+
+  if (error) {
+    alert("Error al guardar actividad: " + error.message);
+    return;
+  }
+
+  await loadEventos();
+  mostrarActividades();
+
+  document.getElementById("nuevoTitulo").value = "";
+  document.getElementById("nuevaDescripcion").value = "";
+  document.getElementById("nuevaFecha").value = "";
 }
 
-db.collection("eventos").doc(nuevaActividad.id).set({
-title: titulo,
-start: fecha,
-description: descripcion
-})
-actualizarCursos()
+let editID = null;
 
-document.getElementById("curso").value = nuevaActividad.id
+async function editarActividad(id){
+  editID = id;
 
-mostrarActividades()
-
-document.getElementById("nuevoTitulo").value=""
-document.getElementById("nuevaDescripcion").value=""
-document.getElementById("nuevaFecha").value=""
-
+  const { data, error } = await supabase.from('eventos').select('*').eq('id', id).single();
+  if(!error && data){
+    document.getElementById("editTitulo").value = data.title;
+    document.getElementById("editDescripcion").value = data.description || "";
+    document.getElementById("editFecha").value = data.start_date;
+    document.getElementById("modalEditar").style.display = "flex";
+  }
 }
 
+async function guardarEdicion(){
+  let titulo = document.getElementById("editTitulo").value;
+  let descripcion = document.getElementById("editDescripcion").value;
+  let fecha = document.getElementById("editFecha").value;
 
-let editID=null
+  const { error } = await supabase.from('eventos').update({
+    title: titulo,
+    description: descripcion,
+    start_date: fecha
+  }).eq('id', editID);
 
-function editarActividad(id){
-
-editID = id
-
-db.collection("eventos").doc(id).get().then(doc => {
-
-let evento = doc.data()
-
-document.getElementById("editTitulo").value = evento.title
-document.getElementById("editDescripcion").value = evento.description
-document.getElementById("editFecha").value = evento.start
-
-document.getElementById("modalEditar").style.display="flex"
-
-})
-
-}
-
-function guardarEdicion(){
-
-let titulo = document.getElementById("editTitulo").value
-let descripcion = document.getElementById("editDescripcion").value
-let fecha = document.getElementById("editFecha").value
-
-db.collection("eventos").doc(editID).update({
-title: titulo,
-description: descripcion,
-start: fecha
-}).then(() => {
-cerrarEditar()
-})
-
+  if(!error){
+    cerrarEditar();
+    await loadEventos();
+  }
 }
 
 function cerrarEditar(){
-document.getElementById("modalEditar").style.display="none"
+  document.getElementById("modalEditar").style.display="none";
 }
 
-
-function eliminarActividad(id){
-
-db.collection("eventos").doc(id).delete()
-
-mostrarActividades()
-actualizarCursos()
-
+async function eliminarActividad(id){
+  await supabase.from('eventos').delete().eq('id', id);
+  await loadEventos();
+  mostrarActividades();
 }
+
 function toggleAnotaciones(){
-modoActividades = false
-modoEscritura = !modoEscritura
+  modoActividades = false;
+  modoEscritura = !modoEscritura;
 
-let btn = document.getElementById("btnAnotaciones")
+  let btn = document.getElementById("btnAnotaciones");
 
-if(modoEscritura){
-btn.innerText = "Salir de anotaciones"
-btn.style.background = "#B22222"
-}else{
-btn.innerText = "Anotaciones"
-btn.style.background = ""
+  if(modoEscritura){
+    btn.innerText = "Salir de anotaciones";
+    btn.style.background = "#B22222";
+  } else {
+    btn.innerText = "Anotaciones";
+    btn.style.background = "";
+  }
 }
 
-}
 function abrirCanva(){
   document.getElementById("iframeCanva").src =
     "https://www.canva.com/design/DAHEaczTcD8/J_glE2y9t_p2KU1Dh5TpNA/view?embed";
@@ -1784,33 +1690,29 @@ function cerrarCanva(){
   document.getElementById("modalCanva").style.display = "none";
   document.getElementById("iframeCanva").src = "";
 }
-  function abrirModalEliminarActividad(id){
-  idActividadAEliminar = id
-  document.getElementById("modalEliminarActividad").style.display = "flex"
+
+function abrirModalEliminarActividad(id){
+  idActividadAEliminar = id;
+  document.getElementById("modalEliminarActividad").style.display = "flex";
 }
 
 function cerrarModalEliminarActividad(){
-  idActividadAEliminar = null
-  document.getElementById("modalEliminarActividad").style.display = "none"
+  idActividadAEliminar = null;
+  document.getElementById("modalEliminarActividad").style.display = "none";
 }
 
 async function confirmarEliminarActividad(){
-
   if(idActividadAEliminar){
-
-    await db.collection("eventos")
-      .doc(idActividadAEliminar)
-      .delete()
-
-    await db.collection("inscripciones")
-      .doc(idActividadAEliminar)
-      .delete()
-
+    // Gracias a la restricción ON DELETE CASCADE de la llave foránea de PostgreSQL, 
+    // al borrar el evento se eliminará automáticamente su inscripción relacionada.
+    await supabase.from('eventos').delete().eq('id', idActividadAEliminar);
+    await loadEventos();
+    await loadInscripciones();
   }
-
-  cerrarModalEliminarActividad()
+  cerrarModalEliminarActividad();
 }
 </script>
+
 <div id="modalCanva" class="modal">
   <div class="modal-contenido" 
     style="width:90%; max-width:1000px; height:80vh; padding:0">
@@ -1835,7 +1737,8 @@ async function confirmarEliminarActividad(){
 
   </div>
 </div>
-  <!-- 🔵 MODAL ELIMINAR ANOTACIÓN -->
+
+<!-- 🔵 MODAL ELIMINAR ANOTACIÓN -->
 <div id="modalEliminar" class="modal">
   <div class="modal-contenido">
 
@@ -1854,7 +1757,8 @@ async function confirmarEliminarActividad(){
 
   </div>
 </div>
-  <!-- 🔴 MODAL ELIMINAR ACTIVIDAD -->
+
+<!-- 🔴 MODAL ELIMINAR ACTIVIDAD -->
 <div id="modalEliminarActividad" class="modal">
   <div class="modal-contenido">
 
