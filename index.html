@@ -1877,6 +1877,64 @@ function abrirModalEquipo(){
 function cerrarModalEquipo(){
   document.getElementById("modalEquipo").style.display = "none";
 }
+  async function buscarEquipo(){
+
+  let correo = document
+    .getElementById("correoBusquedaEquipo")
+    .value
+    .trim()
+    .toLowerCase();
+
+  let resultado = document.getElementById("resultadoEquipo");
+
+  if(!correo){
+    resultado.innerHTML =
+      "<p>Ingresa tu correo.</p>";
+    return;
+  }
+
+  // Buscar al participante
+  const { data: participante, error } =
+    await supabaseClient
+      .from("participantes")
+      .select("*")
+      .eq("correo", correo)
+      .single();
+
+  if(error || !participante){
+    resultado.innerHTML =
+      "<p>No encontramos una inscripción con ese correo.</p>";
+    return;
+  }
+
+  // Buscar a todos los integrantes de la misma actividad
+  const { data: equipo } =
+    await supabaseClient
+      .from("participantes")
+      .select("*")
+      .eq("actividad_id", participante.actividad_id);
+
+  let html = `
+    <h3>Tu equipo actual</h3>
+  `;
+
+  equipo.forEach(persona => {
+
+    html += `
+      <div style="
+        margin:10px 0;
+        padding:10px;
+        border-bottom:1px solid #ddd;
+      ">
+        <b>${persona.nombre}</b><br>
+         ${persona.correo}<br>
+         ${persona.celular || ''}
+      </div>
+    `;
+  });
+
+  resultado.innerHTML = html;
+}
 </script>
 
 <div id="modalCanva" class="modal">
