@@ -185,10 +185,10 @@ body{
   ),
   url("https://i.imgur.com/hTT1t8L.jpeg");
 
-  background-size:cover;           /* 🔥 AGREGA ESTO */
-  background-position:center;      /* 🔥 */
-  background-attachment: fixed;    /* 🔥 */
-  background-repeat:no-repeat;     /* 🔥 */
+  background-size:cover;
+  background-position:center;
+  background-attachment: fixed;
+  background-repeat:no-repeat;
   background-color:#5a0a14;
   min-height:100vh;
   padding:20px;
@@ -339,7 +339,7 @@ font-size:22px;
 grid-template-columns: 1.3fr 2px 1.7fr;
   gap:40px;
 
-  max-width:1400px; /* 🔥 ANTES 1200 */
+  max-width:1400px;
   margin:auto;
 
   align-items:stretch;
@@ -356,7 +356,7 @@ grid-template-columns: 1.3fr 2px 1.7fr;
     transparent
   );
 
-  box-shadow:0 0 10px rgba(255,255,255,0.4); /* 🔥 glow */
+  box-shadow:0 0 10px rgba(255,255,255,0.4);
 }
 
 /* FORMULARIO */
@@ -397,8 +397,8 @@ box-shadow:
   border-radius:15px;
   color:white;
 
-  width:100%;       /* 🔥 CLAVE */
-  max-width:550px;  /* 🔥 SOLO PARA PC */
+  width:100%;
+  max-width:550px;
 
   display:flex;
   flex-direction:column;
@@ -464,7 +464,7 @@ transform:scale(1.05);
   box-shadow:0 15px 40px rgba(0,0,0,0.35);
 
   width:100%;
-  max-width:850px; /* 🔥 ESTE ES EL ARREGLO REAL */
+  max-width:850px;
   margin:auto;
 }
   .fc{
@@ -478,7 +478,6 @@ transform:scale(1.05);
   overflow-wrap:break-word;
   line-height:1.1;
 
-  /* 🔥 MAGIA */
   font-size:clamp(9px, 1.2vw, 13px);
 }
 
@@ -490,7 +489,7 @@ transform:scale(1.05);
 }
 
 .fc-event:hover{
-  background:#FFD700 !important; /* 🔥 amarillo brillante */
+  background:#FFD700 !important;
   border-color:#FFD700 !important;
   color:black !important;
 
@@ -512,7 +511,7 @@ border:none !important;
   color:black !important;
 }
 
-/* 🔴 OCUPADO */
+/* 🔴 OCUPADO / AGOTADO */
 .fc-event.ocupado{
   background:#B22222 !important;
   border-color:#B22222 !important;
@@ -523,7 +522,7 @@ border:none !important;
 .fc-event.nota{
   background:#286F7B !important;
   border-color:#286F7B !important;
-  color:black !important;
+  color:white !important;
 }
 /* MODAL */
 
@@ -547,6 +546,7 @@ border-radius:20px;
 width:400px;
 text-align:center;
 position:relative;
+color: #333;
 }
 
   /* INPUT CONTRASEÑA ADMIN */
@@ -617,7 +617,7 @@ box-shadow:none;
   top:0;
   left:0;
   width:100%;
-  min-height:100dvh; /* 🔥 CLAVE */
+  min-height:100dvh;
 
   display:flex;
   justify-content:center;
@@ -633,7 +633,7 @@ box-shadow:none;
   background-size:cover;
   background-position:center;
 
-  overflow:hidden; /* 🔥 evita movimiento */
+  overflow:hidden;
 }
   input, textarea, select{
   font-size:16px !important;
@@ -725,7 +725,7 @@ font-family: 'Great Vibes', cursive;
 font-size:70px;
 color:#FFD700;
 margin-top:25px;
-font-weight: normal; /* 🔥 quita lo grueso */
+font-weight: normal;
 
 /* brillo suave tipo neón */
 text-shadow:
@@ -865,7 +865,7 @@ box-shadow:
     </p>
 
     <form id="formulario">
-      <input type="text" id="nombre"  placeholder="Nombre" required>
+      <input type="text" id="nombre"  placeholder="Nombre Completo" required>
       <input type="email" id="correo" placeholder="Correo" required>
       <input type="Cellphone" id="celular"  placeholder="Celular" required>
       <select id="curso"></select>
@@ -883,9 +883,7 @@ box-shadow:
       <button class="tab-admin" onclick="toggleActividades()" id="btnActividades"> Actividades </button>
       <button class="tab-admin" onclick="mostrarCrear()">Crear actividad</button>
       <button class="tab-admin" onclick="mostrarInscritos()">Participantes</button>
-      <button class="tab-admin" id="btnAnotaciones" onclick="toggleAnotaciones()">
-Anotaciones
-</button>
+      <button class="tab-admin" id="btnAnotaciones" onclick="toggleAnotaciones()">Anotaciones</button>
     </div>
 
     <div id="seccionActividades">
@@ -897,11 +895,15 @@ Anotaciones
       <input id="nuevoTitulo" placeholder="Título">
       <input id="nuevaDescripcion" placeholder="Descripción">
       <input id="nuevaFecha" type="date">
+      <input id="nuevosCupos" type="number" placeholder="Cupos Totales (Ej: 15)" min="1" value="15" style="margin-top:5px; width:100%;">
       <br><br>
       <button class="boton-admin" onclick="crearActividad()">Guardar actividad</button>
     </div>
 
-    <div id="seccionInscritos" style="display:none"></div>
+    <div id="seccionInscritos" style="display:none">
+      <input type="text" id="filtroParticipantes" placeholder="Buscar por nombre o actividad..." oninput="filtrarParticipantes()" style="width:100%; margin-bottom:12px; padding:8px; border-radius:6px; border:1px solid #D4AF37; background:#FFF5CC;">
+      <div id="listaInscritosContenido"></div>
+    </div>
 
     <br>
 
@@ -1002,6 +1004,8 @@ ADMIN
 
 <input id="editFecha" type="date">
 
+<input id="editCupos" type="number" placeholder="Cupos Totales" min="1" style="margin-top:5px; width:100%;">
+
 <br><br>
 
 <button onclick="guardarEdicion()">Guardar</button>
@@ -1019,22 +1023,19 @@ ADMIN
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-// CREDENCIALES DE TU PROYECTO DE SUPABASE
+// VARIABLES DE ENTORNO Y CREDENCIALES (Ajustar antes de subir a producción)
 const SUPABASE_URL = "YOUR_SUPABASE_URL";
 const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
-// ✅ INICIALIZACIÓN COMPLETAMENTE SEGURA:
-// Cambiamos el nombre de la variable local a `supabaseClient` para que NO entre en colisión
-// con el objeto global `supabase` proveído por el script del CDN.
 let supabaseClient = null;
 try {
   if (window.supabase && SUPABASE_URL && SUPABASE_URL !== "YOUR_SUPABASE_URL" && SUPABASE_URL.startsWith("http")) {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   } else {
-    console.warn("Supabase no está configurado aún o la URL es inválida. Completa SUPABASE_URL y SUPABASE_ANON_KEY.");
+    console.warn("Supabase no se ha configurado de forma completa. Ingresa tus credenciales.");
   }
 } catch (err) {
-  console.error("Error al inicializar Supabase:", err);
+  console.error("Error al arrancar SupabaseClient:", err);
 }
 
 function toggleActividades(){
@@ -1062,53 +1063,52 @@ let idAEliminar = null;
 let idActividadAEliminar = null;
 let modoActividades = false;
 
-// VARIABLES DE ALMACENAMIENTO LOCAL DE DATOS
-let eventosData = {};
-let inscripcionesData = {};
+// ALMACENAMIENTO DE DATOS LOCALES SINCRO RELACIONAL
+let actividadesData = {};
+let participantesData = [];
 let anotacionesData = [];
+let listaParticipantesLocal = []; // caché para filtrado ágil del admin
 
-// ✅ ACTUALIZAR CURSOS (JOIN EN CLIENTE EXCLUYENDO INSCRIPCIONES YA CREADAS)
+// ✅ CARGA DINÁMICA DE CURSOS/ACTIVIDADES CON CONTROL DE CUPOS REALES
 async function actualizarCursos(){
   let select = document.getElementById("curso");
   if(!select) return;
 
   select.innerHTML = "";
-
   if (!supabaseClient) return;
 
   try {
-    const { data: eventos, error: errEv } = await supabaseClient.from('eventos').select('*');
-    const { data: inscripciones, error: errIns } = await supabaseClient.from('inscripciones').select('id');
+    for (let id in actividadesData) {
+      let act = actividadesData[id];
+      let registrados = participantesData.filter(p => p.actividad_id === id).length;
+      let disponibles = act.cupos_totales - registrados;
 
-    if(errEv || !eventos) return;
-
-    const inscritosIds = new Set((inscripciones || []).map(i => i.id));
-
-    eventos.forEach(e => {
-      if(inscritosIds.has(e.id)) return; 
-
-      let option = document.createElement("option");
-      option.value = e.id;
-      option.textContent = e.title;
-      select.appendChild(option);
-    });
+      if (disponibles > 0) {
+        let option = document.createElement("option");
+        option.value = act.id;
+        option.textContent = `${act.title} (${disponibles} cupos libres)`;
+        select.appendChild(option);
+      }
+    }
   } catch (err) {
-    console.warn("Error al actualizar cursos:", err);
+    console.warn("Error al actualizar catálogo de cursos:", err);
   }
 }
 
-// CARGA INICIAL DE DATOS DESDE SUPABASE
-async function loadEventos() {
+// CARGADORES DE BASE DE DATOS
+async function loadActividades() {
   if (!supabaseClient) return;
   try {
-    const { data, error } = await supabaseClient.from('eventos').select('*');
+    const { data, error } = await supabaseClient.from('actividades').select('*');
     if (!error && data) {
-      eventosData = {};
+      actividadesData = {};
       data.forEach(item => {
-        eventosData[item.id] = {
+        actividadesData[item.id] = {
+          id: item.id,
           title: item.title,
           description: item.description,
-          start: item.start_date
+          start: item.start_date,
+          cupos_totales: item.cupos_totales || 15
         };
       });
       renderCalendar();
@@ -1119,42 +1119,38 @@ async function loadEventos() {
   }
 }
 
-async function loadInscripciones() {
+async function loadParticipantes() {
   if (!supabaseClient) return;
   try {
-    const { data, error } = await supabaseClient.from('inscripciones').select('*');
+    const { data, error } = await supabaseClient.from('participantes').select('*');
     if (!error && data) {
-      inscripcionesData = {};
-      data.forEach(item => {
-        inscripcionesData[item.id] = {
-          nombre: item.nombre,
-          correo: item.correo,
-          celular: item.celular
-        };
-      });
+      participantesData = data;
       renderCalendar();
       actualizarCursos();
+      if(document.getElementById("seccionInscritos").style.display === "block") {
+        mostrarInscritos();
+      }
     }
   } catch(err) {
     console.warn(err);
   }
 }
 
+// Solo el administrador registrado puede jalar las notas desde el servidor
 async function loadAnotaciones() {
-  if (!supabaseClient) return;
+  if (!supabaseClient || !esAdmin) return;
   try {
-    const { data, error } = await supabaseClient.from('anotaciones').select('*');
+    const { data, error } = await supabaseClient.from('notas_admin').select('*');
     if (error) return;
 
     anotacionesData = data || [];
 
+    // Limpia sólo anotaciones antes de pintar
     calendar.getEvents().forEach(e => {
       if(e.extendedProps.tipo === "anotacion"){
         e.remove();
       }
     });
-
-    if(!esAdmin) return;
 
     anotacionesData.forEach(a => {
       calendar.addEvent({
@@ -1171,7 +1167,7 @@ async function loadAnotaciones() {
   }
 }
 
-// REDIBUJAR EVENTOS DEL CALENDARIO
+// RENDERIZAR EN CALENDARIO CON FILAS DE REGISTRO DINÁMICAS
 function renderCalendar(){
   calendar.getEvents().forEach(e => {
     if(!e.extendedProps.tipo){
@@ -1179,33 +1175,42 @@ function renderCalendar(){
     }
   });
 
-  for(let id in eventosData){
-    let e = eventosData[id];
-    let inscrito = inscripcionesData[id];
+  for(let id in actividadesData){
+    let act = actividadesData[id];
+    let registrados = participantesData.filter(p => p.actividad_id === id).length;
+    let disponibles = act.cupos_totales - registrados;
+    if (disponibles < 0) disponibles = 0;
 
-    let eventoFinal = {
-      id: id,
-      title: e.title,
-      start: e.start,
-      description: e.description,
-      classNames: ['disponible']
-    };
+    let titleStr = `${act.title} (${disponibles}/${act.cupos_totales} cupos)`;
+    let classList = ['disponible'];
 
-    if(inscrito && inscrito.nombre){
-      eventoFinal.title = e.title + " | " + inscrito.nombre;
-      eventoFinal.classNames = ['ocupado'];
+    if(disponibles <= 0){
+      titleStr = `${act.title} (Agotado)`;
+      classList = ['ocupado'];
     }
 
-    calendar.addEvent(eventoFinal);
+    calendar.addEvent({
+      id: act.id,
+      title: titleStr,
+      start: act.start,
+      description: act.description,
+      classNames: classList,
+      extendedProps: {
+        cupos_disponibles: disponibles,
+        cupos_totales: act.cupos_totales
+      }
+    });
   }
 }
 
-// ✅ CONFIGURACIÓN DEL DOM Y EVENTOS
+// ALIAS PARA RETROCOMPATIBILIDAD CON SCRIPT ANTERIOR
+function loadEventos() { return loadActividades(); }
+function loadInscripciones() { return loadParticipantes(); }
+
+// ✅ CONFIGURACIÓN DEL DOM Y EVENTOS DE INTERFAZ
 document.addEventListener('DOMContentLoaded', function(){
 
   // 🔐 1. LOGIN PROMETEO (SE EJECUTA AL INICIO)
-  // Escucha el evento "input" que es robusto ante copiar, pegar, autocorrecciones o mayúsculas.
-  // Soporta tanto la contraseña "TLAQH 2026" como la alternativa compacta "TLAQH2026".
   const input = document.getElementById("pinInput");
   const pantalla = document.getElementById("pantallaInicio");
 
@@ -1227,7 +1232,7 @@ document.addEventListener('DOMContentLoaded', function(){
       buttonText:{today:'Hoy'},
       events: [],
 
-      // 👉 CLICK EN DÍA (ESCRIBIR ANOTACIONES)
+      // 👉 CLICK EN DÍA (ESCRIBIR NOTAS)
       dateClick: async function(info){
         if(esAdmin && modoActividades){
           return;
@@ -1256,7 +1261,7 @@ document.addEventListener('DOMContentLoaded', function(){
             let texto = input.value.trim();
             if(texto && supabaseClient){
               try {
-                await supabaseClient.from("anotaciones").insert([
+                await supabaseClient.from("notas_admin").insert([
                   { fecha: info.dateStr, texto: texto }
                 ]);
               } catch(err) {
@@ -1269,7 +1274,7 @@ document.addEventListener('DOMContentLoaded', function(){
         });
       },
 
-      // 👉 CLICK EN EVENTO (EDITAR O REPRODUCIR)
+      // 👉 CLICK EN EVENTO (EDITAR O LEER)
       eventClick: async function(info){
         if(info.event.extendedProps.tipo === "anotacion"){
           if(!modoEscritura) return;
@@ -1293,7 +1298,7 @@ document.addEventListener('DOMContentLoaded', function(){
               let nuevo = input.value.trim();
               if(nuevo && supabaseClient){
                 try {
-                  await supabaseClient.from("anotaciones")
+                  await supabaseClient.from("notas_admin")
                     .update({ texto: nuevo })
                     .eq('id', info.event.id);
                 } catch(err) {
@@ -1355,70 +1360,87 @@ document.addEventListener('DOMContentLoaded', function(){
 
   calendar.render();
 
-  // 📅 3. CARGA NO BLOQUEANTE DE SUPABASE
+  // 📅 3. CARGA NO BLOQUEANTE DE BASE DE DATOS
   async function inicializarDatosBase() {
     if (!supabaseClient) return;
     try {
-      await loadEventos();
+      await loadActividades();
       await loadInscripciones();
     } catch (err) {
-      console.warn("Hubo un detalle en la conexión de datos con Supabase:", err);
+      console.warn("Error en la conexión con Supabase:", err);
     }
   }
   inicializarDatosBase();
 
-  // Realtime de Supabase
+  // Canal Realtime para sincronizar todos los terminales en tiempo real
   if (supabaseClient) {
     try {
       supabaseClient
         .channel('public-db-changes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'eventos' }, () => {
-          loadEventos();
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'actividades' }, () => {
+          loadActividades();
         })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'inscripciones' }, () => {
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'participantes' }, () => {
           loadInscripciones();
-          if(document.getElementById("seccionInscritos").style.display === "block") {
-            mostrarInscritos();
-          }
         })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'anotaciones' }, () => {
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'notas_admin' }, () => {
           loadAnotaciones();
         })
         .subscribe();
     } catch(err) {
-      console.warn("No se pudo iniciar el canal de Realtime.", err);
+      console.warn("No se pudo conectar el servidor en Realtime.", err);
     }
   }
 
-  // 🟢 REGISTRO DE FORMULARIO DE INSCRIPCIÓN
+  // 🟢 REGISTRO DE FORMULARIO DE INSCRIPCIÓN (Lógica de validación estricta de cupos)
   document.getElementById("formulario").addEventListener("submit", async function(e){
     e.preventDefault();
 
-    let nombre = document.getElementById("nombre").value;
-    let correo = document.getElementById("correo").value;
+    let nombre = document.getElementById("nombre").value.trim();
+    let correo = document.getElementById("correo").value.trim();
     let curso = document.getElementById("curso").value; 
-    let celular = document.getElementById("celular").value;
-    let nombreCurso = document.getElementById("curso").selectedOptions[0].text;
+    let celular = document.getElementById("celular").value.trim();
+    let nombreCurso = document.getElementById("curso").selectedOptions[0]?.text;
 
     if (!supabaseClient) {
-      alert("No hay conexión con la base de datos.");
+      alert("No hay conexión con el servidor en este momento.");
+      return;
+    }
+
+    // Validación de cupo local antes de enviar la petición de escritura
+    let act = actividadesData[curso];
+    if (!act) {
+      alert("La actividad seleccionada no es válida.");
+      return;
+    }
+
+    let registrados = participantesData.filter(p => p.actividad_id === curso).length;
+    let disponibles = act.cupos_totales - registrados;
+
+    if (disponibles <= 0) {
+      alert("Lo sentimos, no hay cupos disponibles para esta actividad.");
       return;
     }
 
     try {
-      const { error } = await supabaseClient.from("inscripciones").insert([{
-        id: curso,
+      const { error } = await supabaseClient.from("participantes").insert([{
+        actividad_id: curso,
         nombre: nombre,
         correo: correo,
         celular: celular
       }]);
 
       if(error){
-        alert("Error al enviar la inscripción: " + error.message);
+        alert("Ocurrió un error al procesar el registro: " + error.message);
         return;
       }
 
-      console.log("✅ INSCRIPCIÓN GUARDADA:", curso);
+      alert("¡Inscripción registrada correctamente! Tu plaza ha sido asegurada.");
+
+      // Limpieza de campos
+      document.getElementById("nombre").value = "";
+      document.getElementById("correo").value = "";
+      document.getElementById("celular").value = "";
 
       await loadInscripciones();
 
@@ -1467,7 +1489,7 @@ async function confirmarEliminar(){
   if (!supabaseClient) return;
   try {
     if(idAEliminar){
-      await supabaseClient.from("anotaciones").delete().eq('id', idAEliminar);
+      await supabaseClient.from("notas_admin").delete().eq('id', idAEliminar);
     }
   } catch (err) {
     console.error(err);
@@ -1527,73 +1549,92 @@ async function cerrarAdmin(){
   btnAdmin.onclick = abrirLogin;
 }
 
-/* PARTICIPANTES */
+/* PARTICIPANTES CON BÚSQUEDA AVANZADA (Filtros Frontend) */
 async function mostrarInscritos(){
   document.getElementById("seccionActividades").style.display="none";
   document.getElementById("seccionInscritos").style.display="block";
   document.getElementById("seccionCrear").style.display="none";
 
-  let lista = document.getElementById("seccionInscritos");
-  lista.innerHTML = "Cargando participantes...";
+  let listaContenido = document.getElementById("listaInscritosContenido");
+  listaContenido.innerHTML = "Cargando participantes...";
 
   if (!supabaseClient) {
-    lista.innerHTML = "Sin conexión a la base de datos.";
+    listaContenido.innerHTML = "Sin conexión a la base de datos.";
     return;
   }
 
   try {
     const { data, error } = await supabaseClient
-      .from('inscripciones')
+      .from('participantes')
       .select(`
         id,
         nombre,
         correo,
         celular,
-        eventos (
+        actividades (
           title
         )
       `);
 
     if(error){
-      lista.innerHTML = "Error al cargar participantes.";
+      listaContenido.innerHTML = "Error al cargar participantes.";
       return;
     }
 
-    lista.innerHTML = "";
-
-    let participantes = (data || []).map(p => ({
+    listaParticipantesLocal = (data || []).map(p => ({
       id: p.id,
       nombre: p.nombre,
       correo: p.correo,
       celular: p.celular,
-      evento: p.eventos ? p.eventos.title : "Sin nombre de actividad"
+      evento: p.actividades ? p.actividades.title : "Sin nombre de actividad"
     }));
 
-    participantes.sort((a,b) => a.nombre.localeCompare(b.nombre));
+    listaParticipantesLocal.sort((a,b) => a.nombre.localeCompare(b.nombre));
 
-    participantes.forEach(p => {
-      lista.innerHTML += `
-      <div style="margin:10px;padding:10px;border-bottom:1px solid #ccc;color:white;">
-        <b>${p.nombre}</b><br>
-        📌 ${p.evento}<br>
-        📧 ${p.correo}<br>
-        📱 ${p.celular}
-        <br><br>
-        <button class="boton-mini" onclick="eliminarInscripcion('${p.id}')">
-          Eliminar
-        </button>
-      </div>
-      `;
-    });
+    filtrarParticipantes(); 
+
   } catch(err) {
-    lista.innerHTML = "Error al conectar.";
+    listaContenido.innerHTML = "Error al conectar.";
   }
+}
+
+function filtrarParticipantes() {
+  let query = document.getElementById("filtroParticipantes").value.trim().toLowerCase();
+  let listaContenido = document.getElementById("listaInscritosContenido");
+  listaContenido.innerHTML = "";
+
+  let filtrados = listaParticipantesLocal.filter(p => 
+    p.nombre.toLowerCase().includes(query) || 
+    p.evento.toLowerCase().includes(query) ||
+    p.correo.toLowerCase().includes(query) ||
+    p.celular.includes(query)
+  );
+
+  if (filtrados.length === 0) {
+    listaContenido.innerHTML = "<div style='color:#ccc; padding:10px; text-align:center;'>No se encontraron participantes.</div>";
+    return;
+  }
+
+  filtrados.forEach(p => {
+    listaContenido.innerHTML += `
+    <div style="margin:10px 0;padding:10px;border-bottom:1px solid #ccc;color:white;background:rgba(255,255,255,0.05);border-radius:6px;">
+      <b>${p.nombre}</b><br>
+      📌 ${p.evento}<br>
+      📧 ${p.correo}<br>
+      📱 ${p.celular}
+      <br><br>
+      <button class="boton-mini" style="background:#B22222;" onclick="eliminarInscripcion('${p.id}')">
+        Eliminar Registro
+      </button>
+    </div>
+    `;
+  });
 }
 
 async function eliminarInscripcion(id){
   if (!supabaseClient) return;
   try {
-    await supabaseClient.from("inscripciones").delete().eq('id', id);
+    await supabaseClient.from("participantes").delete().eq('id', id);
     await loadInscripciones();
   } catch(err) {
     console.error(err);
@@ -1621,7 +1662,7 @@ async function mostrarActividades(){
   }
 
   try {
-    const { data, error } = await supabaseClient.from('eventos').select('*');
+    const { data, error } = await supabaseClient.from('actividades').select('*');
     if(error){
       lista.innerHTML = "Error al cargar actividades.";
       return;
@@ -1648,9 +1689,10 @@ async function mostrarActividades(){
 }
 
 async function crearActividad(){
-  let titulo = document.getElementById("nuevoTitulo").value;
-  let descripcion = document.getElementById("nuevaDescripcion").value;
+  let titulo = document.getElementById("nuevoTitulo").value.trim();
+  let descripcion = document.getElementById("nuevaDescripcion").value.trim();
   let fecha = document.getElementById("nuevaFecha").value;
+  let cupos = parseInt(document.getElementById("nuevosCupos").value) || 15;
 
   if(!titulo || !fecha){
     alert("Completa título y fecha");
@@ -1660,8 +1702,8 @@ async function crearActividad(){
   if (!supabaseClient) return;
 
   try {
-    const { error } = await supabaseClient.from('eventos').insert([
-      { title: titulo, description: descripcion, start_date: fecha }
+    const { error } = await supabaseClient.from('actividades').insert([
+      { title: titulo, description: descripcion, start_date: fecha, cupos_totales: cupos }
     ]);
 
     if (error) {
@@ -1669,12 +1711,13 @@ async function crearActividad(){
       return;
     }
 
-    await loadEventos();
+    await loadActividades();
     mostrarActividades();
 
     document.getElementById("nuevoTitulo").value = "";
     document.getElementById("nuevaDescripcion").value = "";
     document.getElementById("nuevaFecha").value = "";
+    document.getElementById("nuevosCupos").value = "15";
   } catch(err) {
     console.error(err);
   }
@@ -1687,11 +1730,12 @@ async function editarActividad(id){
   if (!supabaseClient) return;
 
   try {
-    const { data, error } = await supabaseClient.from('eventos').select('*').eq('id', id).single();
+    const { data, error } = await supabaseClient.from('actividades').select('*').eq('id', id).single();
     if(!error && data){
       document.getElementById("editTitulo").value = data.title;
       document.getElementById("editDescripcion").value = data.description || "";
       document.getElementById("editFecha").value = data.start_date;
+      document.getElementById("editCupos").value = data.cupos_totales || 15;
       document.getElementById("modalEditar").style.display = "flex";
     }
   } catch(err) {
@@ -1700,22 +1744,24 @@ async function editarActividad(id){
 }
 
 async function guardarEdicion(){
-  let titulo = document.getElementById("editTitulo").value;
-  let descripcion = document.getElementById("editDescripcion").value;
+  let titulo = document.getElementById("editTitulo").value.trim();
+  let descripcion = document.getElementById("editDescripcion").value.trim();
   let fecha = document.getElementById("editFecha").value;
+  let cupos = parseInt(document.getElementById("editCupos").value) || 15;
 
   if (!supabaseClient) return;
 
   try {
-    const { error } = await supabaseClient.from('eventos').update({
+    const { error } = await supabaseClient.from('actividades').update({
       title: titulo,
       description: descripcion,
-      start_date: fecha
+      start_date: fecha,
+      cupos_totales: cupos
     }).eq('id', editID);
 
     if(!error){
       cerrarEditar();
-      await loadEventos();
+      await loadActividades();
     }
   } catch(err) {
     console.error(err);
@@ -1729,8 +1775,8 @@ function cerrarEditar(){
 async function eliminarActividad(id){
   if (!supabaseClient) return;
   try {
-    await supabaseClient.from('eventos').delete().eq('id', id);
-    await loadEventos();
+    await supabaseClient.from('actividades').delete().eq('id', id);
+    await loadActividades();
     mostrarActividades();
   } catch(err) {
     console.error(err);
@@ -1777,8 +1823,8 @@ async function confirmarEliminarActividad(){
   if (!supabaseClient) return;
   try {
     if(idActividadAEliminar){
-      await supabaseClient.from('eventos').delete().eq('id', idActividadAEliminar);
-      await loadEventos();
+      await supabaseClient.from('actividades').delete().eq('id', idActividadAEliminar);
+      await loadActividades();
       await loadInscripciones();
     }
   } catch(err) {
