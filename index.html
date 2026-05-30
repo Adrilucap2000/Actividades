@@ -1894,12 +1894,16 @@ function cerrarModalEquipo(){
   }
 
   // Buscar al participante
-  const { data: participante, error } =
-    await supabaseClient
-      .from("participantes")
-      .select("*")
-      .eq("correo", correo)
-      .single();
+  const { data, error } =
+  await supabaseClient
+    .from("participantes")
+    .select("*")
+    .eq("correo", correo);
+
+const participante =
+  data && data.length
+    ? data[0]
+    : null;
 
   if(error || !participante){
     resultado.innerHTML =
